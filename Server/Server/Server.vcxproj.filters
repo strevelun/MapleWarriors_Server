@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="NetworkCore">
+      <UniqueIdentifier>{21752d6b-7bf5-46a7-b2f5-c254db1df3d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{6202e435-d4bc-45f9-9dbd-7dec21ae7649}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet\PacketHandler">
+      <UniqueIdentifier>{c0c6ea7e-ec5e-46b9-a7e1-dc98bfb4a8b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet\Types">
+      <UniqueIdentifier>{c74168f9-cce8-402e-82ed-7fd102df9b28}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Packet\Packet.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PacketReader.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PacketHandler\PacketHandler.cpp">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCore\Acceptor.cpp">
+      <Filter>NetworkCore</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCore\Connection.cpp">
+      <Filter>NetworkCore</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCore\ConnectionManager.cpp">
+      <Filter>NetworkCore</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCore\IOCP.cpp">
+      <Filter>NetworkCore</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCore\NetworkEngine.cpp">
+      <Filter>NetworkCore</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCore\RingBuffer.cpp">
+      <Filter>NetworkCore</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerApp.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Packet\Packet.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketReader.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\Types\PacketTypes.h">
+      <Filter>Packet\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketHandler\PacketHandler.h">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCore\Acceptor.h">
+      <Filter>NetworkCore</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCore\Connection.h">
+      <Filter>NetworkCore</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCore\ConnectionManager.h">
+      <Filter>NetworkCore</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCore\IOCP.h">
+      <Filter>NetworkCore</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCore\NetworkEngine.h">
+      <Filter>NetworkCore</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCore\RingBuffer.h">
+      <Filter>NetworkCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerApp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
