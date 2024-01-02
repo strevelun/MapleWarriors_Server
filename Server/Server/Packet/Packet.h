@@ -14,11 +14,12 @@ public:
 	~Packet();
 
 	const char* GetBuffer() const { return m_buffer; }
-	uint16 GetAddedSize() const { return m_addPos; }
-	uint16 GetPacketSize() const { return *reinterpret_cast<const uint16*>(m_buffer); }
+	//uint16 GetAddedSize() const { return m_addPos; }
+	uint16 GetSize() const { return *reinterpret_cast<const uint16*>(m_buffer); }
 
 	template<typename Type>
 	Packet& Add(const Type& _type);
+	Packet& AddWString(const std::wstring& _str);
 };
 
 template<typename Type>

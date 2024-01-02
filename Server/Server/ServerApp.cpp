@@ -14,6 +14,8 @@ ServerApp::~ServerApp()
 
 bool ServerApp::Init(const char* _ip, unsigned short _port, int _backlog)
 {
+	setlocale(LC_ALL, "Korean");
+
 	WSADATA  wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) return false;
 	if (!m_engine.Init()) return false;
@@ -33,7 +35,7 @@ void ServerApp::Run()
 			continue;
 		}
 
-		printf("%d ¿¬°áµÊ\n", clientSocket);
+		printf("%d ¿¬°áµÊ\n", (int)clientSocket);
 
 		Connection* pConn = ConnectionManager::GetInst()->CreateConnection(clientSocket);
 

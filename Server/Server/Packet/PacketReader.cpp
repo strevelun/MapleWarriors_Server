@@ -1,7 +1,7 @@
 #include "PacketReader.h"
 
 PacketReader::PacketReader() :
-	m_pBuffer(nullptr), m_getPos(sizeof(PacketSize))
+	m_pBuffer(nullptr), m_getPos(2)
 {
 }
 
@@ -26,8 +26,16 @@ bool PacketReader::IsBufferReadable(RingBuffer& _buffer)
 	return true;
 }
 
-uint32 PacketReader::GetPacketSize() const
+uint32 PacketReader::GetSize() const
 {
 	if (!m_pBuffer) return 0;
 	return *reinterpret_cast<const uint16*>(m_pBuffer);
+}
+
+const wchar_t* PacketReader::GetWString()
+{
+	uint16 pos = m_getPos;
+	const wchar_t* str = reinterpret_cast<const wchar_t*>(&m_pBuffer[pos]);
+	m_getPos += wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t);
+	return str;
 }

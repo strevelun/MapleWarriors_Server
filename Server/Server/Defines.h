@@ -6,7 +6,7 @@
 #include <thread>
 #include <unordered_map>
 
-#define BUFFER_MAX					17
+#define BUFFER_MAX					1024
 
 #define PACKET_MAX_SIZE				128
 #define PACKET_HEADER_SIZE			4

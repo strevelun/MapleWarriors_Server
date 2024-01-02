@@ -54,7 +54,8 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 	{
 		if (!GetQueuedCompletionStatus(hIOCP, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE))
 		{
-			//printf("false returned : %d\n", WSAGetLastError());
+			printf("false returned : %d\n", WSAGetLastError());
+			ConnectionManager::GetInst()->DeleteConnection(pConn->GetId());
 			continue;
 		}
 

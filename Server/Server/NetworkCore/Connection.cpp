@@ -16,15 +16,14 @@ Connection::~Connection()
 
 void Connection::OnRecv(uint32 _recvBytes)
 {
-
 	m_ringBuffer.MoveWritePos(_recvBytes);
 
 	PacketReader reader;
 	while (reader.IsBufferReadable(m_ringBuffer))
 	{
 		reader.SetBuffer(m_ringBuffer);
-		m_ringBuffer.MoveReadPos(reader.GetPacketSize());
-		PacketHandler::Handle(reader);
+		m_ringBuffer.MoveReadPos(reader.GetSize());
+		PacketHandler::Handle(*this, reader);
 	}
 	m_ringBuffer.HandleVerge();
 }
@@ -54,5 +53,5 @@ bool Connection::RecvWSA()
 
 void Connection::Send(const Packet& _packet)
 {
-    send(m_socket, _packet.GetBuffer(), _packet.GetAddedSize(), 0);
+    send(m_socket, _packet.GetBuffer(), _packet.GetSize(), 0);
 }

@@ -16,10 +16,11 @@ public:
 
 	bool IsBufferReadable(RingBuffer& _buffer);
 
-	uint32 GetPacketSize() const;
+	uint32 GetSize() const;
 
 	template <typename Type>
 	Type Get();
+	const wchar_t* GetWString();
 };
 
 template<typename Type>

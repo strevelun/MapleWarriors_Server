@@ -2,7 +2,7 @@
 
 #include "../../Types.h"
 
-enum class Server : uint16
+enum class Server : PacketType
 {
 	None = 0,
 	Test,
@@ -10,7 +10,7 @@ enum class Server : uint16
 	LoginReqFail,
 };
 
-enum class Client : uint16
+enum class Client : PacketType
 {
 	None = 0,
 	Test,
