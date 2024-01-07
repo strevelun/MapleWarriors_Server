@@ -6,8 +6,8 @@ enum class Server : PacketType
 {
 	None = 0,
 	Test,
-	LoginReqOK,
-	LoginReqFail,
+	LoginFailure,
+	LoginSuccess,
 };
 
 enum class Client : PacketType

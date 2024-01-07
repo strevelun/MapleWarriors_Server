@@ -36,6 +36,6 @@ const wchar_t* PacketReader::GetWString()
 {
 	uint16 pos = m_getPos;
 	const wchar_t* str = reinterpret_cast<const wchar_t*>(&m_pBuffer[pos]);
-	m_getPos += wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t);
+	m_getPos += int(wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t));
 	return str;
 }

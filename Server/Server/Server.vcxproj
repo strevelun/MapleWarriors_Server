@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CSLock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkCore\Acceptor.cpp" />
     <ClCompile Include="NetworkCore\Connection.cpp" />
@@ -135,11 +136,15 @@
     <ClCompile Include="NetworkCore\NetworkEngine.cpp" />
     <ClCompile Include="NetworkCore\RingBuffer.cpp" />
     <ClCompile Include="Packet\Packet.cpp" />
+    <ClCompile Include="Packet\PacketHandler\LoginPacketHandler.cpp" />
     <ClCompile Include="Packet\PacketHandler\PacketHandler.cpp" />
     <ClCompile Include="Packet\PacketReader.cpp" />
     <ClCompile Include="ServerApp.cpp" />
+    <ClCompile Include="User.cpp" />
+    <ClCompile Include="UserManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CSLock.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="NetworkCore\Acceptor.h" />
     <ClInclude Include="NetworkCore\Connection.h" />
@@ -148,11 +153,14 @@
     <ClInclude Include="NetworkCore\NetworkEngine.h" />
     <ClInclude Include="NetworkCore\RingBuffer.h" />
     <ClInclude Include="Packet\Packet.h" />
+    <ClInclude Include="Packet\PacketHandler\LoginPacketHandler.h" />
     <ClInclude Include="Packet\PacketHandler\PacketHandler.h" />
     <ClInclude Include="Packet\PacketReader.h" />
     <ClInclude Include="Packet\Types\PacketTypes.h" />
     <ClInclude Include="ServerApp.h" />
     <ClInclude Include="Types.h" />
+    <ClInclude Include="User.h" />
+    <ClInclude Include="UserManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

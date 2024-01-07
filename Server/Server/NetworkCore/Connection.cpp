@@ -1,9 +1,10 @@
 #include "Connection.h"
 #include "../Packet/PacketReader.h"
 #include "../Packet/PacketHandler/PacketHandler.h"
+#include "../UserManager.h"
 
 Connection::Connection(uint32 _id, SOCKET _socket):
-    m_id(_id), m_socket(_socket), m_overlapped{}
+    m_id(_id), m_socket(_socket), m_overlapped{}, m_pUser(nullptr)
 {
 	m_dataBuf.buf = m_ringBuffer.GetWriteAddr();
 	m_dataBuf.len = BUFFER_MAX;
@@ -11,7 +12,8 @@ Connection::Connection(uint32 _id, SOCKET _socket):
 
 Connection::~Connection()
 {
-    if (m_socket) closesocket(m_socket);
+    if (m_socket)	closesocket(m_socket);
+	if(m_pUser)		m_pUser->SetState(eLoginState::Logout);
 }
 
 void Connection::OnRecv(uint32 _recvBytes)

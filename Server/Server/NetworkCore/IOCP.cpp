@@ -1,4 +1,5 @@
 #include "IOCP.h"
+#include "../UserManager.h"
 
 IOCP::IOCP() :
     m_hCPObject(nullptr),
@@ -55,14 +56,16 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 		if (!GetQueuedCompletionStatus(hIOCP, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE))
 		{
 			printf("false returned : %d\n", WSAGetLastError());
-			ConnectionManager::GetInst()->DeleteConnection(pConn->GetId());
+			ConnectionManager::GetInst()->Delete(pConn->GetId());
+			//UserManager::GetInst()->Disconnect(pConn->GetId());
 			continue;
 		}
 
 		if (bytesTransferred == 0)
 		{
 			printf("bytesTransferred : 0 (disconnect)\n");
-			ConnectionManager::GetInst()->DeleteConnection(pConn->GetId());
+			ConnectionManager::GetInst()->Delete(pConn->GetId());
+			//UserManager::GetInst()->Disconnect(pConn->GetId());
 			continue;
 		}
 
@@ -72,7 +75,8 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 
 		if (!pConn->RecvWSA())
 		{
-			ConnectionManager::GetInst()->DeleteConnection(pConn->GetId());
+			ConnectionManager::GetInst()->Delete(pConn->GetId());
+			//UserManager::GetInst()->Disconnect(pConn->GetId());
 			continue;
 		}
 	}

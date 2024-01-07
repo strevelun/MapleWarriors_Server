@@ -12,27 +12,26 @@ private:
 	std::unordered_map<uint32, Connection*> m_mapConnection;
 
 public:
-	Connection* CreateConnection(SOCKET _socket);
-
-	bool DeleteConnection(uint32 _id);
+	Connection* Create(SOCKET _socket);
+	bool Delete(uint32 _id);
 
 #pragma region Singleton
 private:
-	static ConnectionManager* m_pInst;
+	static ConnectionManager* s_pInst;
 
 public:
 	static ConnectionManager* GetInst()
 	{
-		if (!m_pInst)
-			m_pInst = new ConnectionManager;
-		return m_pInst;
+		if (!s_pInst)
+			s_pInst = new ConnectionManager;
+		return s_pInst;
 	}
 
 	static void DestInst()
 	{
-		if (m_pInst)
-			delete m_pInst;
-		m_pInst = nullptr;
+		if (s_pInst)
+			delete s_pInst;
+		s_pInst = nullptr;
 	}
 
 private:

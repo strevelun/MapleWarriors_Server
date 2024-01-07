@@ -37,7 +37,7 @@ void ServerApp::Run()
 
 		printf("%d ¿¬°áµÊ\n", (int)clientSocket);
 
-		Connection* pConn = ConnectionManager::GetInst()->CreateConnection(clientSocket);
+		Connection* pConn = ConnectionManager::GetInst()->Create(clientSocket);
 
 		m_engine.OnConnected(pConn);
 	}

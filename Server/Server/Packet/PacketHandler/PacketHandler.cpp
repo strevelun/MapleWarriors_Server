@@ -1,39 +1,25 @@
 #include "PacketHandler.h"
 #include "../Types/PacketTypes.h"
+#include "../../UserManager.h"
+#include "LoginPacketHandler.h"
 
-// TODO : 상속으로 
-void PacketHandler::Handle(Connection& conn, PacketReader& _packet)
+void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 {
-	Client type = _packet.Get<Client>();
-	switch (type)
+	switch (_packet.Get<Client>())
 	{
+#pragma region Login
 	case Client::Test:
-		Test(conn, _packet);
+		Login::Test(_conn, _packet);
 		break;
 
 	case Client::LoginReq:
-		LoginReq(conn, _packet);
+		Login::LoginReq(_conn, _packet);
 		break;
+
+#pragma endregion
+
+#pragma region Lobby
+
+#pragma endregion
 	}
-}
-
-void PacketHandler::Test(Connection& conn, PacketReader& _packet)
-{
-	//printf("Test\n");
-}
-
-void PacketHandler::LoginReq(Connection& conn, PacketReader& _packet)
-{
-	const wchar_t* str = _packet.GetWString();
-	int result = _packet.Get<char>();
-	wprintf(L"%s\n", str);
-
-	Packet packet;
-	packet
-		.Add<PacketType>((PacketType)Server::LoginReqOK)
-		.AddWString(str)
-		.Add<char>(result);
-	conn.Send(packet);
-
-	printf("LoginReq\n");
 }

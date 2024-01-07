@@ -60,6 +60,18 @@
     <ClCompile Include="ServerApp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="UserManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="User.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PacketHandler\LoginPacketHandler.cpp">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="CSLock.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Packet\Packet.h">
@@ -99,6 +111,18 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ServerApp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UserManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="User.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketHandler\LoginPacketHandler.h">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="CSLock.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

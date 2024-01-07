@@ -30,7 +30,7 @@ void NetworkEngine::OnConnected(Connection* _pConn)
 	if (!m_iocp.ConnectIOCP(_pConn->GetSocket(), _pConn) || !_pConn->RecvWSA())
 	{
 		printf("IOCP Connection Failed");
-		ConnectionManager::GetInst()->DeleteConnection(_pConn->GetId());
+		ConnectionManager::GetInst()->Delete(_pConn->GetId());
 		return;
 	}
 }

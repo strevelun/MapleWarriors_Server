@@ -6,7 +6,7 @@ int main()
 {
 	ServerApp app;
 
-	if (app.Init("192.168.219.107", 30001, 5) == true)
+	if (app.Init("192.168.219.107", 30001, SOMAXCONN) == true)
 	{
 		app.Run();
 	}
