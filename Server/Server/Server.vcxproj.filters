@@ -25,6 +25,12 @@
     <Filter Include="Packet\Types">
       <UniqueIdentifier>{c74168f9-cce8-402e-82ed-7fd102df9b28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lobby">
+      <UniqueIdentifier>{213698b7-351e-49b3-8987-d2ed1dc2ea1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Room">
+      <UniqueIdentifier>{dee20715-1da8-4560-9284-e88d0d2b903d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Packet\Packet.cpp">
@@ -71,6 +77,21 @@
     </ClCompile>
     <ClCompile Include="CSLock.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PacketHandler\LobbyPacketHandler.cpp">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="Lobby\Lobby.cpp">
+      <Filter>Lobby</Filter>
+    </ClCompile>
+    <ClCompile Include="Lobby\LobbyManager.cpp">
+      <Filter>Lobby</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\Room.cpp">
+      <Filter>Room</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\RoomManager.cpp">
+      <Filter>Room</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -124,6 +145,21 @@
     </ClInclude>
     <ClInclude Include="CSLock.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketHandler\LobbyPacketHandler.h">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Lobby\Lobby.h">
+      <Filter>Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="Lobby\LobbyManager.h">
+      <Filter>Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\Room.h">
+      <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\RoomManager.h">
+      <Filter>Room</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

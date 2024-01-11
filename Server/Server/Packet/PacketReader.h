@@ -5,7 +5,7 @@
 class PacketReader
 {
 private:
-	char* m_pBuffer;
+	char*		m_pBuffer;
 	uint16		m_getPos;
 
 public:

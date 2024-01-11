@@ -11,6 +11,7 @@ class User;
 class Connection 
 {
 private:
+    eSceneState     m_eSceneState;
     int32           m_id;
     SOCKET          m_socket;
     RingBuffer      m_ringBuffer;
@@ -28,6 +29,7 @@ public:
     User* GetUser() const { return m_pUser; }
 
     void SetUser(User* _pUser) { m_pUser = _pUser; }
+    void SetSceneState(eSceneState _eState) { m_eSceneState = _eState; }
 
     void OnRecv(uint32 _recvBytes);
 

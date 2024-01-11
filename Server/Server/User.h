@@ -26,7 +26,5 @@ public:
 
 	//void SetConnectionId(uint32 _connectionId) { m_connectionId = _connectionId; }
 	void SetState(eLoginState _eState) { m_eState = _eState; }
-
-	void HandleLogin(Connection& _conn);
 };
 

@@ -8,6 +8,7 @@ enum class Server : PacketType
 	Test,
 	LoginFailure,
 	LoginSuccess,
+	LobbyChat,
 };
 
 enum class Client : PacketType
@@ -15,4 +16,5 @@ enum class Client : PacketType
 	None = 0,
 	Test,
 	LoginReq,
+	LobbyChat,
 };

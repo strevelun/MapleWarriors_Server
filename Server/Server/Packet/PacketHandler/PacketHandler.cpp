@@ -2,6 +2,7 @@
 #include "../Types/PacketTypes.h"
 #include "../../UserManager.h"
 #include "LoginPacketHandler.h"
+#include "LobbyPacketHandler.h"
 
 void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 {
@@ -19,7 +20,9 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 #pragma endregion
 
 #pragma region Lobby
-
+	case Client::LobbyChat:
+		NLobby::LobbyChat(_conn, _packet);
+		break;
 #pragma endregion
 	}
 }
