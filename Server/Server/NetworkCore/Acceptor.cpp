@@ -15,6 +15,7 @@ Acceptor::~Acceptor()
 
 bool Acceptor::Start(const char* _ip, unsigned short _port, int _backlog)
 {
+	m_clientAddrSize = sizeof(SOCKADDR_IN);
 	SOCKADDR_IN				m_servAddr;
 
 	m_serverSocket = ::WSASocketW(PF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
@@ -45,9 +46,5 @@ bool Acceptor::Start(const char* _ip, unsigned short _port, int _backlog)
 
 SOCKET Acceptor::Accept()
 {
-	SOCKADDR_IN clientAddr;
-	int clientAddrSize = sizeof(clientAddr);
-
-	SOCKET clientSocket = accept(m_serverSocket, (SOCKADDR*)&clientAddr, &clientAddrSize);
-	return clientSocket;
+	return accept(m_serverSocket, (SOCKADDR*)&m_clientAddr, &m_clientAddrSize);
 }

@@ -20,7 +20,7 @@ HANDLE IOCP::CreateIOCP()
     return m_hCPObject;
 }
 
-bool IOCP::ConnectIOCP(SOCKET _socket, Connection* _completionKey)
+bool IOCP::AssociateIOCP(SOCKET _socket, Connection* _completionKey)
 {
     if (m_hCPObject == nullptr) return false;
 
@@ -53,30 +53,35 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 
 	while (1)
 	{
-		if (!GetQueuedCompletionStatus(hIOCP, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE))
+		bool result = GetQueuedCompletionStatus(hIOCP, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE);
+		if (!result)
 		{
-			printf("false returned : %d\n", WSAGetLastError());
+			printf("false returned : %d\n", WSAGetLastError()); 
+	
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
-			//UserManager::GetInst()->Disconnect(pConn->GetId());
 			continue;
 		}
 
 		if (bytesTransferred == 0)
 		{
-			printf("bytesTransferred : 0 (disconnect)\n");
+			//printf("bytesTransferred : 0 (disconnect)\n");
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
-			//UserManager::GetInst()->Disconnect(pConn->GetId());
 			continue;
 		}
 
-		printf("%d, ", (int)bytesTransferred);
+		//printf("%d, ", (int)bytesTransferred);
 
 		pConn->OnRecv(bytesTransferred);
 
-		if (!pConn->RecvWSA())
+		if (pConn->GonnaBeDeleted())
 		{
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
-			//UserManager::GetInst()->Disconnect(pConn->GetId());
+			continue;
+		}
+
+		if (!pConn->RecvWSA()) 
+		{
+			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}
 	}

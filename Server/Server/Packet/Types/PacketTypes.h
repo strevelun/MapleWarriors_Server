@@ -2,19 +2,26 @@
 
 #include "../../Types.h"
 
-enum class Server : PacketType
+enum class eServer : PacketType
 {
 	None = 0,
 	Test,
-	LoginFailure,
+	LoginFailure_AlreadyLoggedIn,
+	LoginFailure_Full,
 	LoginSuccess,
 	LobbyChat,
+	LobbyUpdateInfo_UserList,
+	LobbyUpdateInfo_RoomList,
 };
 
-enum class Client : PacketType
+enum class eClient : PacketType
 {
 	None = 0,
 	Test,
+	Exit,
 	LoginReq,
 	LobbyChat,
+	LobbyUpdateInfo,
+	UserListGetPageInfo,
+	RoomListGetPageInfo
 };

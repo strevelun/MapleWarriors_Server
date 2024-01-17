@@ -4,16 +4,21 @@
 
 #include "../Types.h"
 #include "Connection.h"
+#include "../CSLock.h"
 
 class ConnectionManager
 {
 private:
-	uint32 m_connectionId;
+	CSLock									m_lock;
+	uint32									m_connectionId;
+	uint32									m_count;
 	std::unordered_map<uint32, Connection*> m_mapConnection;
 
 public:
 	Connection* Create(SOCKET _socket);
 	bool Delete(uint32 _id);
+
+	uint32 GetCount() const { return m_count; }
 
 #pragma region Singleton
 private:

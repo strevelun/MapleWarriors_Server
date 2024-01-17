@@ -19,7 +19,7 @@ uint32 RingBuffer::GetWritableSize() const
 
 uint32 RingBuffer::GetReadableSize() const
 {
-	if (IsFull()) return BUFFER_MAX;
+	//if (IsFull()) return BUFFER_MAX;
 	if (m_bIsTempUsed) return m_tempPos;
 
 	return (m_readPos <= m_writePos) ? m_writePos - m_readPos : BUFFER_MAX - m_readPos;
@@ -57,10 +57,8 @@ void RingBuffer::MoveReadPos(uint32 _readBytes)
 
 void RingBuffer::MoveWritePos(uint32 _recvBytes)
 {
-#ifdef _DEBUG
 	m_totalRecvBytes += _recvBytes;
-	printf("[totalRecvBytes : %d]\n", m_totalRecvBytes);
-#endif
+
 	m_writtenBytes += _recvBytes;
 	m_writePos = (_recvBytes + m_writePos) % BUFFER_MAX;
 	if (m_bIsTempUsed) m_tempPos += _recvBytes;

@@ -6,4 +6,7 @@
 namespace NLobby
 {
 	void LobbyChat(Connection& _conn, PacketReader& _packet);
+	void LobbyUpdateInfo(Connection& _conn, PacketReader& _packet);
+	void UserListGetPageInfo(Connection& _conn, PacketReader& _packet);
+	void RoomListGetPageInfo(Connection& _conn, PacketReader& _packet);
 }

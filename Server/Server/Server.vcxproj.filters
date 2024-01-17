@@ -93,6 +93,9 @@
     <ClCompile Include="Room\RoomManager.cpp">
       <Filter>Room</Filter>
     </ClCompile>
+    <ClCompile Include="Lobby\LobbyUser.cpp">
+      <Filter>Lobby</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Packet\Packet.h">
@@ -160,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="Room\RoomManager.h">
       <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Lobby\LobbyUser.h">
+      <Filter>Lobby</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,6 +8,8 @@ class Acceptor
 {
 private:
 	SOCKET					m_serverSocket;
+	SOCKADDR_IN				m_clientAddr;
+	int						m_clientAddrSize;
 
 public:
 	Acceptor();

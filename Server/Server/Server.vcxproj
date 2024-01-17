@@ -130,6 +130,7 @@
     <ClCompile Include="CSLock.cpp" />
     <ClCompile Include="Lobby\Lobby.cpp" />
     <ClCompile Include="Lobby\LobbyManager.cpp" />
+    <ClCompile Include="Lobby\LobbyUser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkCore\Acceptor.cpp" />
     <ClCompile Include="NetworkCore\Connection.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Lobby\Lobby.h" />
     <ClInclude Include="Lobby\LobbyManager.h" />
+    <ClInclude Include="Lobby\LobbyUser.h" />
     <ClInclude Include="NetworkCore\Acceptor.h" />
     <ClInclude Include="NetworkCore\Connection.h" />
     <ClInclude Include="NetworkCore\ConnectionManager.h" />

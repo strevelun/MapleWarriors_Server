@@ -4,8 +4,8 @@
 #include "../UserManager.h"
 #include "../Lobby/LobbyManager.h"
 
-Connection::Connection(uint32 _id, SOCKET _socket):
-    m_id(_id), m_socket(_socket), m_overlapped{}, m_pUser(nullptr)
+Connection::Connection(int32 _id, SOCKET _socket) :
+    m_id(_id), m_lobbyID(-1), m_socket(_socket), m_overlapped{}, m_pUser(nullptr), m_gonnaBeDeleted(false)
 {
 	m_dataBuf.buf = m_ringBuffer.GetWriteAddr();
 	m_dataBuf.len = BUFFER_MAX;
@@ -13,20 +13,19 @@ Connection::Connection(uint32 _id, SOCKET _socket):
 
 Connection::~Connection()
 {
-    if (m_socket)	closesocket(m_socket);
-	if(m_pUser)		m_pUser->SetState(eLoginState::Logout);
-	switch (m_eSceneState)
+	if (m_pUser)
 	{
-	case eSceneState::Lobby:
-	{
-		Lobby* pLobby =	LobbyManager::GetInst()->GetLobby();
-		pLobby->Delete(m_id);
+		m_pUser->SetState(eLoginState::Logout);
+		wprintf(L"[%s] 님 접속종료\n", m_pUser->GetNickname());
 	}
-		break;
-	case eSceneState::Room:
-		break;
-	case eSceneState::InGame:
-		break;
+	else
+		printf("[%d] 님 접속종료\n", (int)m_socket);
+
+	if (m_socket)
+	{
+		//shutdown(m_socket, SD_BOTH);
+		//CancelIoEx((HANDLE)m_socket, nullptr);
+		closesocket(m_socket);
 	}
 }
 
@@ -41,13 +40,15 @@ void Connection::OnRecv(uint32 _recvBytes)
 		reader.SetBuffer(m_ringBuffer);
 		// 링버퍼에게 얼마나 읽었는지 알려준다.
 		PacketHandler::Handle(*this, reader);
-		m_ringBuffer.MoveReadPos(reader.GetSize());
+ 		m_ringBuffer.MoveReadPos(reader.GetSize());
 	}
 	m_ringBuffer.HandleVerge();
 }
 
 bool Connection::RecvWSA()
 {
+	if (m_gonnaBeDeleted) return false;
+
 	DWORD recvBytes = 0, flags = 0;
 	int err = 0;
 
@@ -62,7 +63,7 @@ bool Connection::RecvWSA()
 	{
 		if ((err = WSAGetLastError()) != WSA_IO_PENDING)
 		{
-			printf("WSARecv Error : %d\n", err);
+			printf("[%d] WSARecv Error : %d\n", (int)m_socket, err);
 			return false;
 		}
 	}
@@ -71,5 +72,17 @@ bool Connection::RecvWSA()
 
 void Connection::Send(const Packet& _packet)
 {
+	uint16 size = _packet.GetSize();
     send(m_socket, _packet.GetBuffer(), _packet.GetSize(), 0);
+	//printf("[ %d ] 보낸 바이트 : %d\n", (int)m_socket, size);
+}
+
+void Connection::Leave()
+{
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	
+	if (m_eSceneState != eSceneState::Login)
+	{
+		pLobby->Leave(m_lobbyID);
+	}
 }
