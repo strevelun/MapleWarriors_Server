@@ -36,6 +36,9 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::RoomListGetPageInfo:
 		NLobby::RoomListGetPageInfo(_conn, _packet);
 		break;
+	case eClient::CreateRoom:
+		NLobby::CreateRoom(_conn, _packet);
+		break;
 #pragma endregion
 	}
 }

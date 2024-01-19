@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Room.h"
+//#include "Room.h"
 
 class RoomManager
 {
 private:
-	std::vector<Room*> m_vecRoom;
+	//std::vector<Room*> m_vecRoom;
 
 public:
 

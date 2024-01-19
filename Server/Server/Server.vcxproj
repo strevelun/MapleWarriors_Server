@@ -131,6 +131,8 @@
     <ClCompile Include="Lobby\Lobby.cpp" />
     <ClCompile Include="Lobby\LobbyManager.cpp" />
     <ClCompile Include="Lobby\LobbyUser.cpp" />
+    <ClCompile Include="Lobby\Room.cpp" />
+    <ClCompile Include="Lobby\RoomUser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkCore\Acceptor.cpp" />
     <ClCompile Include="NetworkCore\Connection.cpp" />
@@ -143,7 +145,6 @@
     <ClCompile Include="Packet\PacketHandler\LoginPacketHandler.cpp" />
     <ClCompile Include="Packet\PacketHandler\PacketHandler.cpp" />
     <ClCompile Include="Packet\PacketReader.cpp" />
-    <ClCompile Include="Room\Room.cpp" />
     <ClCompile Include="Room\RoomManager.cpp" />
     <ClCompile Include="ServerApp.cpp" />
     <ClCompile Include="User.cpp" />
@@ -155,6 +156,8 @@
     <ClInclude Include="Lobby\Lobby.h" />
     <ClInclude Include="Lobby\LobbyManager.h" />
     <ClInclude Include="Lobby\LobbyUser.h" />
+    <ClInclude Include="Lobby\Room.h" />
+    <ClInclude Include="Lobby\RoomUser.h" />
     <ClInclude Include="NetworkCore\Acceptor.h" />
     <ClInclude Include="NetworkCore\Connection.h" />
     <ClInclude Include="NetworkCore\ConnectionManager.h" />
@@ -167,7 +170,6 @@
     <ClInclude Include="Packet\PacketHandler\PacketHandler.h" />
     <ClInclude Include="Packet\PacketReader.h" />
     <ClInclude Include="Packet\Types\PacketTypes.h" />
-    <ClInclude Include="Room\Room.h" />
     <ClInclude Include="Room\RoomManager.h" />
     <ClInclude Include="ServerApp.h" />
     <ClInclude Include="Types.h" />

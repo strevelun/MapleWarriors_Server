@@ -17,26 +17,25 @@ void Login::LoginReq(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pNickname = _packet.GetWString();
 	User* pUser = UserManager::GetInst()->Create(pNickname);
-	if (pUser->GetState() == eLoginState::Logout)
-	{
-		pUser->SetState(eLoginState::Login);
-		_conn.SetUser(pUser);
-	}
-
-	PacketType type = PacketType(_conn.GetUser() ? eServer::LoginSuccess : eServer::LoginFailure_AlreadyLoggedIn);
-
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
-	if (_conn.GetUser())
-	{
-		type = (PacketType)eServer::LoginSuccess;
-		pLobby->Enter(_conn);
-	}
-	else
+
+	PacketType type;
+
+	if (pUser->GetState() == eLoginState::Logout)
 	{
 		if (pLobby->GetUserCount() >= USER_LOBBY_MAX)
 			type = (PacketType)eServer::LoginFailure_Full;
 		else
-			type = (PacketType)eServer::LoginFailure_AlreadyLoggedIn;
+		{
+			type = (PacketType)eServer::LoginSuccess;
+			pUser->SetState(eLoginState::Login);
+			_conn.SetUser(pUser);
+			pLobby->Enter(_conn);
+		}
+	}
+	else // 해당아이디로 누군가 로그인
+	{
+		type = (PacketType)eServer::LoginFailure_AlreadyLoggedIn;
 	}
 
 	wprintf(L"%s님 [%d] : ", pNickname, (int)_conn.GetSocket());

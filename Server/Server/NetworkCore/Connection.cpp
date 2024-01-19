@@ -5,7 +5,7 @@
 #include "../Lobby/LobbyManager.h"
 
 Connection::Connection(int32 _id, SOCKET _socket) :
-    m_id(_id), m_lobbyID(-1), m_socket(_socket), m_overlapped{}, m_pUser(nullptr), m_gonnaBeDeleted(false)
+    m_id(_id), m_lobbyID(-1), m_roomID(-1), m_socket(_socket), m_overlapped{}, m_pUser(nullptr), m_gonnaBeDeleted(false)
 {
 	m_dataBuf.buf = m_ringBuffer.GetWriteAddr();
 	m_dataBuf.len = BUFFER_MAX;
@@ -31,7 +31,7 @@ Connection::~Connection()
 
 void Connection::OnRecv(uint32 _recvBytes)
 {
-	m_ringBuffer.MoveWritePos(_recvBytes);
+	m_ringBuffer.MoveWritePos(_recvBytes); // 3110
 
 	PacketReader reader;
 	while (reader.IsBufferReadable(m_ringBuffer))
@@ -66,7 +66,13 @@ bool Connection::RecvWSA()
 			printf("[%d] WSARecv Error : %d\n", (int)m_socket, err);
 			return false;
 		}
+		else
+			printf("WSA_IO_PENDING\n");
 	}
+	else
+		printf("I/O started : %d\n", rc);
+
+	//printf("RecvWSA\n");
 	return true;
 }
 
@@ -81,8 +87,12 @@ void Connection::Leave()
 {
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	
-	if (m_eSceneState != eSceneState::Login)
+	switch (m_eSceneState)
 	{
+	case eSceneState::Room:
+		pLobby->LeaveRoom(m_roomID);
+	case eSceneState::Lobby:
 		pLobby->Leave(m_lobbyID);
+		break;
 	}
 }

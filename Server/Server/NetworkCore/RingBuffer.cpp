@@ -40,6 +40,7 @@ bool RingBuffer::SetWriteBuf(WSABUF& _buf)
 	{
 		_buf.buf = &m_buffer[m_writePos];
 		_buf.len = writableSize;
+		printf("writePos : %d, writableSize : %d\n", m_writePos, writableSize);
 	}
 	return true;
 }
@@ -61,6 +62,7 @@ void RingBuffer::MoveWritePos(uint32 _recvBytes)
 
 	m_writtenBytes += _recvBytes;
 	m_writePos = (_recvBytes + m_writePos) % BUFFER_MAX;
+	//printf("m_readPos : %d, m_writePos : %d\n", m_readPos, m_writePos);
 	if (m_bIsTempUsed) m_tempPos += _recvBytes;
 }
 
@@ -78,5 +80,7 @@ void RingBuffer::HandleVerge()
 		m_tempPos = BUFFER_MAX - m_readPos;
 		memcpy(m_tempBuffer, &m_buffer[m_readPos], m_tempPos);
 		m_bIsTempUsed = true;
+		printf("TEMPBUFFER\n");
 	}
+	//printf("HANDLEVERGE : %d, %d\n", m_readPos, m_writePos);
 }

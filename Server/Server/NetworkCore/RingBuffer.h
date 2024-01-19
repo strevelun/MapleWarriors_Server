@@ -26,7 +26,7 @@ public:
 
 	uint32 GetWritableSize() const;
 	uint32 GetReadableSize() const;
-	bool IsFull() const { return m_writtenBytes == BUFFER_MAX; }
+	bool IsFull() const { return m_writtenBytes >= BUFFER_MAX; }
 
 	bool SetWriteBuf(WSABUF& _buf);
 

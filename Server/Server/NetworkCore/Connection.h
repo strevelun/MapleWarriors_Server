@@ -17,9 +17,10 @@ private:
     eSceneState     m_eSceneState;
     int32           m_id;
     uint32          m_lobbyID;
+    uint32          m_roomID; // TODO : consider changing the type
     SOCKET          m_socket;
     RingBuffer      m_ringBuffer;
-    User* m_pUser;
+    User*           m_pUser;
 
     WSABUF          m_dataBuf;
     WSAOVERLAPPED   m_overlapped;
@@ -40,6 +41,7 @@ public:
     void SetUser(User* _pUser) { m_pUser = _pUser; }
     void SetSceneState(eSceneState _eState) { m_eSceneState = _eState; }
     void SetLobbyID(uint32 _id) { m_lobbyID = _id; }
+    void SetRoomID(uint32 _id) { m_roomID = _id; }
     void SetDeleted() { m_gonnaBeDeleted = true; }
 
     void OnRecv(uint32 _recvBytes);

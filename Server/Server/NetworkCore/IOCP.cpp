@@ -53,6 +53,7 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 
 	while (1)
 	{
+		printf("GetQUeuedCS 일보직전\n");
 		bool result = GetQueuedCompletionStatus(hIOCP, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE);
 		if (!result)
 		{
