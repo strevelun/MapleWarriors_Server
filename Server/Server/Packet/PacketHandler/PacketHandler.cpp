@@ -6,7 +6,9 @@
 
 void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 {
-	switch (_packet.Get<eClient>())
+	eClient type = _packet.Get<eClient>();
+	//printf("[%d] Before Handle : %d\n", (int)_conn.GetSocket(), type);
+	switch (type)
 	{
 #pragma region Login
 	case eClient::Test:
@@ -41,4 +43,5 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 		break;
 #pragma endregion
 	}
+	//printf("[%d] Handle over\n", (int)_conn.GetSocket());
 }

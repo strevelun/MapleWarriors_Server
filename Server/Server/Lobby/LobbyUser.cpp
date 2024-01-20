@@ -28,5 +28,6 @@ void LobbyUser::Clear()
 
 void LobbyUser::Send(const Packet& _pkt)
 {
+	if (!m_pConn) return;
 	m_pConn->Send(_pkt);
 }

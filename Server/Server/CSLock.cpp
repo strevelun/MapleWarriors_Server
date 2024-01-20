@@ -1,7 +1,7 @@
 #include "CSLock.h"
 
 CSLock::CSLock(bool _bTest) :
-	m_bTest(_bTest), m_signal{}, m_waitThreads(0)
+	m_bTest(_bTest), m_signal{}, m_waitThreads(0), m_entered(0)
 {
 	InitializeCriticalSection(&m_lock);
 	if(_bTest) m_signal = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -23,12 +23,18 @@ void CSLock::Enter()
 
 		printf("flush!\n");
 	}
-	EnterCriticalSection(&m_lock);
+	++m_entered;
+	//printf("entered : %d, LockCount : %d, RecursionCount : %d\n", GetEnteredCount(), m_lock.LockCount, m_lock.RecursionCount);
+	EnterCriticalSection(&m_lock); // --LockCount
+	//printf("after entered : %d, LockCount : %d, RecursionCount : %d\n", GetEnteredCount(), m_lock.LockCount, m_lock.RecursionCount);
 }
 
 void CSLock::Leave()
 {
+	//printf("before left : %d, LockCount : %d, RecursionCount : %d\n", GetEnteredCount(), m_lock.LockCount, m_lock.RecursionCount);
 	LeaveCriticalSection(&m_lock);
+	//printf("after left : %d, LockCount : %d, RecursionCount : %d\n", GetEnteredCount(), m_lock.LockCount, m_lock.RecursionCount);
+	--m_entered;
 	if (m_bTest)
 	{
 		wprintf(L"Left\n");

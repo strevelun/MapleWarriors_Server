@@ -16,7 +16,7 @@ private:
 
 public:
 	Connection* Create(SOCKET _socket);
-	bool Delete(uint32 _id);
+	void Delete(uint32 _id);
 
 	uint32 GetCount() const { return m_count; }
 

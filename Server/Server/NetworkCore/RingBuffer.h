@@ -24,6 +24,7 @@ public:
 	char* GetReadAddr() { return m_bIsTempUsed ? m_tempBuffer : &m_buffer[m_readPos]; }
 	char* GetWriteAddr() { return &m_buffer[m_writePos]; }
 
+	uint32 GetWrittenBytes() const { return m_writtenBytes;	}
 	uint32 GetWritableSize() const;
 	uint32 GetReadableSize() const;
 	bool IsFull() const { return m_writtenBytes >= BUFFER_MAX; }

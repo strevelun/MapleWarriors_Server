@@ -40,7 +40,7 @@ bool RingBuffer::SetWriteBuf(WSABUF& _buf)
 	{
 		_buf.buf = &m_buffer[m_writePos];
 		_buf.len = writableSize;
-		printf("writePos : %d, writableSize : %d\n", m_writePos, writableSize);
+		//printf("writePos : %d, writableSize : %d\n", m_writePos, writableSize);
 	}
 	return true;
 }

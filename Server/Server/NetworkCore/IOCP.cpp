@@ -53,7 +53,8 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 
 	while (1)
 	{
-		printf("GetQUeuedCS 일보직전\n");
+		//if(pConn)
+		//	("[%d] GetQUeuedCS 호출 전\n", (int)pConn->GetSocket());
 		bool result = GetQueuedCompletionStatus(hIOCP, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE);
 		if (!result)
 		{
@@ -62,6 +63,7 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}
+		//printf("[%d] GetQUeuedCS 호출 후\n", (int)pConn->GetSocket());
 
 		if (bytesTransferred == 0)
 		{

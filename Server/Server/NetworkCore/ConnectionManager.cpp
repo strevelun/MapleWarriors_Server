@@ -14,18 +14,19 @@ Connection* ConnectionManager::Create(SOCKET _socket)
 	return pConn;
 }
 
-bool ConnectionManager::Delete(uint32 _id)
+void ConnectionManager::Delete(uint32 _id)
 {
 	m_lock.Enter();
 	std::unordered_map<uint32, Connection*>::iterator iter = m_mapConnection.find(_id);
-	if (iter == m_mapConnection.cend()) return false;
-
-	--m_count;
-	iter->second->Leave();		
-	delete iter->second;
-	m_mapConnection.erase(_id);
+	if (iter != m_mapConnection.cend())
+	{
+		--m_count;
+		iter->second->Leave();
+		delete iter->second;
+		m_mapConnection.erase(_id);
+	}
 	m_lock.Leave();
-	return true;
+	printf("현재 접속자 수 : %d\n", m_count);
 }
 
 ConnectionManager::ConnectionManager() :

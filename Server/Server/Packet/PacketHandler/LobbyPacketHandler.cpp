@@ -18,6 +18,7 @@ void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	pLobby->SendAll(pkt);
+	//printf("[%d] SendAll\n", (int)_conn.GetSocket());
 }
 
 void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
