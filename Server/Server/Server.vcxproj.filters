@@ -99,6 +99,12 @@
     <ClCompile Include="Lobby\RoomUser.cpp">
       <Filter>Lobby</Filter>
     </ClCompile>
+    <ClCompile Include="Packet\PacketHandler\InGamePacketHandler.cpp">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PacketHandler\RoomPacketHandler.cpp">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Packet\Packet.h">
@@ -172,6 +178,12 @@
     </ClInclude>
     <ClInclude Include="Lobby\RoomUser.h">
       <Filter>Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketHandler\InGamePacketHandler.h">
+      <Filter>Packet\PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PacketHandler\RoomPacketHandler.h">
+      <Filter>Packet\PacketHandler</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@
 #define PACKET_HEADER_SIZE			4
 
 #define NICKNAME_LEN				11 // 10 + 1
-#define ROOMTITLE_LEN				17 // 16 + 1
+#define ROOMTITLE_LEN				16 // 15 + 1
 
 #define USER_NOT_CONNECTED			0
 

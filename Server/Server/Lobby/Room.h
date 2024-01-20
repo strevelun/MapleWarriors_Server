@@ -4,6 +4,13 @@
 #include "../NetworkCore/Connection.h"
 #include "RoomUser.h"
 
+enum class eRoomState
+{
+	None,
+	Standby,
+	InGame,
+};
+
 class Room
 {
 private:
@@ -12,6 +19,8 @@ private:
 	uint32			m_id;
 	wchar_t			m_title[ROOMTITLE_LEN];
 	const wchar_t* m_pOwner;
+	uint32				m_numOfUser;
+	eRoomState				m_eState;
 
 public:
 	Room();
@@ -23,5 +32,8 @@ public:
 	uint32 GetId() const { return m_id; }
 	const wchar_t* GetTitle() const { return m_title; }
 	const wchar_t* GetOwner() const { return m_pOwner; }
+	uint32 GetNumOfUser() const { return m_numOfUser; }
+	eRoomState GetState() const { return m_eState; }
+
 };
 

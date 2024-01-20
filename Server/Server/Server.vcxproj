@@ -141,9 +141,11 @@
     <ClCompile Include="NetworkCore\NetworkEngine.cpp" />
     <ClCompile Include="NetworkCore\RingBuffer.cpp" />
     <ClCompile Include="Packet\Packet.cpp" />
+    <ClCompile Include="Packet\PacketHandler\InGamePacketHandler.cpp" />
     <ClCompile Include="Packet\PacketHandler\LobbyPacketHandler.cpp" />
     <ClCompile Include="Packet\PacketHandler\LoginPacketHandler.cpp" />
     <ClCompile Include="Packet\PacketHandler\PacketHandler.cpp" />
+    <ClCompile Include="Packet\PacketHandler\RoomPacketHandler.cpp" />
     <ClCompile Include="Packet\PacketReader.cpp" />
     <ClCompile Include="Room\RoomManager.cpp" />
     <ClCompile Include="ServerApp.cpp" />
@@ -165,9 +167,11 @@
     <ClInclude Include="NetworkCore\NetworkEngine.h" />
     <ClInclude Include="NetworkCore\RingBuffer.h" />
     <ClInclude Include="Packet\Packet.h" />
+    <ClInclude Include="Packet\PacketHandler\InGamePacketHandler.h" />
     <ClInclude Include="Packet\PacketHandler\LobbyPacketHandler.h" />
     <ClInclude Include="Packet\PacketHandler\LoginPacketHandler.h" />
     <ClInclude Include="Packet\PacketHandler\PacketHandler.h" />
+    <ClInclude Include="Packet\PacketHandler\RoomPacketHandler.h" />
     <ClInclude Include="Packet\PacketReader.h" />
     <ClInclude Include="Packet\Types\PacketTypes.h" />
     <ClInclude Include="Room\RoomManager.h" />

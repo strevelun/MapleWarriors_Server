@@ -3,6 +3,8 @@
 #include "../../UserManager.h"
 #include "LoginPacketHandler.h"
 #include "LobbyPacketHandler.h"
+#include "RoomPacketHandler.h"
+#include "InGamePacketHandler.h"
 
 void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 {
@@ -41,6 +43,16 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::CreateRoom:
 		NLobby::CreateRoom(_conn, _packet);
 		break;
+#pragma endregion
+
+#pragma region Room
+	case eClient::ExitRoom:
+		Room::ExitRoom(_conn, _packet);
+		break;
+#pragma endregion
+
+#pragma region InGame
+
 #pragma endregion
 	}
 	//printf("[%d] Handle over\n", (int)_conn.GetSocket());

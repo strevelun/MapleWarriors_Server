@@ -118,9 +118,6 @@ void Lobby::PacketRoomListPage(uint32 _page, Packet& _pkt)
 {
 	m_roomLock.Enter();
 
-	// 1페이지라면 처음부터 10개
-	// 3페이지 : 31~40
-
 	uint32 result;
 	if (m_roomCount > 0 && m_roomCount % LOBBY_ROOMLIST_PAGE == 0)
 	{
@@ -152,9 +149,11 @@ void Lobby::PacketRoomListPage(uint32 _page, Packet& _pkt)
 		if (count >= result) break;
 
 		roomID = *iter;
+		_pkt.Add<char>(roomID);
 		_pkt.AddWString(m_arrRoom[roomID].GetTitle());
 		_pkt.AddWString(m_arrRoom[roomID].GetOwner());
-		_pkt.Add<char>(roomID);
+		_pkt.Add<char>(m_arrRoom[roomID].GetNumOfUser());
+		_pkt.Add<char>((char)m_arrRoom[roomID].GetState());
 	}
 
 	//printf("%d\n", result);
@@ -164,25 +163,12 @@ void Lobby::PacketRoomListPage(uint32 _page, Packet& _pkt)
 
 void Lobby::SendAll(const Packet& _pkt)
 {
-	// for문에 진입할때 m_arrUser[id]가 Clear됨. nullptr에 접근
+	m_userLock.Enter();
+	auto setLobbyUser = m_setLobbyUser;
+	m_userLock.Leave();
 
-	//m_userLock.Enter();
-	//printf("before loop\n");
-
-	for (uint32 id : m_setLobbyUser)
-	{
+	for (uint32 id : setLobbyUser)
 		m_arrUser[id].Send(_pkt);
-	}
-	//printf("after loop\n");
-	
-	//std::set<uint32>::iterator iter = m_setLobbyUser.begin();
-	//std::set<uint32>::iterator iterEnd = m_setLobbyUser.end(); 	Server.exe!Connection::Send(const Packet & _packet) 줄 86	C++
-
-	//for (; iter != iterEnd; ++iter)
-	//{
-	//	m_arrUser[*iter].Send(_pkt);
-	//}
-	//m_userLock.Leave();
 }
 
 Room* Lobby::CreateRoom(Connection& _conn, const wchar_t* _pTitle)

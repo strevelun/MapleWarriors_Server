@@ -95,14 +95,14 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 	{
 		_conn.SetSceneState(eSceneState::Room);
 
-		pkt.Add<PacketType>((PacketType)eServer::CreateRoom);
+		pkt.Add<PacketType>((PacketType)eServer::CreateRoom_Success);
 		pkt.Add<char>(pRoom->GetId());
+		pkt.AddWString(pTitle);
 	}
-	else
+	else // 방 만들기 실패
 	{
-
+		pkt.Add<PacketType>((PacketType)eServer::CreateRoom_Fail);
 	}
-
 
 	_conn.Send(pkt);
 }
