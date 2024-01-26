@@ -1,43 +1,40 @@
 #include "Lobby.h"
-#include "../User.h"
+#include "../User/User.h"
 
 Lobby::Lobby() :
-	m_vecUnusedUserIDs(USER_LOBBY_MAX), m_vecUnusedRoomIDs(USER_LOBBY_MAX), m_userCount(0), m_roomCount(0)
+	m_vecUnusedUserIDs(USER_LOBBY_MAX), m_userCount(0)
 {
-	int j = USER_LOBBY_MAX - 1;
+	uint32 j = USER_LOBBY_MAX - 1;
 	for (uint32 i = 0; i < USER_LOBBY_MAX; ++i, --j)
 		m_vecUnusedUserIDs[i] = j;
-
-	j = USER_LOBBY_MAX - 1;
-	for (uint32 i = 0; i < USER_LOBBY_MAX; ++i, --j)
-	{
-		m_vecUnusedRoomIDs[i] = j;
-	}
 }
 
 Lobby::~Lobby()
 {
 }
 
-void Lobby::Enter(Connection& _conn)
+void Lobby::Enter(Connection& _conn, User* _pUser)
 {
-	m_userLock.Enter();
-	if (m_userCount < USER_LOBBY_MAX && _conn.GetSceneState() == eSceneState::Login)
+	m_lock.Enter();
 	{
-		uint32 lobbyId = m_vecUnusedUserIDs.back();
-		m_vecUnusedUserIDs.pop_back();
-		m_setLobbyUser.insert(lobbyId);
-		m_arrUser[lobbyId].Init(_conn);
+		if (m_userCount < USER_LOBBY_MAX && _pUser->GetSceneState() == eSceneState::Login)
+		{
+			uint32 lobbyId = m_vecUnusedUserIDs.back();
+			m_vecUnusedUserIDs.pop_back();
+			m_setAllLobbyUser.insert(lobbyId);
+			m_usetUserInLobby.insert(lobbyId);
+			m_arrUser[lobbyId].Init(_conn, _pUser);
 
-		_conn.SetLobbyID(lobbyId);
-		_conn.SetSceneState(eSceneState::Lobby);
+			_pUser->SetLobbyID(lobbyId);
+			_pUser->SetSceneState(eSceneState::Lobby);
 
-		++m_userCount;
-		printf("로비 입장! : %d명\n", m_userCount);
+			++m_userCount;
+			printf("로비 입장! : %d명\n", m_userCount);
+		}
+		else
+			printf("입장 거부됨 [현재 인원 : %d]\n", m_userCount);
 	}
-	else
-		printf("입장 거부됨 [현재 인원 : %d]\n", m_userCount);
-	m_userLock.Leave();
+	m_lock.Leave();
 }
 
 LobbyUser* Lobby::Find(uint32 _lobbyID)
@@ -46,173 +43,166 @@ LobbyUser* Lobby::Find(uint32 _lobbyID)
 
 	LobbyUser* pUser = nullptr;
 
-	m_userLock.Enter();
-	if (m_setLobbyUser.find(_lobbyID) != m_setLobbyUser.cend())
+	//m_userLock.Enter();
+	if (m_setAllLobbyUser.find(_lobbyID) != m_setAllLobbyUser.cend())
 	{
 		pUser = &m_arrUser[_lobbyID];
 	}
-	m_userLock.Leave();
+	//m_userLock.Leave();
 	return pUser;
 }
 
 void Lobby::Leave(uint32 _lobbyID)
 {
-	if (!Find(_lobbyID)) return;
-
-	m_userLock.Enter();
-	m_arrUser[_lobbyID].Clear();
-	m_vecUnusedUserIDs.push_back(_lobbyID);
-	m_setLobbyUser.erase(_lobbyID);
-	--m_userCount;
-	m_userLock.Leave();
+	m_lock.Enter();
+	{
+		if (Find(_lobbyID))
+		{
+			m_arrUser[_lobbyID].Clear();
+			m_vecUnusedUserIDs.push_back(_lobbyID);
+			m_setAllLobbyUser.erase(_lobbyID);
+			m_usetUserInLobby.erase(_lobbyID);
+			--m_userCount;
+		}
+	}
+	m_lock.Leave();
 }
 
 void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 {
-	m_userLock.Enter();
+	_pkt.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_UserList);
 
-	// 1페이지라면 처음부터 10개
-	// 3페이지 : 31~40
-
-	uint32 result;
-	if (m_userCount % LOBBY_USERLIST_PAGE == 0)
+	m_lock.Enter();
 	{
-		if (_page > 0 && _page >= m_userCount / LOBBY_USERLIST_PAGE)
-			_page = m_userCount / LOBBY_USERLIST_PAGE - 1;
-		result = LOBBY_USERLIST_PAGE;
+		// 1페이지라면 처음부터 10개
+		// 3페이지 : 31~40
+
+		uint32 result;
+		if (m_userCount % LOBBY_USERLIST_PAGE == 0)
+		{
+			if (_page > 0 && _page >= m_userCount / LOBBY_USERLIST_PAGE)
+				_page = m_userCount / LOBBY_USERLIST_PAGE - 1;
+			result = LOBBY_USERLIST_PAGE;
+		}
+		else
+		{
+			if (_page > 0 && _page > m_userCount / LOBBY_USERLIST_PAGE)
+				_page = m_userCount / LOBBY_USERLIST_PAGE;
+			result = (m_userCount / LOBBY_USERLIST_PAGE == _page) ? m_userCount % LOBBY_USERLIST_PAGE : LOBBY_USERLIST_PAGE;
+		}
+
+		int startPos = LOBBY_USERLIST_PAGE * _page;
+
+		_pkt.Add<char>(_page);
+		_pkt.Add<char>(result);
+
+		uint32 lobbyID = 0;
+		int count = 0;
+		std::set<uint32>::iterator iter = m_setAllLobbyUser.begin();
+
+		if (_page != 0)		std::advance(iter, startPos);
+
+		std::set<uint32>::iterator iterEnd = m_setAllLobbyUser.end();
+		for (; iter != iterEnd; ++count, ++iter)
+		{
+			if (count >= result) break;
+
+			lobbyID = *iter;
+			_pkt.AddWString(m_arrUser[lobbyID].GetNickname());
+			_pkt.Add<char>((char)m_arrUser[lobbyID].GetSceneState());
+		}
+
+		//printf("%d\n", result);
 	}
-	else
-	{
-		if (_page > 0 && _page > m_userCount / LOBBY_USERLIST_PAGE)
-			_page = m_userCount / LOBBY_USERLIST_PAGE;
-		result = (m_userCount / LOBBY_USERLIST_PAGE == _page) ? m_userCount % LOBBY_USERLIST_PAGE : LOBBY_USERLIST_PAGE;
-	}
-
-	int startPos = LOBBY_USERLIST_PAGE * _page;
-
-	_pkt.Add<char>(_page);
-	_pkt.Add<char>(result);
-
-	uint32 lobbyID = 0;
-	int count = 0;
-	std::set<uint32>::iterator iter = m_setLobbyUser.begin();
-
-	if (_page != 0)		std::advance(iter, startPos);
-
-	std::set<uint32>::iterator iterEnd = m_setLobbyUser.end();
-	for (; iter != iterEnd; ++count, ++iter)
-	{
-		if (count >= result) break;
-
-		lobbyID = *iter;
-		_pkt.AddWString(m_arrUser[lobbyID].GetNickname());
-		_pkt.Add<char>((char)m_arrUser[lobbyID].GetSceneState());
-	}
-
-	//printf("%d\n", result);
-
-	m_userLock.Leave();
+	m_lock.Leave();
 }
 
 void Lobby::PacketRoomListPage(uint32 _page, Packet& _pkt)
 {
-	m_roomLock.Enter();
+	_pkt.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
 
-	uint32 result;
-	if (m_roomCount > 0 && m_roomCount % LOBBY_ROOMLIST_PAGE == 0)
-	{
-		if (_page > 0 && _page >= m_roomCount / LOBBY_ROOMLIST_PAGE)
-			_page = m_roomCount / LOBBY_ROOMLIST_PAGE - 1;
-		result = LOBBY_ROOMLIST_PAGE;
-	}
-	else
-	{
-		if (_page > 0 && _page > m_roomCount / LOBBY_ROOMLIST_PAGE)
-			_page = m_roomCount / LOBBY_ROOMLIST_PAGE;
-		result = (m_roomCount / LOBBY_ROOMLIST_PAGE == _page) ? m_roomCount % LOBBY_ROOMLIST_PAGE : LOBBY_ROOMLIST_PAGE;
-	}
-
-	int startPos = LOBBY_ROOMLIST_PAGE * _page;
-
-	_pkt.Add<char>(_page);
-	_pkt.Add<char>(result);
-
-	uint32 roomID = 0;
-	int count = 0;
-	std::set<uint32>::iterator iter = m_setRoom.begin();
-
-	if (_page != 0)		std::advance(iter, startPos);
-
-	std::set<uint32>::iterator iterEnd = m_setRoom.end();
-	for (; iter != iterEnd; ++count, ++iter)
-	{
-		if (count >= result) break;
-
-		roomID = *iter;
-		_pkt.Add<char>(roomID);
-		_pkt.AddWString(m_arrRoom[roomID].GetTitle());
-		_pkt.AddWString(m_arrRoom[roomID].GetOwner());
-		_pkt.Add<char>(m_arrRoom[roomID].GetNumOfUser());
-		_pkt.Add<char>((char)m_arrRoom[roomID].GetState());
-	}
-
-	//printf("%d\n", result);
-
-	m_roomLock.Leave();
+	m_roomManager.MakePacketRoomListPage(_page, _pkt);
 }
 
-void Lobby::SendAll(const Packet& _pkt)
+void Lobby::PacketRoomUserSlotInfo(uint32 _roomID, Packet& _pkt)
 {
-	m_userLock.Enter();
-	auto setLobbyUser = m_setLobbyUser;
-	m_userLock.Leave();
+	_pkt.Add<PacketType>((PacketType)eServer::RoomUsersInfo);
+	m_roomManager.MakePacketUserSlotInfo(_roomID, _pkt);
+}
 
-	for (uint32 id : setLobbyUser)
+void Lobby::Send(const Packet& _pkt, uint32 _userID)
+{
+	if (_userID >= USER_LOBBY_MAX) return;
+
+	m_arrUser[_userID].Send(_pkt);
+}
+
+void Lobby::SendAllInLobby(const Packet& _pkt)
+{
+	m_lock.Enter();
+	auto usetLobbyUser = m_usetUserInLobby;
+	m_lock.Leave();
+
+	for (uint32 id : usetLobbyUser)
 		m_arrUser[id].Send(_pkt);
 }
 
-Room* Lobby::CreateRoom(Connection& _conn, const wchar_t* _pTitle)
+Room* Lobby::CreateRoom(Connection& _conn, User* _pUser, const wchar_t* _pTitle)
 {
-	if (m_roomCount >= USER_LOBBY_MAX) return nullptr; // TODO : inside lock?
-	
-	m_roomLock.Enter();
+	Room* pRoom = m_roomManager.Create(_conn, _pUser, _pTitle);
 
-	uint32 roomId = m_vecUnusedRoomIDs.back();
-	m_vecUnusedRoomIDs.pop_back();
-	m_setRoom.insert(roomId);
-	m_arrRoom[roomId].Init(_conn, _pTitle, roomId);
-
-	_conn.SetRoomID(roomId);
-
-	++m_roomCount;
-	m_roomLock.Leave();
-
-	return &m_arrRoom[roomId];
-}
-
-Room* Lobby::FindRoom(uint32 _roomID)
-{
-	if (_roomID >= USER_LOBBY_MAX) return nullptr;
-
-	Room* pRoom = nullptr;
-
-	m_roomLock.Enter();
-	if (m_setRoom.find(_roomID) != m_setRoom.cend())
+	if (pRoom)
 	{
-		pRoom = &m_arrRoom[_roomID];
+		m_lock.Enter();
+		{
+			m_usetUserInLobby.erase(_pUser->GetLobbyId());
+		}
+		m_lock.Leave();
 	}
-	m_roomLock.Leave();
+
 	return pRoom;
 }
 
-void Lobby::LeaveRoom(uint32 _roomID)
+eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomID)
 {
-	if (!FindRoom(_roomID)) return;
+	eEnterRoomResult eResult = m_roomManager.Enter(_conn, _pUser, _roomID);
 
-	m_roomLock.Enter();
-	m_arrRoom[_roomID].Clear();
-	m_vecUnusedRoomIDs.push_back(_roomID);
-	m_setRoom.erase(_roomID);
-	--m_roomCount;
-	m_roomLock.Leave();
+	m_lock.Enter();
+	{
+		m_usetUserInLobby.erase(_pUser->GetLobbyId());
+	}
+	m_lock.Leave();
+
+	return eResult;
+}
+
+// 방장이 LeaveRoom할때 같이 
+uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerID, uint32& _newOwnerID)
+{
+	if (_roomID >= USER_LOBBY_MAX) return 0;
+
+	bool found = false;
+
+	uint32 result = m_roomManager.Leave(_pUser, _roomID, _prevOwnerID, _newOwnerID);
+
+	if (result != ROOM_ID_NOT_FOUND)
+	{
+		m_lock.Enter();
+		m_usetUserInLobby.insert(_pUser->GetLobbyId());
+		m_lock.Leave();
+	}
+
+	return result;
+}
+
+// EnterRoom하는 유저가 SendRoom다 할때까지 기다리기 x
+void Lobby::SendRoom(const Packet& _pkt, uint32 _roomID, uint32 _exceptID)
+{
+	if (_roomID >= USER_LOBBY_MAX) return;
+
+	m_roomManager.Send(_pkt, _roomID, _exceptID);
+}
+
+void Lobby::SendAllRooms(const Packet& _pkt)
+{
 }

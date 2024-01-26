@@ -2,13 +2,13 @@
 #include "../Packet.h"
 #include "../../Lobby/LobbyManager.h"
 #include "../../NetworkCore/ConnectionManager.h"
-#include "../../User.h"
+#include "../../User/UserManager.h"
 
 void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pChat = _packet.GetWString();
-	//wprintf(L"%s\n", chat);
-	const wchar_t* pNickname = _conn.GetUser()->GetNickname();
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	const wchar_t* pNickname = pUser->GetNickname();
 
 	Packet pkt;
 	pkt
@@ -17,7 +17,7 @@ void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 		.AddWString(pChat);
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
-	pLobby->SendAll(pkt);
+	pLobby->SendAllInLobby(pkt);
 	//printf("[%d] SendAll\n", (int)_conn.GetSocket());
 }
 
@@ -28,27 +28,17 @@ void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
 	char roomListPage = _packet.Get<char>();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	uint32 userCount = pLobby->GetUserCount();
-	uint32 roomCount = pLobby->GetRoomCount();
 
 	if (userCount != 0)// && userCount > userListPage * LOBBY_USERLIST_PAGE)
 	{
 		Packet pktUserList;
-		pktUserList
-			.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_UserList);
-
 		pLobby->PacketUserListPage(userListPage, pktUserList);
 		_conn.Send(pktUserList);
 	}
 
-	//if (roomCount != 0)
-	//{
-		Packet pktRoomList;
-		pktRoomList
-			.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
-
-		pLobby->PacketRoomListPage(roomListPage, pktRoomList);
-		_conn.Send(pktRoomList);
-	//}
+	Packet pktRoomList;
+	pLobby->PacketRoomListPage(roomListPage, pktRoomList);
+	_conn.Send(pktRoomList);
 }
 
 void NLobby::UserListGetPageInfo(Connection& _conn, PacketReader& _packet)
@@ -58,12 +48,8 @@ void NLobby::UserListGetPageInfo(Connection& _conn, PacketReader& _packet)
 	uint32 userCount = pLobby->GetUserCount();
 
 	if (userCount == 0) return;
-	//if (userCount <= userListPage * LOBBY_USERLIST_PAGE) return; // 10명 뿐인데 1페이지를 보여줄 수 없다
 
 	Packet pktUserList;
-	pktUserList
-		.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_UserList);
-
 	pLobby->PacketUserListPage(userListPage, pktUserList);
 	_conn.Send(pktUserList);
 }
@@ -72,14 +58,8 @@ void NLobby::RoomListGetPageInfo(Connection& _conn, PacketReader& _packet)
 {
 	char roomListPage = _packet.Get<char>();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
-	uint32 roomCount = pLobby->GetRoomCount();
-
-	if (roomCount == 0) return;
 
 	Packet pktRoomList;
-	pktRoomList
-		.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
-
 	pLobby->PacketRoomListPage(roomListPage, pktRoomList);
 	_conn.Send(pktRoomList);
 }
@@ -88,13 +68,12 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pTitle = _packet.GetWString();
 	Packet pkt;
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
-	Room* pRoom = pLobby->CreateRoom(_conn, pTitle);
+	Room* pRoom = pLobby->CreateRoom(_conn, pUser, pTitle);
 	if (pRoom)
 	{
-		_conn.SetSceneState(eSceneState::Room);
-
 		pkt.Add<PacketType>((PacketType)eServer::CreateRoom_Success);
 		pkt.Add<char>(pRoom->GetId());
 		pkt.AddWString(pTitle);
@@ -105,4 +84,47 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 	}
 
 	_conn.Send(pkt);
+	wprintf(L"[%s] CreateRoom\n", pUser->GetNickname());
+}
+
+void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
+{
+	int roomID = _packet.Get<char>();
+
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	eEnterRoomResult eResult = pLobby->EnterRoom(_conn, pUser, roomID);
+
+	// 이 사이에 누가 LeaveRoom한다면 반영된 정보를 가져오게 됨.
+	// LoadScene해서 Init하기 전 UIUsers 갱신하는 패킷이 온다면
+
+	Packet pkt;
+
+	switch (eResult)
+	{
+	case eEnterRoomResult::Success:
+	{
+		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_Success);
+
+		uint32 idx = pUser->GetRoomUserIdx();
+		Packet pktNotifyRoomUserEnter;
+		pktNotifyRoomUserEnter
+			.Add<PacketType>((PacketType)eServer::NotifyRoomUserEnter)
+			.Add<char>(idx)
+			.AddWString(pUser->GetNickname());
+		pLobby->SendRoom(pktNotifyRoomUserEnter, roomID, idx); // 이 시점에 방에있던 Connection이 할당 해제가 되어 있음
+		break;
+	}
+	case eEnterRoomResult::Full:
+		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_Full);
+		break;
+	case eEnterRoomResult::InGame:
+		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_InGame);
+		break;
+	case eEnterRoomResult::NoRoom:
+		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_NoRoom);
+		break;
+	}
+	_conn.Send(pkt);
+	wprintf(L"[%s] EnterRoom : %d\n", pUser->GetNickname(), (int)eResult);
 }

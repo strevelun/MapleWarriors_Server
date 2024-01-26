@@ -1,37 +1,31 @@
 #pragma once
 
-//#include "Room.h"
+#include "Room.h"
+
+class User;
 
 class RoomManager
 {
 private:
-	//std::vector<Room*> m_vecRoom;
+	CSLock									m_lock;
+
+	std::vector<uint32>						m_vecUnusedRoomIDs;
+	std::set<uint32>						m_setRoom;
+	std::array<Room, USER_LOBBY_MAX>		m_arrRoom;
+
+	uint32									m_count;
 
 public:
-
-
-#pragma region Singleton
-private:
-	static RoomManager* s_pInst;
-
-public:
-	static RoomManager* GetInst()
-	{
-		if (!s_pInst)
-			s_pInst = new RoomManager;
-		return s_pInst;
-	}
-
-	static void DestInst()
-	{
-		if (s_pInst)
-			delete s_pInst;
-		s_pInst = nullptr;
-	}
-
-private:
 	RoomManager();
 	~RoomManager();
-#pragma endregion 
+
+	Room* Create(Connection& _conn, User* _pUser, const wchar_t* _pTitle);
+	eEnterRoomResult Enter(Connection& _conn, User* _pUser, uint32 _roomID);
+	uint32 Leave(User* _pUser, uint32 _roomID, uint32& _prevOwnerID, uint32 &_newOwnerID);
+
+	void MakePacketRoomListPage(uint32 _page, Packet& _pkt);
+	void MakePacketUserSlotInfo(uint32 _roomID, Packet& _pkt);
+
+	void Send(const Packet& _pkt, uint32 _roomID, uint32 _exceptID);
 };
 

@@ -1,4 +1,5 @@
 #include "ConnectionManager.h"
+#include "../User/UserManager.h"
 
 ConnectionManager* ConnectionManager::s_pInst = nullptr;
 
@@ -6,7 +7,6 @@ Connection* ConnectionManager::Create(SOCKET _socket)
 {
 	m_lock.Enter();
 	Connection* pConn = new Connection(m_connectionId, _socket);
-	pConn->SetSceneState(eSceneState::Login);
 	m_mapConnection.insert({ m_connectionId, pConn });
 	++m_connectionId;
 	++m_count;
@@ -21,7 +21,6 @@ void ConnectionManager::Delete(uint32 _id)
 	if (iter != m_mapConnection.cend())
 	{
 		--m_count;
-		iter->second->Leave();
 		delete iter->second;
 		m_mapConnection.erase(_id);
 	}

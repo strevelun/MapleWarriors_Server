@@ -1,6 +1,5 @@
 #include "PacketHandler.h"
 #include "../Types/PacketTypes.h"
-#include "../../UserManager.h"
 #include "LoginPacketHandler.h"
 #include "LobbyPacketHandler.h"
 #include "RoomPacketHandler.h"
@@ -42,12 +41,21 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 		break;
 	case eClient::CreateRoom:
 		NLobby::CreateRoom(_conn, _packet);
+		break;	
+	case eClient::EnterRoom:
+		NLobby::EnterRoom(_conn, _packet);
 		break;
 #pragma endregion
 
 #pragma region Room
+	case eClient::RoomChat:
+		NRoom::RoomChat(_conn, _packet);
+		break;
 	case eClient::ExitRoom:
-		Room::ExitRoom(_conn, _packet);
+		NRoom::ExitRoom(_conn, _packet);
+		break;	
+	case eClient::ReqRoomUsersInfo:
+		NRoom::ReqRoomUsersInfo(_conn, _packet);
 		break;
 #pragma endregion
 

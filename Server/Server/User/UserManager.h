@@ -4,7 +4,7 @@
 #include <string>
 
 #include "User.h"
-#include "CSLock.h"
+#include "../CSLock.h"
 
 class UserManager
 {
@@ -13,14 +13,14 @@ private:
 
 private:
 	std::unordered_map<std::wstring, User*>		m_mapUser;
-	//std::unordered_map<uint32, User*>			m_mapConnectedUser;
+	std::unordered_map<uint32, User*>			m_mapConnectedUser;
 
 public:
 	User* Create(const wchar_t* _pNickname);
 	User* Find(const wchar_t* _pNickname);
-	//User* FindConnectedUser(uint32 _connectionId);
-	//void Connect(uint32 _connectionId, User* _pUser);
-	//void Disconnect(uint32 _connectionId);
+	User* FindConnectedUser(uint32 _connectionId);
+	bool Connect(uint32 _connectionId, User* _pUser);
+	void Disconnect(uint32 _connectionId);
 
 #pragma region Singleton
 private:

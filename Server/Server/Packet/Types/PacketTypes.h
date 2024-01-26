@@ -14,9 +14,17 @@ enum class eServer : PacketType
 	LobbyUpdateInfo_RoomList,
 	CreateRoom_Success,
 	CreateRoom_Fail,
+	EnterRoom_Success,
+	EnterRoom_Full,
+	EnterRoom_InGame,
+	EnterRoom_NoRoom,
 	ExitRoom,
 	StartGame_Success,
 	StartGame_Fail,
+	NotifyRoomUserEnter,
+	NotifyRoomUserExit,
+	RoomChat,
+	RoomUsersInfo,
 };
 
 enum class eClient : PacketType
@@ -30,9 +38,11 @@ enum class eClient : PacketType
 	UserListGetPageInfo,
 	RoomListGetPageInfo,
 	CreateRoom,
+	EnterRoom,
 	ExitRoom,
 	StartGame,
 	RoomReady,
 	RoomStandby,
 	RoomChat,
+	ReqRoomUsersInfo,
 };

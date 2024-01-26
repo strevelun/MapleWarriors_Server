@@ -31,6 +31,9 @@
     <Filter Include="Room">
       <UniqueIdentifier>{dee20715-1da8-4560-9284-e88d0d2b903d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="User">
+      <UniqueIdentifier>{0c7e7c11-7c10-436d-b66e-f6068414ffe3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Packet\Packet.cpp">
@@ -66,12 +69,6 @@
     <ClCompile Include="ServerApp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="UserManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="User.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Packet\PacketHandler\LoginPacketHandler.cpp">
       <Filter>Packet\PacketHandler</Filter>
     </ClCompile>
@@ -93,17 +90,23 @@
     <ClCompile Include="Lobby\LobbyUser.cpp">
       <Filter>Lobby</Filter>
     </ClCompile>
-    <ClCompile Include="Lobby\Room.cpp">
-      <Filter>Lobby</Filter>
-    </ClCompile>
-    <ClCompile Include="Lobby\RoomUser.cpp">
-      <Filter>Lobby</Filter>
-    </ClCompile>
     <ClCompile Include="Packet\PacketHandler\InGamePacketHandler.cpp">
       <Filter>Packet\PacketHandler</Filter>
     </ClCompile>
     <ClCompile Include="Packet\PacketHandler\RoomPacketHandler.cpp">
       <Filter>Packet\PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="User\User.cpp">
+      <Filter>User</Filter>
+    </ClCompile>
+    <ClCompile Include="User\UserManager.cpp">
+      <Filter>User</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\Room.cpp">
+      <Filter>Room</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\RoomUser.cpp">
+      <Filter>Room</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -146,12 +149,6 @@
     <ClInclude Include="ServerApp.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="UserManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="User.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Packet\PacketHandler\LoginPacketHandler.h">
       <Filter>Packet\PacketHandler</Filter>
     </ClInclude>
@@ -173,17 +170,23 @@
     <ClInclude Include="Lobby\LobbyUser.h">
       <Filter>Lobby</Filter>
     </ClInclude>
-    <ClInclude Include="Lobby\Room.h">
-      <Filter>Lobby</Filter>
-    </ClInclude>
-    <ClInclude Include="Lobby\RoomUser.h">
-      <Filter>Lobby</Filter>
-    </ClInclude>
     <ClInclude Include="Packet\PacketHandler\InGamePacketHandler.h">
       <Filter>Packet\PacketHandler</Filter>
     </ClInclude>
     <ClInclude Include="Packet\PacketHandler\RoomPacketHandler.h">
       <Filter>Packet\PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="User\User.h">
+      <Filter>User</Filter>
+    </ClInclude>
+    <ClInclude Include="User\UserManager.h">
+      <Filter>User</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\Room.h">
+      <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\RoomUser.h">
+      <Filter>Room</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 #include "LoginPacketHandler.h"
-#include "../../UserManager.h"
+#include "../../User/UserManager.h"
 #include "../../Lobby/LobbyManager.h"
 #include "../../NetworkCore/ConnectionManager.h"
 
@@ -28,9 +28,8 @@ void Login::LoginReq(Connection& _conn, PacketReader& _packet)
 		else
 		{
 			type = (PacketType)eServer::LoginSuccess;
-			pUser->SetState(eLoginState::Login);
-			_conn.SetUser(pUser);
-			pLobby->Enter(_conn);
+			UserManager::GetInst()->Connect(_conn.GetId(), pUser);
+			pLobby->Enter(_conn, pUser);
 		}
 	}
 	else // 해당아이디로 누군가 로그인

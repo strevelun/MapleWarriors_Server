@@ -10,4 +10,5 @@ namespace NLobby
 	void UserListGetPageInfo(Connection& _conn, PacketReader& _packet);
 	void RoomListGetPageInfo(Connection& _conn, PacketReader& _packet);
 	void CreateRoom(Connection& _conn, PacketReader& _packet);
+	void EnterRoom(Connection& _conn, PacketReader& _packet);
 }

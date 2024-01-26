@@ -1,11 +1,11 @@
 #include "Connection.h"
 #include "../Packet/PacketReader.h"
 #include "../Packet/PacketHandler/PacketHandler.h"
-#include "../UserManager.h"
+#include "../User/UserManager.h"
 #include "../Lobby/LobbyManager.h"
 
 Connection::Connection(int32 _id, SOCKET _socket) :
-    m_id(_id), m_lobbyID(-1), m_roomID(-1), m_socket(_socket), m_overlapped{}, m_pUser(nullptr), m_gonnaBeDeleted(false)
+    m_id(_id), m_socket(_socket), m_overlapped{}, m_gonnaBeDeleted(false)
 {
 	m_dataBuf.buf = m_ringBuffer.GetWriteAddr();
 	m_dataBuf.len = BUFFER_MAX;
@@ -13,20 +13,7 @@ Connection::Connection(int32 _id, SOCKET _socket) :
 
 Connection::~Connection()
 {
-	if (m_pUser)
-	{
-		m_pUser->SetState(eLoginState::Logout);
-		wprintf(L"[%s] 님 접속종료\n", m_pUser->GetNickname());
-	}
-	else
-		printf("[%d] 님 접속종료\n", (int)m_socket);
-
-	if (m_socket)
-	{
-		//shutdown(m_socket, SD_BOTH);
-		//CancelIoEx((HANDLE)m_socket, nullptr);
-		closesocket(m_socket);
-	}
+	if (m_socket) closesocket(m_socket);
 }
 
 void Connection::OnRecv(uint32 _recvBytes)
@@ -85,18 +72,4 @@ void Connection::Send(const Packet& _packet)
 	//printf(".");
     send(m_socket, _packet.GetBuffer(), _packet.GetSize(), 0);
 	//printf("[ %d ] 보낸 바이트 : %d, 남은 처리바이트 : %d\n", (int)m_socket, size, m_ringBuffer.GetWrittenBytes());
-}
-
-void Connection::Leave()
-{
-	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
-	
-	switch (m_eSceneState)
-	{
-	case eSceneState::Room:
-		pLobby->LeaveRoom(m_roomID);
-	case eSceneState::Lobby:
-		pLobby->Leave(m_lobbyID);
-		break;
-	}
 }

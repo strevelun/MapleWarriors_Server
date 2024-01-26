@@ -1,5 +1,5 @@
 #include "IOCP.h"
-#include "../UserManager.h"
+#include "../User/UserManager.h"
 
 IOCP::IOCP() :
     m_hCPObject(nullptr),
@@ -60,6 +60,8 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 		{
 			printf("false returned : %d\n", WSAGetLastError()); 
 	
+			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
+			if (pUser) pUser->Leave();
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}
@@ -68,6 +70,9 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 		if (bytesTransferred == 0)
 		{
 			//printf("bytesTransferred : 0 (disconnect)\n");
+			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
+			if (pUser) pUser->Leave();
+			pUser->Leave();
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}
@@ -78,12 +83,16 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 
 		if (pConn->GonnaBeDeleted())
 		{
+			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
+			if(pUser) pUser->Leave();
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}
 
 		if (!pConn->RecvWSA()) 
 		{
+			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
+			if (pUser) pUser->Leave();
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}

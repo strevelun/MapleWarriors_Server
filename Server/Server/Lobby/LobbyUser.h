@@ -4,6 +4,7 @@
 #include "../Packet/Packet.h"
 
 class Connection;
+class User;
 
 class LobbyUser
 {
@@ -16,7 +17,7 @@ public:
 	LobbyUser();
 	~LobbyUser();
 
-	void Init(Connection& _pConn);
+	void Init(Connection& _pConn, User* _pUser);
 	void Clear();
 
 	const wchar_t* GetNickname() const { return m_pNickname; }
