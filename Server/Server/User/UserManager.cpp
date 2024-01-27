@@ -52,6 +52,7 @@ bool UserManager::Connect(uint32 _connectionId, User* _pUser)
 		m_mapConnectedUser.insert({ _connectionId, _pUser });
 		_pUser->SetConnectionId(_connectionId);
 		_pUser->SetState(eLoginState::Login);
+		_pUser->SetSceneState(eSceneState::Login);
 	}
 	m_lock.Leave();
 
@@ -68,6 +69,10 @@ void UserManager::Disconnect(uint32 _connectionId)
 		m_mapConnectedUser.erase(_connectionId);
 		pUser->SetConnectionId(USER_NOT_CONNECTED);
 		pUser->SetState(eLoginState::Logout);
+		pUser->SetSceneState(eSceneState::None);
+		pUser->SetLobbyID(USER_NOT_IN_THE_ROOM);
+		pUser->SetRoomID(USER_NOT_IN_THE_ROOM);
+		pUser->SetRoomUserIdx(USER_NOT_IN_THE_ROOM);
 	}
 	m_lock.Leave();
 }
