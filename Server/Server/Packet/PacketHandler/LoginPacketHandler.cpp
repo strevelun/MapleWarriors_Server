@@ -4,16 +4,16 @@
 #include "../../NetworkCore/ConnectionManager.h"
 
 
-void Login::Test(Connection& _conn, PacketReader& _packet)
+void NLogin::Test(Connection& _conn, PacketReader& _packet)
 {
 }
 
-void Login::Exit(Connection& _conn, PacketReader& _packet)
+void NLogin::Exit(Connection& _conn, PacketReader& _packet)
 {
 	_conn.SetDeleted();
 }
 
-void Login::LoginReq(Connection& _conn, PacketReader& _packet)
+void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pNickname = _packet.GetWString();
 	User* pUser = UserManager::GetInst()->Create(pNickname);

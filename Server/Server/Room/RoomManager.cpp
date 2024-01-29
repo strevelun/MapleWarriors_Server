@@ -2,7 +2,7 @@
 #include "../User/UserManager.h"
 
 RoomManager::RoomManager() :
-	m_vecUnusedRoomIDs(ROOM_MAX)
+	m_vecUnusedRoomIDs(ROOM_MAX), m_count(0)
 {
 	uint32 j = ROOM_MAX - 1;
 	for (uint32 i = 0; i < ROOM_MAX; ++i, --j)
@@ -38,12 +38,22 @@ eEnterRoomResult RoomManager::Enter(Connection& _conn, User* _pUser, uint32 _roo
 {
 	m_lock.Enter();
 
+	if (_pUser->GetSceneState() == eSceneState::Room)
+	{
+		m_lock.Leave();
+		return eEnterRoomResult::None;
+	}
+
 	eEnterRoomResult eResult = eEnterRoomResult::None;
 	auto iter = m_setRoom.find(_roomID);
 	if (iter == m_setRoom.cend()) eResult = eEnterRoomResult::NoRoom;
 	else if (m_arrRoom[*iter].GetState() == eRoomState::InGame)	eResult = eEnterRoomResult::InGame;
 
-	if (eResult != eEnterRoomResult::None) return eResult;
+	if (eResult != eEnterRoomResult::None)
+	{
+		m_lock.Leave();
+		return eResult;
+	}
 
 	bool result = m_arrRoom[*iter].Enter(_conn, _pUser);
 	if (!result) eResult = eEnterRoomResult::Full;
@@ -61,7 +71,7 @@ eEnterRoomResult RoomManager::Enter(Connection& _conn, User* _pUser, uint32 _roo
 
 uint32 RoomManager::Leave(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32 &_newOwnerIdx)
 {
-	uint32 leftNum = 0;
+	uint32 leftNum = ROOM_ID_NOT_FOUND;
 
 	m_lock.Enter(); 
 
@@ -98,6 +108,19 @@ Room* RoomManager::Find(uint32 _roomID)
 	m_lock.Leave();
 
 	return pRoom;
+}
+
+void RoomManager::SetRoomState(uint32 _roomID, eRoomState _eState)
+{
+	if (_roomID >= ROOM_MAX) return;
+
+	m_lock.Enter();
+	auto iter = m_setRoom.find(_roomID);
+	if (iter != m_setRoom.end())
+	{
+		m_arrRoom[_roomID].SetState(_eState);
+	}
+	m_lock.Leave();
 }
 
 void RoomManager::MakePacketRoomListPage(uint32 _page, Packet& _pkt)

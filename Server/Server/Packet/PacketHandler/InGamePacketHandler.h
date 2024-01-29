@@ -2,8 +2,8 @@
 #include "../../NetworkCore/Connection.h"
 #include "../PacketReader.h"
 
-namespace InGame
+namespace NInGame
 {
-	void Test(Connection& _conn, PacketReader& _packet);
+	void ReqInitInfo(Connection& _conn, PacketReader& _packet);
 
 }

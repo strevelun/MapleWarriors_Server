@@ -97,11 +97,12 @@ void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 		_pkt.Add<char>(result);
 
 		uint32 lobbyID = 0;
-		int count = 0;
+		uint32 count = 0;
 		std::set<uint32>::iterator iter = m_setAllLobbyUser.begin();
 
 		if (_page != 0)		std::advance(iter, startPos);
 
+		eSceneState eState;
 		std::set<uint32>::iterator iterEnd = m_setAllLobbyUser.end();
 		for (; iter != iterEnd; ++count, ++iter)
 		{
@@ -109,25 +110,17 @@ void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 
 			lobbyID = *iter;
 			_pkt.AddWString(m_arrUser[lobbyID].GetNickname());
-			_pkt.Add<char>((char)m_arrUser[lobbyID].GetSceneState());
+			eState = m_arrUser[lobbyID].GetSceneState();
+			_pkt.Add<char>((char)eState);
+			if (eState == eSceneState::Room || eState == eSceneState::InGame)
+			{
+				_pkt.Add<char>(m_arrUser[lobbyID].GetRoomID());
+			}
 		}
 
 		//printf("%d\n", result);
 	}
 	m_lock.Leave();
-}
-
-void Lobby::PacketRoomListPage(uint32 _page, Packet& _pkt)
-{
-	_pkt.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
-
-	m_roomManager.MakePacketRoomListPage(_page, _pkt);
-}
-
-void Lobby::PacketRoomUserSlotInfo(uint32 _roomID, Packet& _pkt)
-{
-	_pkt.Add<PacketType>((PacketType)eServer::RoomUsersInfo);
-	m_roomManager.MakePacketUserSlotInfo(_roomID, _pkt);
 }
 
 void Lobby::Send(const Packet& _pkt, uint32 _userID)
@@ -178,12 +171,10 @@ eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomI
 	return eResult;
 }
 
-// 방장이 LeaveRoom할때 같이 
+// 언제든지 가능하도록
 uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 {
 	if (_roomID >= USER_LOBBY_MAX) return 0;
-
-	bool found = false;
 
 	uint32 result = m_roomManager.Leave(_pUser, _roomID, _prevOwnerIdx, _newOwnerIdx);
 
@@ -197,19 +188,10 @@ uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uin
 	return result;
 }
 
-Room* Lobby::FindRoom(uint32 _roomID)
-{
-	return m_roomManager.Find(_roomID);
-}
-
 // EnterRoom하는 유저가 SendRoom다 할때까지 기다리기 x
 void Lobby::SendRoom(const Packet& _pkt, uint32 _roomID, uint32 _exceptID)
 {
 	if (_roomID >= USER_LOBBY_MAX) return;
 
 	m_roomManager.Send(_pkt, _roomID, _exceptID);
-}
-
-void Lobby::SendAllRooms(const Packet& _pkt)
-{
 }

@@ -23,6 +23,7 @@ void User::Leave()
 
 	switch (m_eSceneState)
 	{
+	case eSceneState::InGame:
 	case eSceneState::Room:
 	{
 		uint32 roomID = m_roomID;

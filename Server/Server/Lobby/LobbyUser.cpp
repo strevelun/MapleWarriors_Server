@@ -3,7 +3,7 @@
 #include "../User/User.h"
 
 LobbyUser::LobbyUser() :
-	m_pConn(nullptr), m_pNickname(nullptr), m_eSceneState(eSceneState::None)
+	m_pConn(nullptr), m_pUser(nullptr)
 {
 }
 
@@ -14,14 +14,12 @@ LobbyUser::~LobbyUser()
 void LobbyUser::Init(Connection& _pConn, User* _pUser)
 {
 	m_pConn = &_pConn;
-	m_pNickname = _pUser->GetNickname();
-	m_eSceneState = _pUser->GetSceneState();
+	m_pUser = _pUser;
 }
 
 void LobbyUser::Clear()
 {
-	m_pNickname = nullptr;
-	m_eSceneState = eSceneState::None;
+	m_pUser = nullptr;
 	m_pConn = nullptr;
 }
 

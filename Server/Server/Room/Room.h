@@ -25,6 +25,8 @@ private:
 	uint32					m_ownerIdx;
 	uint32					m_numOfUser;
 	eRoomState				m_eState;
+	uint32					m_readyCnt;
+	eGameMap				m_eMap;
 
 public:
 	Room();
@@ -41,6 +43,9 @@ public:
 	eRoomState GetState() const { return m_eState; }
 
 	bool SetMemberState(uint32 _idx, eRoomUserState _eState);
+	void SetState(eRoomState _eState) { m_eState = _eState; }
+
+	bool StartGame();
 
 	void PacketRoomUserSlotInfo(uint32 _roomID, Packet& _pkt);
 

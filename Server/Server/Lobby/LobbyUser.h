@@ -2,16 +2,15 @@
 
 #include "../Defines.h"
 #include "../Packet/Packet.h"
+#include "../User/User.h"
 
 class Connection;
-class User;
 
 class LobbyUser
 {
 private:
 	Connection*				m_pConn;
-	const wchar_t*			m_pNickname;
-	eSceneState				m_eSceneState;
+	User*					m_pUser;
 
 public:
 	LobbyUser();
@@ -20,8 +19,9 @@ public:
 	void Init(Connection& _pConn, User* _pUser);
 	void Clear();
 
-	const wchar_t* GetNickname() const { return m_pNickname; }
-	eSceneState GetSceneState() const { return m_eSceneState; }
+	const wchar_t* GetNickname() const { return m_pUser->GetNickname(); }
+	eSceneState GetSceneState() const { return m_pUser->GetSceneState(); }
+	uint32		GetRoomID() const { return m_pUser->GetRoomId(); }
 
 	void Send(const Packet& _pkt);
 };

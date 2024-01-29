@@ -53,9 +53,11 @@ void NRoom::ReqRoomUsersInfo(Connection& _conn, PacketReader& _packet)
 {
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	RoomManager* pRoomManager = pLobby->GetRoomManager();
 
 	Packet pkt;
-	pLobby->PacketRoomUserSlotInfo(pUser->GetRoomId(), pkt);
+	pkt.Add<PacketType>((PacketType)eServer::RoomUsersInfo);
+	pRoomManager->MakePacketUserSlotInfo(pUser->GetRoomId(), pkt);
 
 	_conn.Send(pkt);
 }
@@ -63,6 +65,23 @@ void NRoom::ReqRoomUsersInfo(Connection& _conn, PacketReader& _packet)
 void NRoom::StartGame(Connection& _conn, PacketReader& _packet)
 {
 	// 방장이 아니면 return
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	RoomManager* pRoomManager = pLobby->GetRoomManager();
+	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
+
+	Packet pkt;
+	bool bSuccess = pRoom->StartGame();
+	if (bSuccess)
+	{
+		pkt.Add<PacketType>((PacketType)eServer::StartGame_Success);
+		pRoom->SendAll(pkt);
+	}
+	else
+	{
+		pkt.Add<PacketType>((PacketType)eServer::StartGame_Fail);
+		_conn.Send(pkt);
+	}
 }
 
 void NRoom::RoomReady(Connection& _conn, PacketReader& _packet)
@@ -71,7 +90,8 @@ void NRoom::RoomReady(Connection& _conn, PacketReader& _packet)
 
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
-	Room* pRoom = pLobby->FindRoom(pUser->GetRoomId());
+	RoomManager* pRoomManager = pLobby->GetRoomManager();
+	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
 	Packet pkt;
 	if (!pRoom->SetMemberState(pUser->GetRoomUserIdx(), eRoomUserState::Ready))
@@ -94,7 +114,8 @@ void NRoom::RoomStandby(Connection& _conn, PacketReader& _packet)
 
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
-	Room* pRoom = pLobby->FindRoom(pUser->GetRoomId());
+	RoomManager* pRoomManager = pLobby->GetRoomManager();
+	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
 	Packet pkt;
 	if (!pRoom->SetMemberState(pUser->GetRoomUserIdx(), eRoomUserState::Standby))

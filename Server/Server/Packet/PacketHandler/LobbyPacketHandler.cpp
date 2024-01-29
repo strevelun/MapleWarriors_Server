@@ -27,6 +27,7 @@ void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
 	char userListPage = _packet.Get<char>();
 	char roomListPage = _packet.Get<char>();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	RoomManager* pRoomManager = pLobby->GetRoomManager();
 	uint32 userCount = pLobby->GetUserCount();
 
 	if (userCount != 0)// && userCount > userListPage * LOBBY_USERLIST_PAGE)
@@ -37,7 +38,8 @@ void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
 	}
 
 	Packet pktRoomList;
-	pLobby->PacketRoomListPage(roomListPage, pktRoomList);
+	pktRoomList.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
+	pRoomManager->MakePacketRoomListPage(roomListPage, pktRoomList);
 	_conn.Send(pktRoomList);
 }
 
@@ -58,9 +60,11 @@ void NLobby::RoomListGetPageInfo(Connection& _conn, PacketReader& _packet)
 {
 	char roomListPage = _packet.Get<char>();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	RoomManager* pRoomManager = pLobby->GetRoomManager();
 
 	Packet pktRoomList;
-	pLobby->PacketRoomListPage(roomListPage, pktRoomList);
+	pktRoomList.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
+	pRoomManager->MakePacketRoomListPage(roomListPage, pktRoomList);
 	_conn.Send(pktRoomList);
 }
 
@@ -124,6 +128,8 @@ void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 	case eEnterRoomResult::NoRoom:
 		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_NoRoom);
 		break;
+	default:
+		return;
 	}
 	_conn.Send(pkt);
 	wprintf(L"[%s] EnterRoom : %d\n", pUser->GetNickname(), (int)eResult);

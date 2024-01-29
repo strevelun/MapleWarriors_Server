@@ -49,4 +49,5 @@ enum class eClient : PacketType
 	RoomStandby,
 	RoomChat,
 	ReqRoomUsersInfo,
+	ReqInitInfo,
 };

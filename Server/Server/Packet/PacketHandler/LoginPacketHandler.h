@@ -3,7 +3,7 @@
 #include "../../NetworkCore/Connection.h"
 #include "../PacketReader.h"
 
-namespace Login
+namespace NLogin
 {
 	void Test(Connection& _conn, PacketReader& _packet);
 	void Exit(Connection& _conn, PacketReader& _packet);

@@ -13,15 +13,15 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	{
 #pragma region Login
 	case eClient::Test:
-		Login::Test(_conn, _packet);
+		NLogin::Test(_conn, _packet);
 		break;
 
 	case eClient::Exit:
-		Login::Exit(_conn, _packet);
+		NLogin::Exit(_conn, _packet);
 		break;
 
 	case eClient::LoginReq:
-		Login::LoginReq(_conn, _packet);
+		NLogin::LoginReq(_conn, _packet);
 		break;
 
 #pragma endregion
@@ -69,7 +69,9 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 #pragma endregion
 
 #pragma region InGame
-
+	case eClient::ReqInitInfo:
+		NInGame::ReqInitInfo(_conn, _packet);
+		break;
 #pragma endregion
 	}
 	//printf("[%d] Handle over\n", (int)_conn.GetSocket());
