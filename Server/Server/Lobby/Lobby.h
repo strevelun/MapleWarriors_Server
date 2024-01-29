@@ -18,7 +18,7 @@ private:
 	std::set<uint32>						m_setAllLobbyUser;
 	std::unordered_set<uint32>				m_usetUserInLobby;
 	
-	std::array<LobbyUser, USER_LOBBY_MAX>	m_arrUser; 
+	std::array<LobbyUser, ROOM_MAX>	m_arrUser;
 
 	uint32 m_userCount;
 
@@ -40,7 +40,8 @@ public:
 
 	Room* CreateRoom(Connection& _conn, User* _pUser, const wchar_t* _pTitle);
 	eEnterRoomResult EnterRoom(Connection& _conn, User* _pUser, uint32 _roomID);
-	uint32 LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerID, uint32& _newOwnerID);
+	uint32 LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32& _newOwnerIdx);
+	Room* FindRoom(uint32 _roomID);
 
 	void SendRoom(const Packet& _pkt, uint32 _roomID, uint32 _exceptID = USER_NOT_IN_THE_ROOM);
 	void SendAllRooms(const Packet& _pkt);

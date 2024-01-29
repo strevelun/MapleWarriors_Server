@@ -21,7 +21,7 @@ void Room::Init(Connection& _conn, const wchar_t* _pTitle, uint32 _id)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 
 	m_pOwnerNickname = pUser->GetNickname();
-	m_ownerID = 0;
+	m_ownerIdx = 0;
 	m_arrUser[0].Init(_conn, pUser, true);
 	pUser->SetRoomUserIdx(0);
 	m_numOfUser = 1;
@@ -32,7 +32,7 @@ void Room::Clear()
 {
 	m_title[0] = L'\0';
 	m_pOwnerNickname = nullptr;
-	m_ownerID = 0;
+	m_ownerIdx = 0;
 	m_numOfUser = 0;
 	m_eState = eRoomState::None;
 
@@ -41,6 +41,25 @@ void Room::Clear()
 		if (user.GetState() != eRoomUserState::None)
 			user.Clear();
 	m_lock.Leave();
+}
+
+
+bool Room::SetMemberState(uint32 _idx, eRoomUserState _eState)
+{
+	if (_idx >= ROOM_USER_MAX) return false;
+
+	bool success = false;
+
+	m_lock.Enter();
+	if (m_eState == eRoomState::Standby &&
+		m_ownerIdx != _idx && 
+		m_arrUser[_idx].GetState() != eRoomUserState::None)
+	{
+		m_arrUser[_idx].SetState(_eState);
+		success = true;
+	}
+	m_lock.Leave();
+	return success;
 }
 
 void Room::PacketRoomUserSlotInfo(uint32 _roomID, Packet& _pkt)
@@ -54,9 +73,11 @@ void Room::PacketRoomUserSlotInfo(uint32 _roomID, Packet& _pkt)
 		if (user.GetState() != eRoomUserState::None)
 		{
 			// TODO : 캐릭터 선택 정보 추가하기
+			_pkt.Add<uint16>(user.GetConnectionID());
 			_pkt.Add<char>(idx);
 			_pkt.Add<bool>(user.IsOwner());
 			_pkt.AddWString(user.GetNickname());
+			_pkt.Add<char>((char)user.GetState());
 		}
 		++idx;
 	}
@@ -93,7 +114,7 @@ bool Room::Enter(Connection& _conn, User* _pUser)
 	return false;
 }
 
-uint32 Room::Leave(User* _pUser, uint32& _prevOwnerID, uint32& _newOwnerID)
+uint32 Room::Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 {
 	printf("Leave : %d\n", m_numOfUser);
 	if (m_numOfUser == 0) return USER_NOT_IN_THE_ROOM;
@@ -105,14 +126,15 @@ uint32 Room::Leave(User* _pUser, uint32& _prevOwnerID, uint32& _newOwnerID)
 	{
 		if (m_arrUser[idx].IsOwner())
 		{
-			_prevOwnerID = idx;
-			_newOwnerID = FindNextOwner(idx);
-			if (_newOwnerID != USER_NOT_IN_THE_ROOM) // 방에 방장 혼자가 아닌 경우
+			_prevOwnerIdx = idx;
+			_newOwnerIdx = FindNextOwner(idx);
+			if (_newOwnerIdx != USER_NOT_IN_THE_ROOM) // 방에 방장 혼자가 아닌 경우
 			{
-				m_pOwnerNickname = m_arrUser[_newOwnerID].GetNickname();
-				m_ownerID = _newOwnerID;
-				m_arrUser[_prevOwnerID].SetOwner(false);
-				m_arrUser[_newOwnerID].SetOwner(true);
+				m_pOwnerNickname = m_arrUser[_newOwnerIdx].GetNickname();
+				m_ownerIdx = _newOwnerIdx;
+				m_arrUser[_prevOwnerIdx].SetOwner(false);
+				m_arrUser[_newOwnerIdx].SetOwner(true);
+				m_arrUser[_newOwnerIdx].SetState(eRoomUserState::Ready);
 			}
 		}
 		m_arrUser[idx].Clear();

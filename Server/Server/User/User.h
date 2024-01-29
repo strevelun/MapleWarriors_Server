@@ -8,7 +8,6 @@
 class User
 {
 private:
-	CSLock		m_lock;
 
 private:
 	eLoginState		m_eLoginState; 

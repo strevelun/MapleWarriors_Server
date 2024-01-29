@@ -25,6 +25,10 @@ enum class eServer : PacketType
 	NotifyRoomUserExit,
 	RoomChat,
 	RoomUsersInfo,
+	RoomReady,
+	RoomReady_Fail,
+	RoomStandby,
+	RoomStandby_Fail,
 };
 
 enum class eClient : PacketType

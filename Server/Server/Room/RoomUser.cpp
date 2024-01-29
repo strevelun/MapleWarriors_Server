@@ -13,7 +13,7 @@ RoomUser::~RoomUser()
 void RoomUser::Init(Connection& _conn, User* _pUser, bool _bIsOwner)
 {
 	m_pConn = &_conn;
-	m_eState = eRoomUserState::Ready;
+	m_eState = eRoomUserState::Standby;
 	m_pNickname = _pUser->GetNickname();
 	m_bOwner = _bIsOwner;
 

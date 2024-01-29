@@ -72,7 +72,6 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 			//printf("bytesTransferred : 0 (disconnect)\n");
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if (pUser) pUser->Leave();
-			pUser->Leave();
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}

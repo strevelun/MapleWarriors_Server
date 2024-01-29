@@ -57,6 +57,15 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::ReqRoomUsersInfo:
 		NRoom::ReqRoomUsersInfo(_conn, _packet);
 		break;
+	case eClient::StartGame:
+		NRoom::StartGame(_conn, _packet);
+		break;
+	case eClient::RoomReady:
+		NRoom::RoomReady(_conn, _packet);
+		break;
+	case eClient::RoomStandby:
+		NRoom::RoomStandby(_conn, _packet);
+		break;
 #pragma endregion
 
 #pragma region InGame

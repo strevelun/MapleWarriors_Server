@@ -167,23 +167,25 @@ eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomI
 {
 	eEnterRoomResult eResult = m_roomManager.Enter(_conn, _pUser, _roomID);
 
-	m_lock.Enter();
+	if (eResult == eEnterRoomResult::Success)
 	{
-		m_usetUserInLobby.erase(_pUser->GetLobbyId());
+		m_lock.Enter();
+		{
+			m_usetUserInLobby.erase(_pUser->GetLobbyId());
+		}
+		m_lock.Leave();
 	}
-	m_lock.Leave();
-
 	return eResult;
 }
 
 // 방장이 LeaveRoom할때 같이 
-uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerID, uint32& _newOwnerID)
+uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 {
 	if (_roomID >= USER_LOBBY_MAX) return 0;
 
 	bool found = false;
 
-	uint32 result = m_roomManager.Leave(_pUser, _roomID, _prevOwnerID, _newOwnerID);
+	uint32 result = m_roomManager.Leave(_pUser, _roomID, _prevOwnerIdx, _newOwnerIdx);
 
 	if (result != ROOM_ID_NOT_FOUND)
 	{
@@ -193,6 +195,11 @@ uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerID, uint
 	}
 
 	return result;
+}
+
+Room* Lobby::FindRoom(uint32 _roomID)
+{
+	return m_roomManager.Find(_roomID);
 }
 
 // EnterRoom하는 유저가 SendRoom다 할때까지 기다리기 x

@@ -2,10 +2,10 @@
 #include "../User/UserManager.h"
 
 RoomManager::RoomManager() :
-	m_vecUnusedRoomIDs(USER_LOBBY_MAX)
+	m_vecUnusedRoomIDs(ROOM_MAX)
 {
-	uint32 j = USER_LOBBY_MAX - 1;
-	for (uint32 i = 0; i < USER_LOBBY_MAX; ++i, --j)
+	uint32 j = ROOM_MAX - 1;
+	for (uint32 i = 0; i < ROOM_MAX; ++i, --j)
 		m_vecUnusedRoomIDs[i] = j;
 }
 
@@ -18,7 +18,7 @@ Room* RoomManager::Create(Connection& _conn, User* _pUser, const wchar_t* _pTitl
 	Room* pRoom = nullptr;
 	m_lock.Enter();
 	{
-		if (m_count < USER_LOBBY_MAX)
+		if (m_count < ROOM_MAX)
 		{
 			uint32 roomId = m_vecUnusedRoomIDs.back();
 			m_vecUnusedRoomIDs.pop_back();
@@ -59,7 +59,7 @@ eEnterRoomResult RoomManager::Enter(Connection& _conn, User* _pUser, uint32 _roo
 	return eResult;
 }
 
-uint32 RoomManager::Leave(User* _pUser, uint32 _roomID, uint32& _prevOwnerID, uint32 &_newOwnerID)
+uint32 RoomManager::Leave(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32 &_newOwnerIdx)
 {
 	uint32 leftNum = 0;
 
@@ -67,7 +67,7 @@ uint32 RoomManager::Leave(User* _pUser, uint32 _roomID, uint32& _prevOwnerID, ui
 
 	if (m_setRoom.find(_roomID) != m_setRoom.cend())
 	{
-		leftNum = m_arrRoom[_roomID].Leave(_pUser, _prevOwnerID, _newOwnerID);
+		leftNum = m_arrRoom[_roomID].Leave(_pUser, _prevOwnerIdx, _newOwnerIdx);
 		printf("남은 방 인원 : %d\n", leftNum);
 		if (leftNum == 0)
 		{
@@ -82,6 +82,22 @@ uint32 RoomManager::Leave(User* _pUser, uint32 _roomID, uint32& _prevOwnerID, ui
 
 	m_lock.Leave();
     return leftNum;
+}
+
+Room* RoomManager::Find(uint32 _roomID)
+{
+	if (_roomID >= ROOM_MAX) return nullptr;
+
+	Room* pRoom = nullptr;
+	m_lock.Enter();
+	auto iter = m_setRoom.find(_roomID);
+	if (iter != m_setRoom.end())
+	{
+		pRoom = &m_arrRoom[_roomID];
+	}
+	m_lock.Leave();
+
+	return pRoom;
 }
 
 void RoomManager::MakePacketRoomListPage(uint32 _page, Packet& _pkt)

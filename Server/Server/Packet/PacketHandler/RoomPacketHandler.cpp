@@ -23,8 +23,8 @@ void NRoom::ExitRoom(Connection& _conn, PacketReader& _packet)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	uint32 roomId = pUser->GetRoomId();
 	uint32 roomUserIdx = pUser->GetRoomUserIdx();
-	uint32 prevOwnerID = USER_NOT_IN_THE_ROOM;
-	uint32 nextOwnerID = USER_NOT_IN_THE_ROOM;
+	uint32 prevOwnerIdx = USER_NOT_IN_THE_ROOM;
+	uint32 nextOwnerIdx = USER_NOT_IN_THE_ROOM;
 
 	// 자신이 방장이면 룸을 제거
 	// 방장 한 명일때 방장이 나가면 룸을 제거해야 하는데 누군가 들어온다면?
@@ -34,10 +34,10 @@ void NRoom::ExitRoom(Connection& _conn, PacketReader& _packet)
 	pktNotifyRoomUserExit
 		.Add<PacketType>((PacketType)eServer::NotifyRoomUserExit)
 		.Add<char>(roomUserIdx);
-	uint32 leftNum = pLobby->LeaveRoom(pUser, roomId, prevOwnerID, nextOwnerID);
-	pktNotifyRoomUserExit.Add<char>(prevOwnerID);
-	pktNotifyRoomUserExit.Add<char>(nextOwnerID);
-	printf("%d, %d", prevOwnerID, nextOwnerID);
+	uint32 leftNum = pLobby->LeaveRoom(pUser, roomId, prevOwnerIdx, nextOwnerIdx);
+	pktNotifyRoomUserExit.Add<char>(prevOwnerIdx);
+	pktNotifyRoomUserExit.Add<char>(nextOwnerIdx);
+	printf("%d, %d", prevOwnerIdx, nextOwnerIdx);
 
 	if(leftNum != 0 && leftNum != ROOM_ID_NOT_FOUND)
 		pLobby->SendRoom(pktNotifyRoomUserExit, roomId, roomUserIdx);
@@ -58,4 +58,55 @@ void NRoom::ReqRoomUsersInfo(Connection& _conn, PacketReader& _packet)
 	pLobby->PacketRoomUserSlotInfo(pUser->GetRoomId(), pkt);
 
 	_conn.Send(pkt);
+}
+
+void NRoom::StartGame(Connection& _conn, PacketReader& _packet)
+{
+	// 방장이 아니면 return
+}
+
+void NRoom::RoomReady(Connection& _conn, PacketReader& _packet)
+{
+	// 방장이면 리턴
+
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	Room* pRoom = pLobby->FindRoom(pUser->GetRoomId());
+
+	Packet pkt;
+	if (!pRoom->SetMemberState(pUser->GetRoomUserIdx(), eRoomUserState::Ready))
+	{
+		pkt.Add<PacketType>((PacketType)eServer::RoomReady_Fail);
+	}	
+	else
+	{
+		pkt.Add<PacketType>((PacketType)eServer::RoomReady)
+			.Add<char>(pUser->GetRoomUserIdx())
+			.Add<uint16>(_conn.GetId());
+	}
+
+	pRoom->SendAll(pkt); 
+}
+
+void NRoom::RoomStandby(Connection& _conn, PacketReader& _packet)
+{
+	// 방장이면 리턴
+
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	Room* pRoom = pLobby->FindRoom(pUser->GetRoomId());
+
+	Packet pkt;
+	if (!pRoom->SetMemberState(pUser->GetRoomUserIdx(), eRoomUserState::Standby))
+	{
+		pkt.Add<PacketType>((PacketType)eServer::RoomStandby_Fail);
+	}
+	else
+	{
+		pkt.Add<PacketType>((PacketType)eServer::RoomStandby)
+			.Add<char>(pUser->GetRoomUserIdx())
+			.Add<uint16>(_conn.GetId());
+	}
+
+	pRoom->SendAll(pkt);
 }

@@ -11,7 +11,7 @@
 #include <array>
 #include <set>
 
-#define BUFFER_MAX					131072
+#define BUFFER_MAX					4096
 
 #define PACKET_MAX_SIZE				512
 #define PACKET_HEADER_SIZE			4
@@ -24,6 +24,7 @@
 #define TEST_LOCK_THREADS_MAX		2
 
 #define USER_LOBBY_MAX				300
+#define ROOM_MAX					300
 #define ROOM_USER_MAX				4
 
 #define LOBBY_USERLIST_PAGE			10
