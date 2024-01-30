@@ -7,7 +7,7 @@
 
 void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 {
-	eClient type = _packet.Get<eClient>();
+	eClient type = (eClient)_packet.GetPacketType();
 	//printf("[%d] Before Handle : %d\n", (int)_conn.GetSocket(), type);
 	switch (type)
 	{

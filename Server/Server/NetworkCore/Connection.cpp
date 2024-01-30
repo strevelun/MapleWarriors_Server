@@ -32,7 +32,7 @@ void Connection::OnRecv(uint32 _recvBytes)
  		m_ringBuffer.MoveReadPos(reader.GetSize());
 		//printf("[%d] MoveReadPos ³¡ : %d\n", (int)m_socket, reader.GetSize());
 	}
-	m_ringBuffer.HandleVerge();
+	//m_ringBuffer.HandleVerge();
 }
 
 bool Connection::RecvWSA()

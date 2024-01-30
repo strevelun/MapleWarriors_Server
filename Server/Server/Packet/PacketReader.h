@@ -5,8 +5,10 @@
 class PacketReader
 {
 private:
-	char*		m_pBuffer;
-	uint16		m_getPos;
+	const char*		m_pBuffer;
+	char			m_tempBuf[PACKET_MAX_SIZE];
+	uint16			m_getPos;
+	uint16			m_startOffset;
 
 public:
 	PacketReader();
@@ -18,15 +20,24 @@ public:
 
 	uint32 GetSize() const;
 
-	template <typename Type>
-	Type Get();
+	//template <typename Type>
+	//Type Get();
+	PacketType GetPacketType();
+	char GetChar();
+	uint16 GetUShort();
 	const wchar_t* GetWString();
-};
 
+};
+/*
 template<typename Type>
 inline Type PacketReader::Get()
 {
+	if (std::is_same<Type, char>::value)
+	{
+		GetChar();
+	}
 	uint16 pos = m_getPos;
 	m_getPos += sizeof(Type);
 	return *reinterpret_cast<Type*>(&m_pBuffer[pos]);
 }
+*/

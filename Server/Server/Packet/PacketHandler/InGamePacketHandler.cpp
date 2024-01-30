@@ -3,6 +3,8 @@
 
 void NInGame::ReqInitInfo(Connection& _conn, PacketReader& _packet)
 {
-	// 닉네임 정보
-	printf("체크\n");
+	// 맵정보, 닉네임, 캐릭터 선택, 
+
+	Packet pkt;
+	pkt.Add<PacketType>((PacketType)eServer::ResInitInfo);
 }

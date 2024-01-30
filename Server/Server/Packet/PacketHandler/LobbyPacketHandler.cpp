@@ -24,8 +24,8 @@ void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
 {
 	//printf("[ %d ] : LobbyUpdateInfo - start\n", (int)_conn.GetSocket());
-	char userListPage = _packet.Get<char>();
-	char roomListPage = _packet.Get<char>();
+	char userListPage = _packet.GetChar();
+	char roomListPage = _packet.GetChar();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
 	uint32 userCount = pLobby->GetUserCount();
@@ -45,7 +45,7 @@ void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
 
 void NLobby::UserListGetPageInfo(Connection& _conn, PacketReader& _packet)
 {
-	char userListPage = _packet.Get<char>();
+	char userListPage = _packet.GetChar();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	uint32 userCount = pLobby->GetUserCount();
 
@@ -58,7 +58,7 @@ void NLobby::UserListGetPageInfo(Connection& _conn, PacketReader& _packet)
 
 void NLobby::RoomListGetPageInfo(Connection& _conn, PacketReader& _packet)
 {
-	char roomListPage = _packet.Get<char>();
+	char roomListPage = _packet.GetChar();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
 
@@ -93,7 +93,7 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 
 void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 {
-	int roomID = _packet.Get<char>();
+	int roomID = _packet.GetChar();
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());

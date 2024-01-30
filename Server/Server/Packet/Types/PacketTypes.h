@@ -29,6 +29,7 @@ enum class eServer : PacketType
 	RoomReady_Fail,
 	RoomStandby,
 	RoomStandby_Fail,
+	ResInitInfo,
 };
 
 enum class eClient : PacketType
