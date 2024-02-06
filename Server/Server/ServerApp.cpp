@@ -12,7 +12,7 @@ ServerApp::~ServerApp()
 {
 }
 
-bool ServerApp::Init(const char* _ip, unsigned short _port, int _backlog)
+bool ServerApp::Init(const int8* _ip, unsigned short _port, int32 _backlog)
 {
 	setlocale(LC_ALL, "Korean");
 
@@ -37,7 +37,7 @@ void ServerApp::Run()
 
 		Connection* pConn = ConnectionManager::GetInst()->Create(clientSocket);
 
-		printf("%d 연결됨 [현재접속수 : %d]\n", (int)clientSocket, ConnectionManager::GetInst()->GetCount());
+		printf("%d 연결됨 [현재접속수 : %d]\n", (int32)clientSocket, ConnectionManager::GetInst()->GetCount());
 
 		m_engine.OnConnected(pConn);
 	}

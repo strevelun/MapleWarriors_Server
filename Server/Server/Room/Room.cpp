@@ -87,10 +87,10 @@ bool Room::StartGame()
 	return bSuccess;
 }
 
-void Room::PacketRoomUserSlotInfo(uint32 _roomID, Packet& _pkt)
+void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 {
 	m_lock.Enter();
-	_pkt.Add<char>(m_numOfUser);
+	_pkt.Add<int8>(m_numOfUser);
 
 	uint32 idx = 0;
 	for (RoomUser& user : m_arrUser)
@@ -99,10 +99,30 @@ void Room::PacketRoomUserSlotInfo(uint32 _roomID, Packet& _pkt)
 		{
 			// TODO : 캐릭터 선택 정보 추가하기
 			_pkt.Add<uint16>(user.GetConnectionID());
-			_pkt.Add<char>(idx);
+			_pkt.Add<int8>(idx);
 			_pkt.Add<bool>(user.IsOwner());
 			_pkt.AddWString(user.GetNickname());
-			_pkt.Add<char>((char)user.GetState());
+			_pkt.Add<int8>((int8)user.GetState());
+		}
+		++idx;
+	}
+	m_lock.Leave();
+}
+
+void Room::PacketStartGameReqInitInfo(Packet& _pkt)
+{
+	m_lock.Enter();
+	_pkt.Add<int8>(m_numOfUser);
+
+	uint32 idx = 0;
+	for (RoomUser& user : m_arrUser)
+	{
+		if (user.GetState() != eRoomUserState::None)
+		{
+			_pkt.Add<uint16>(user.GetConnectionID());
+			_pkt.Add<int8>(idx);
+			_pkt.AddWString(user.GetNickname());
+			//_pkt.Add<int8>(user.GetCharacterChoice());
 		}
 		++idx;
 	}
@@ -175,7 +195,7 @@ uint32 Room::Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 	return m_numOfUser;
 }
 
-void Room::SendAll(const Packet& _pkt, uint32 _exceptID)
+void Room::SendAll(const Packet& _pkt, uint32 _exceptIdx)
 {
 	m_lock.Enter();
 	if(m_numOfUser != 0)
@@ -183,7 +203,7 @@ void Room::SendAll(const Packet& _pkt, uint32 _exceptID)
 		uint32 idx = 0;
 		for (RoomUser& user : m_arrUser)
 		{
-			if (user.GetState() != eRoomUserState::None && idx != _exceptID)
+			if (user.GetState() != eRoomUserState::None && idx != _exceptIdx)
 				user.Send(_pkt);
 			++idx;
 		}

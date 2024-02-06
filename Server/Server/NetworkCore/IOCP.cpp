@@ -1,5 +1,6 @@
 #include "IOCP.h"
 #include "../User/UserManager.h"
+//#include <chrono>
 
 IOCP::IOCP() :
     m_hCPObject(nullptr),
@@ -44,7 +45,7 @@ bool IOCP::CreateWorkerThread(uint32 _numOfThread)
 	return true;
 }
 
-unsigned int __stdcall IOCP::Worker(void* _pArgs)
+uint32 __stdcall IOCP::Worker(void* _pArgs)
 {
 	HANDLE hIOCP = (HANDLE)_pArgs;
 	DWORD			bytesTransferred = 0;
@@ -54,29 +55,33 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 	while (1)
 	{
 		//if(pConn)
-		//	("[%d] GetQUeuedCS 호출 전\n", (int)pConn->GetSocket());
+		//	("[%d] GetQUeuedCS 호출 전\n", (int32)pConn->GetSocket());
 		bool result = GetQueuedCompletionStatus(hIOCP, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE);
 		if (!result)
 		{
+			auto start = std::chrono::high_resolution_clock::now();
 			printf("false returned : %d\n", WSAGetLastError()); 
 	
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if (pUser) pUser->Leave();
+			UserManager::GetInst()->Disconnect(pConn->GetId());
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
+			//std::cout << "경과 시간: " << std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - start).count() << std::endl;
 			continue;
 		}
-		//printf("[%d] GetQUeuedCS 호출 후\n", (int)pConn->GetSocket());
+		//printf("[%d] GetQUeuedCS 호출 후\n", (int32)pConn->GetSocket());
 
 		if (bytesTransferred == 0)
 		{
 			//printf("bytesTransferred : 0 (disconnect)\n");
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if (pUser) pUser->Leave();
+			UserManager::GetInst()->Disconnect(pConn->GetId());
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}
 
-		//printf("%d, ", (int)bytesTransferred);
+		//printf("%d, ", (int32)bytesTransferred);
 
 		pConn->OnRecv(bytesTransferred);
 
@@ -84,6 +89,7 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 		{
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if(pUser) pUser->Leave();
+			UserManager::GetInst()->Disconnect(pConn->GetId());
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}
@@ -92,6 +98,7 @@ unsigned int __stdcall IOCP::Worker(void* _pArgs)
 		{
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if (pUser) pUser->Leave();
+			UserManager::GetInst()->Disconnect(pConn->GetId());
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}

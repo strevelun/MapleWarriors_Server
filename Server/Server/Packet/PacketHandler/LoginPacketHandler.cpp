@@ -3,9 +3,14 @@
 #include "../../Lobby/LobbyManager.h"
 #include "../../NetworkCore/ConnectionManager.h"
 
-
+// 패킷 지연 시간 테스트
 void NLogin::Test(Connection& _conn, PacketReader& _packet)
 {
+	int64 ticks = _packet.GetInt64();
+	Packet pkt;
+	pkt.Add<PacketType>((PacketType)eServer::Test);
+	pkt.Add<int64>(ticks);
+	_conn.Send(pkt);
 }
 
 void NLogin::Exit(Connection& _conn, PacketReader& _packet)
@@ -33,7 +38,7 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 		{
 			type = (PacketType)eServer::LoginSuccess;
 			p.Add<PacketType>(type);
-			p.Add<char>(_conn.GetId());
+			p.Add<uint16>(_conn.GetId());
 			UserManager::GetInst()->Connect(_conn.GetId(), pUser);
 			pLobby->Enter(_conn, pUser);
 		}
@@ -44,7 +49,7 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 		p.Add<PacketType>(type);
 	}
 
-	wprintf(L"%s님 [%d] : ", pNickname, (int)_conn.GetSocket());
+	wprintf(L"%s님 [%d] : ", pNickname, (int32)_conn.GetSocket());
 	if ((eServer)type == eServer::LoginSuccess) std::cout << "로그인 성공!" << '\n';
 	else std::cout << "로그인 실패!" << '\n';
 

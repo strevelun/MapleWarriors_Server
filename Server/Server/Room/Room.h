@@ -41,18 +41,20 @@ public:
 	uint32 GetOwnerIdx() const { return m_ownerIdx; }
 	uint32 GetNumOfUser() const { return m_numOfUser; }
 	eRoomState GetState() const { return m_eState; }
+	eGameMap GetMapID() const { return m_eMap; }
 
 	bool SetMemberState(uint32 _idx, eRoomUserState _eState);
 	void SetState(eRoomState _eState) { m_eState = _eState; }
 
 	bool StartGame();
 
-	void PacketRoomUserSlotInfo(uint32 _roomID, Packet& _pkt);
+	void PacketRoomUserSlotInfo(Packet& _pkt); // change name
+	void PacketStartGameReqInitInfo(Packet& _pkt);
 
 	bool Enter(Connection& _conn, User* _pUser);
 	uint32 Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx);
 
-	void SendAll(const Packet& _pkt, uint32 _exceptID = USER_NOT_IN_THE_ROOM);
+	void SendAll(const Packet& _pkt, uint32 _exceptIdx = USER_NOT_IN_THE_ROOM);
 
 private:
 	uint32 FindNextOwner(uint32 _prevOwnerIdx);

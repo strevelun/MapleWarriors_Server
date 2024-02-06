@@ -30,6 +30,8 @@ enum class eServer : PacketType
 	RoomStandby,
 	RoomStandby_Fail,
 	ResInitInfo,
+	BeginMove,
+	EndMove,
 };
 
 enum class eClient : PacketType
@@ -51,4 +53,6 @@ enum class eClient : PacketType
 	RoomChat,
 	ReqRoomUsersInfo,
 	ReqInitInfo,
+	BeginMove,
+	EndMove,
 };

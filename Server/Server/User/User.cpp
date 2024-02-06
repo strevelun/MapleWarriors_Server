@@ -33,12 +33,12 @@ void User::Leave()
 		Packet pktNotifyRoomUserExit;
 		pktNotifyRoomUserExit
 			.Add<PacketType>((PacketType)eServer::NotifyRoomUserExit)
-			.Add<char>(m_roomUserIdx); // 나간 유저 
+			.Add<int8>(m_roomUserIdx); // 나간 유저 
 
 		uint32 leftNum = pLobby->LeaveRoom(this, m_roomID, prevOwnerID, nextOwnerID);
 
-		pktNotifyRoomUserExit.Add<char>(prevOwnerID);
-		pktNotifyRoomUserExit.Add<char>(nextOwnerID);
+		pktNotifyRoomUserExit.Add<int8>(prevOwnerID);
+		pktNotifyRoomUserExit.Add<int8>(nextOwnerID);
 		printf("%d, %d", prevOwnerID, nextOwnerID);
 
 		if (leftNum != 0 && leftNum != ROOM_ID_NOT_FOUND)

@@ -91,10 +91,10 @@ void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 			result = (m_userCount / LOBBY_USERLIST_PAGE == _page) ? m_userCount % LOBBY_USERLIST_PAGE : LOBBY_USERLIST_PAGE;
 		}
 
-		int startPos = LOBBY_USERLIST_PAGE * _page;
+		int32 startPos = LOBBY_USERLIST_PAGE * _page;
 
-		_pkt.Add<char>(_page);
-		_pkt.Add<char>(result);
+		_pkt.Add<int8>(_page);
+		_pkt.Add<int8>(result);
 
 		uint32 lobbyID = 0;
 		uint32 count = 0;
@@ -111,10 +111,10 @@ void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 			lobbyID = *iter;
 			_pkt.AddWString(m_arrUser[lobbyID].GetNickname());
 			eState = m_arrUser[lobbyID].GetSceneState();
-			_pkt.Add<char>((char)eState);
+			_pkt.Add<int8>((int8)eState);
 			if (eState == eSceneState::Room || eState == eSceneState::InGame)
 			{
-				_pkt.Add<char>(m_arrUser[lobbyID].GetRoomID());
+				_pkt.Add<int8>(m_arrUser[lobbyID].GetRoomID());
 			}
 		}
 
@@ -171,7 +171,7 @@ eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomI
 	return eResult;
 }
 
-// 언제든지 가능하도록
+// _pUser의 LobbyID가 초기화된 후 LeaveRoom이 호출되는 경우 포착됨
 uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 {
 	if (_roomID >= USER_LOBBY_MAX) return 0;
@@ -189,6 +189,7 @@ uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uin
 }
 
 // EnterRoom하는 유저가 SendRoom다 할때까지 기다리기 x
+// TODO : 제거
 void Lobby::SendRoom(const Packet& _pkt, uint32 _roomID, uint32 _exceptID)
 {
 	if (_roomID >= USER_LOBBY_MAX) return;

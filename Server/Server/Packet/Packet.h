@@ -6,14 +6,14 @@
 class Packet
 {
 private:
-	char m_buffer[PACKET_MAX_SIZE];
+	int8 m_buffer[PACKET_MAX_SIZE];
 	uint16 m_addPos;
 
 public:
 	Packet();
 	~Packet();
 
-	const char* GetBuffer() const { return m_buffer; }
+	const int8* GetBuffer() const { return m_buffer; }
 	//uint16 GetAddedSize() const { return m_addPos; }
 	uint16 GetSize() const { return *reinterpret_cast<const uint16*>(m_buffer); }
 

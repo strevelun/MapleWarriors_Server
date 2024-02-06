@@ -57,9 +57,8 @@ enum class eEnterRoomResult
 	NoRoom // 갱신되기 전 없어진 방을 클릭했을 때
 };
 
-enum class eGameMap
+enum class eGameMap 
 {
 	None,
 	Test,
-
 };

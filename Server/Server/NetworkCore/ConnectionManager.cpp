@@ -25,7 +25,7 @@ void ConnectionManager::Delete(uint32 _id)
 		m_mapConnection.erase(_id);
 	}
 	m_lock.Leave();
-	printf("현재 접속자 수 : %d\n", m_count);
+	printf("id(%d) 접속 종료됨 (현재 접속자 수 : %d)\n", _id, m_count);
 }
 
 ConnectionManager::ConnectionManager() :

@@ -18,6 +18,6 @@ public:
 	bool CreateWorkerThread(uint32 _numOfThread);
 
 private:
-	static unsigned int __stdcall Worker(void* _pArgs);
+	static uint32 __stdcall Worker(void* _pArgs);
 };
 

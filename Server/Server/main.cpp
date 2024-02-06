@@ -2,7 +2,7 @@
 
 #pragma comment( lib, "ws2_32.lib")
 
-int main()
+int32 main()
 {
 	ServerApp app;
 

@@ -141,13 +141,13 @@ void RoomManager::MakePacketRoomListPage(uint32 _page, Packet& _pkt)
 			result = (m_count / LOBBY_ROOMLIST_PAGE == _page) ? m_count % LOBBY_ROOMLIST_PAGE : LOBBY_ROOMLIST_PAGE;
 		}
 
-		int startPos = LOBBY_ROOMLIST_PAGE * _page;
+		int32 startPos = LOBBY_ROOMLIST_PAGE * _page;
 
-		_pkt.Add<char>(_page);
-		_pkt.Add<char>(result);
+		_pkt.Add<int8>(_page);
+		_pkt.Add<int8>(result);
 
 		uint32 roomID = 0;
-		int count = 0;
+		uint32 count = 0;
 		std::set<uint32>::iterator iter = m_setRoom.begin();
 
 		if (_page != 0)		std::advance(iter, startPos);
@@ -158,11 +158,11 @@ void RoomManager::MakePacketRoomListPage(uint32 _page, Packet& _pkt)
 			if (count >= result) break;
 
 			roomID = *iter;
-			_pkt.Add<char>(roomID);
+			_pkt.Add<uint32>(roomID);
 			_pkt.AddWString(m_arrRoom[roomID].GetTitle());
 			_pkt.AddWString(m_arrRoom[roomID].GetOwner());
-			_pkt.Add<char>(m_arrRoom[roomID].GetNumOfUser());
-			_pkt.Add<char>((char)m_arrRoom[roomID].GetState());
+			_pkt.Add<int8>(m_arrRoom[roomID].GetNumOfUser());
+			_pkt.Add<int8>((int8)m_arrRoom[roomID].GetState());
 		}
 	}
 	m_lock.Leave();
@@ -181,7 +181,7 @@ void RoomManager::MakePacketUserSlotInfo(uint32 _roomID, Packet& _pkt)
 	// TODO : ∏ ¡§∫∏ √ﬂ∞°
 	_pkt.AddWString(m_arrRoom[*iter].GetTitle());
 
-	m_arrRoom[*iter].PacketRoomUserSlotInfo(_roomID, _pkt);
+	m_arrRoom[*iter].PacketRoomUserSlotInfo(_pkt);
 	m_lock.Leave();
 }
 

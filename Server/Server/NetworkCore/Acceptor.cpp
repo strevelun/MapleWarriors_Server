@@ -13,7 +13,7 @@ Acceptor::~Acceptor()
 	if (m_serverSocket) closesocket(m_serverSocket);
 }
 
-bool Acceptor::Start(const char* _ip, unsigned short _port, int _backlog)
+bool Acceptor::Start(const int8* _ip, uint16 _port, int32 _backlog)
 {
 	m_clientAddrSize = sizeof(SOCKADDR_IN);
 	SOCKADDR_IN				m_servAddr;

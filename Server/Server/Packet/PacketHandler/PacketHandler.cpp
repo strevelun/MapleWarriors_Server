@@ -8,7 +8,7 @@
 void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 {
 	eClient type = (eClient)_packet.GetPacketType();
-	//printf("[%d] Before Handle : %d\n", (int)_conn.GetSocket(), type);
+	//printf("[%d] Before Handle : %d\n", (int32)_conn.GetSocket(), type);
 	switch (type)
 	{
 #pragma region Login
@@ -72,7 +72,13 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::ReqInitInfo:
 		NInGame::ReqInitInfo(_conn, _packet);
 		break;
+	case eClient::BeginMove:
+		NInGame::BeginMove(_conn, _packet);
+		break;	
+	case eClient::EndMove:
+		NInGame::EndMove(_conn, _packet);
+		break;
 #pragma endregion
 	}
-	//printf("[%d] Handle over\n", (int)_conn.GetSocket());
+	//printf("[%d] Handle over\n", (int32)_conn.GetSocket());
 }

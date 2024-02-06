@@ -5,8 +5,8 @@
 class PacketReader
 {
 private:
-	const char*		m_pBuffer;
-	char			m_tempBuf[PACKET_MAX_SIZE];
+	const int8*		m_pBuffer;
+	int8			m_tempBuf[PACKET_MAX_SIZE];
 	uint16			m_getPos;
 	uint16			m_startOffset;
 
@@ -23,8 +23,11 @@ public:
 	//template <typename Type>
 	//Type Get();
 	PacketType GetPacketType();
-	char GetChar();
+	int8 GetInt8();
 	uint16 GetUShort();
+	int32 GetInt32();
+	int32 GetUInt32();
+	int64 GetInt64();
 	const wchar_t* GetWString();
 
 };
@@ -32,7 +35,7 @@ public:
 template<typename Type>
 inline Type PacketReader::Get()
 {
-	if (std::is_same<Type, char>::value)
+	if (std::is_same<Type, int8>::value)
 	{
 		GetChar();
 	}

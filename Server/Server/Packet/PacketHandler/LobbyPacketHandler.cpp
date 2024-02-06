@@ -9,6 +9,7 @@ void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 	const wchar_t* pChat = _packet.GetWString();
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	const wchar_t* pNickname = pUser->GetNickname();
+	if (!pUser) return;
 
 	Packet pkt;
 	pkt
@@ -18,14 +19,14 @@ void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	pLobby->SendAllInLobby(pkt);
-	//printf("[%d] SendAll\n", (int)_conn.GetSocket());
+	//printf("[%d] SendAll\n", (int32)_conn.GetSocket());
 }
 
 void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
 {
-	//printf("[ %d ] : LobbyUpdateInfo - start\n", (int)_conn.GetSocket());
-	char userListPage = _packet.GetChar();
-	char roomListPage = _packet.GetChar();
+	//printf("[ %d ] : LobbyUpdateInfo - start\n", (int32)_conn.GetSocket());
+	int8 userListPage = _packet.GetInt8();
+	int8 roomListPage = _packet.GetInt8();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
 	uint32 userCount = pLobby->GetUserCount();
@@ -33,19 +34,20 @@ void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
 	if (userCount != 0)// && userCount > userListPage * LOBBY_USERLIST_PAGE)
 	{
 		Packet pktUserList;
-		pLobby->PacketUserListPage(userListPage, pktUserList);
+		pLobby->PacketUserListPage(userListPage, pktUserList);	
 		_conn.Send(pktUserList);
 	}
 
 	Packet pktRoomList;
 	pktRoomList.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
 	pRoomManager->MakePacketRoomListPage(roomListPage, pktRoomList);
+
 	_conn.Send(pktRoomList);
 }
 
 void NLobby::UserListGetPageInfo(Connection& _conn, PacketReader& _packet)
 {
-	char userListPage = _packet.GetChar();
+	int8 userListPage = _packet.GetInt8();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	uint32 userCount = pLobby->GetUserCount();
 
@@ -58,7 +60,7 @@ void NLobby::UserListGetPageInfo(Connection& _conn, PacketReader& _packet)
 
 void NLobby::RoomListGetPageInfo(Connection& _conn, PacketReader& _packet)
 {
-	char roomListPage = _packet.GetChar();
+	int8 roomListPage = _packet.GetInt8();
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
 
@@ -73,13 +75,14 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 	const wchar_t* pTitle = _packet.GetWString();
 	Packet pkt;
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	if (!pUser) return;
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	Room* pRoom = pLobby->CreateRoom(_conn, pUser, pTitle);
 	if (pRoom)
 	{
 		pkt.Add<PacketType>((PacketType)eServer::CreateRoom_Success);
-		pkt.Add<char>(pRoom->GetId());
+		pkt.Add<uint32>(pRoom->GetId());
 		pkt.AddWString(pTitle);
 	}
 	else // 방 만들기 실패
@@ -93,7 +96,7 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 
 void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 {
-	int roomID = _packet.GetChar();
+	uint32 roomID = _packet.GetUInt32();
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
@@ -114,7 +117,7 @@ void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 		Packet pktNotifyRoomUserEnter;
 		pktNotifyRoomUserEnter
 			.Add<PacketType>((PacketType)eServer::NotifyRoomUserEnter)
-			.Add<char>(idx)
+			.Add<int8>(idx)
 			.AddWString(pUser->GetNickname());
 		pLobby->SendRoom(pktNotifyRoomUserEnter, roomID, idx); // 이 시점에 방에있던 Connection이 할당 해제가 되어 있음
 		break;
@@ -132,5 +135,5 @@ void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 		return;
 	}
 	_conn.Send(pkt);
-	wprintf(L"[%s] EnterRoom : %d\n", pUser->GetNickname(), (int)eResult);
+	wprintf(L"[%s] EnterRoom : %d\n", pUser->GetNickname(), (int32)eResult);
 }

@@ -24,11 +24,11 @@ bool PacketReader::IsBufferReadable(RingBuffer& _buffer)
 
 	uint16 packetSize;
 	uint32 readPos = _buffer.GetReadPos();
-	const char* pBuf = _buffer.GetBuffer();
+	const int8* pBuf = _buffer.GetBuffer();
 	if (readPos + sizeof(PacketSize) > BUFFER_MAX)
 	{
-		char first = pBuf[readPos];
-		char second = pBuf[0];
+		int8 first = pBuf[readPos];
+		int8 second = pBuf[0];
 		packetSize = (second << 8) | first;
 	}
 	else
@@ -43,11 +43,11 @@ uint32 PacketReader::GetSize() const
 {
 	if (!m_pBuffer) return 0;
 
-	int size = 0;
+	int32 size = 0;
 	if (m_startOffset + sizeof(PacketSize) > BUFFER_MAX)
 	{
-		byte first = m_pBuffer[m_startOffset];
-		byte second = m_pBuffer[0];
+		int8 first = m_pBuffer[m_startOffset];
+		int8 second = m_pBuffer[0];
 		size = (second << 8) | first;
 	}
 	else
@@ -63,7 +63,7 @@ const wchar_t* PacketReader::GetWString()
 	uint32 len = wcsnlen_s(str, maxCnt);
 	if (len < maxCnt) // 정상적인 경우
 	{
-		m_getPos += int(len * sizeof(wchar_t) + sizeof(wchar_t));
+		m_getPos += int32(len * sizeof(wchar_t) + sizeof(wchar_t));
 		return str;
 	}
 	else
@@ -94,25 +94,94 @@ PacketType PacketReader::GetPacketType()
 	return GetUShort();
 }
 
-char PacketReader::GetChar()
+int8 PacketReader::GetInt8()
 {
-	int pos = m_getPos;
-	m_getPos = (sizeof(char) + m_getPos) % BUFFER_MAX;
+	int32 pos = m_getPos;
+	m_getPos = (sizeof(int8) + m_getPos) % BUFFER_MAX;
 	return m_pBuffer[pos];
 }
 
 uint16 PacketReader::GetUShort()
 {
-	int pos = m_getPos;
+	int32 pos = m_getPos;
 	m_getPos = (sizeof(uint16) + m_getPos) % BUFFER_MAX;
 	uint16 result;
 	if (pos + sizeof(uint16) > BUFFER_MAX)
 	{
-		byte first = m_pBuffer[pos];
-		byte second = m_pBuffer[0];
+		int8 first = m_pBuffer[pos];
+		int8 second = m_pBuffer[0];
 		result = (second << 8) | first;
 	}
 	else
 		result = *reinterpret_cast<const uint16*>(&m_pBuffer[pos]);
+	return result;
+}
+
+int32 PacketReader::GetInt32()
+{
+	int32 pos = m_getPos;
+	m_getPos = (sizeof(int32) + m_getPos) % BUFFER_MAX;
+	int32 result;
+	if (pos + sizeof(int32) > BUFFER_MAX)
+	{
+		int32 i = pos;
+		int32 bit = 0;
+		int8 temp;
+		while (bit < sizeof(int32))
+		{
+			temp = m_pBuffer[i];
+			result |= temp << (bit * 8);
+			++bit;
+			i = (i + 1) % BUFFER_MAX;
+		}
+	}
+	else
+		result = *reinterpret_cast<const int32*>(&m_pBuffer[pos]);
+	return result;
+}
+
+int32 PacketReader::GetUInt32()
+{
+	uint32 pos = m_getPos;
+	m_getPos = (sizeof(uint32) + m_getPos) % BUFFER_MAX;
+	uint32 result;
+	if (pos + sizeof(uint32) > BUFFER_MAX)
+	{
+		uint32 i = pos;
+		uint32 bit = 0;
+		int8 temp;
+		while (bit < sizeof(uint32))
+		{
+			temp = m_pBuffer[i];
+			result |= temp << (bit * 8);
+			++bit;
+			i = (i + 1) % BUFFER_MAX;
+		}
+	}
+	else
+		result = *reinterpret_cast<const uint32*>(&m_pBuffer[pos]);
+	return result;
+}
+
+int64 PacketReader::GetInt64()
+{
+	int64 pos = m_getPos;
+	m_getPos = (sizeof(int64) + m_getPos) % BUFFER_MAX;
+	int64 result;
+	if (pos + sizeof(int64) > BUFFER_MAX)
+	{
+		int64 i = pos;
+		int64 bit = 0;
+		int8 temp;
+		while (bit < sizeof(int64))
+		{
+			temp = m_pBuffer[i];
+			result |= temp << (bit * 8);
+			++bit;
+			i = (i + 1) % BUFFER_MAX;
+		}
+	}
+	else
+		result = *reinterpret_cast<const int64*>(&m_pBuffer[pos]);
 	return result;
 }

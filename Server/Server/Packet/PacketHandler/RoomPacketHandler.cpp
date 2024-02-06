@@ -33,10 +33,10 @@ void NRoom::ExitRoom(Connection& _conn, PacketReader& _packet)
 	Packet pktNotifyRoomUserExit;
 	pktNotifyRoomUserExit
 		.Add<PacketType>((PacketType)eServer::NotifyRoomUserExit)
-		.Add<char>(roomUserIdx);
+		.Add<int8>(roomUserIdx);
 	uint32 leftNum = pLobby->LeaveRoom(pUser, roomId, prevOwnerIdx, nextOwnerIdx);
-	pktNotifyRoomUserExit.Add<char>(prevOwnerIdx);
-	pktNotifyRoomUserExit.Add<char>(nextOwnerIdx);
+	pktNotifyRoomUserExit.Add<int8>(prevOwnerIdx);
+	pktNotifyRoomUserExit.Add<int8>(nextOwnerIdx);
 	printf("%d, %d", prevOwnerIdx, nextOwnerIdx);
 
 	if(leftNum != 0 && leftNum != ROOM_ID_NOT_FOUND)
@@ -101,7 +101,7 @@ void NRoom::RoomReady(Connection& _conn, PacketReader& _packet)
 	else
 	{
 		pkt.Add<PacketType>((PacketType)eServer::RoomReady)
-			.Add<char>(pUser->GetRoomUserIdx())
+			.Add<int8>(pUser->GetRoomUserIdx())
 			.Add<uint16>(_conn.GetId());
 	}
 
@@ -125,7 +125,7 @@ void NRoom::RoomStandby(Connection& _conn, PacketReader& _packet)
 	else
 	{
 		pkt.Add<PacketType>((PacketType)eServer::RoomStandby)
-			.Add<char>(pUser->GetRoomUserIdx())
+			.Add<int8>(pUser->GetRoomUserIdx())
 			.Add<uint16>(_conn.GetId());
 	}
 
