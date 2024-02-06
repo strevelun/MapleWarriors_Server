@@ -180,6 +180,7 @@ uint32 Room::Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 				m_arrUser[_prevOwnerIdx].SetOwner(false);
 				m_arrUser[_newOwnerIdx].SetOwner(true);
 				m_arrUser[_newOwnerIdx].SetState(eRoomUserState::Ready);
+				if (m_arrUser[_newOwnerIdx].GetState() == eRoomUserState::Ready) --m_readyCnt; // 방장 양도된 애가 레디 중일때 카운트--
 			}
 		}
 		if (m_arrUser[idx].GetState() == eRoomUserState::Ready) --m_readyCnt;

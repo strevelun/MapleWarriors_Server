@@ -9,7 +9,7 @@ void NLogin::Test(Connection& _conn, PacketReader& _packet)
 	int64 ticks = _packet.GetInt64();
 	Packet pkt;
 	pkt.Add<PacketType>((PacketType)eServer::Test);
-	pkt.Add<int64>(ticks);
+	//Sleep(20);
 	_conn.Send(pkt);
 }
 
