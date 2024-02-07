@@ -51,7 +51,7 @@ void User::Leave()
 		printf("%d : User::Leave\n", leftNum);
 	}
 	case eSceneState::Lobby:
-		pLobby->Leave(m_lobbyID);
+		pLobby->Leave(m_lobbyID, m_connectionId);
 		break;
 	}
 

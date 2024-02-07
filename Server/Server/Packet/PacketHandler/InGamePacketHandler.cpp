@@ -54,8 +54,7 @@ void NInGame::BeginMove(Connection& _conn, PacketReader& _packet)
 void NInGame::EndMove(Connection& _conn, PacketReader& _packet)
 {
 	int8 roomSlot = _packet.GetInt8();
-	int32 xpos = _packet.GetInt32();
-	int32 ypos = _packet.GetInt32();
+	int64 interval = _packet.GetInt64();
 
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	if (!pUser) return;
@@ -69,8 +68,7 @@ void NInGame::EndMove(Connection& _conn, PacketReader& _packet)
 	pkt
 		.Add<PacketType>((PacketType)eServer::EndMove)
 		.Add<int8>(roomSlot)
-		.Add<int32>(xpos)
-		.Add<int32>(ypos);
+		.Add<int64>(interval);
 
 	pRoom->SendAll(pkt, pUser->GetRoomUserIdx());
 }

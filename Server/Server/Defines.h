@@ -10,6 +10,7 @@
 #include <vector>
 #include <array>
 #include <set>
+#include <map>
 
 #define BUFFER_MAX					4096
 

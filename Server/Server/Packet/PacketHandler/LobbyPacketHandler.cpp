@@ -6,10 +6,11 @@
 
 void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 {
-	const wchar_t* pChat = _packet.GetWString();
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
-	const wchar_t* pNickname = pUser->GetNickname();
 	if (!pUser) return;
+
+	const wchar_t* pChat = _packet.GetWString();
+	const wchar_t* pNickname = pUser->GetNickname();
 
 	Packet pkt;
 	pkt

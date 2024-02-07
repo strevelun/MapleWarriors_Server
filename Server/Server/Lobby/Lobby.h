@@ -7,6 +7,15 @@
 
 // 로비에서 채팅을 하면 로비에 있는 유저들에게 전부 보냄
 
+struct _stLobbyUser
+{
+	uint32 lobbyID;
+	uint32 connID;
+
+	_stLobbyUser(uint32 _lobbyID, uint32 _connID) : lobbyID(_lobbyID), connID(_connID) {}
+	bool operator< (const _stLobbyUser& _other) const { return connID < _other.connID; }
+};
+
 class Lobby
 {
 private:
@@ -15,10 +24,10 @@ private:
 private:
 	CSLock m_lock;
 	std::vector<uint32>						m_vecUnusedUserIDs;
-	std::set<uint32>						m_setAllLobbyUser;
+	std::set<_stLobbyUser>			m_setAllLobbyUser;
 	std::unordered_set<uint32>				m_usetUserInLobby;
 	
-	std::array<LobbyUser, ROOM_MAX>	m_arrUser;
+	std::array<LobbyUser, USER_LOBBY_MAX>	m_arrUser;
 
 	uint32 m_userCount;
 
@@ -27,8 +36,8 @@ public:
 	~Lobby();
 
 	void Enter(Connection& _conn, User* _pUser);
-	LobbyUser* Find(uint32 _lobbyID);
-	void Leave(uint32 _lobbyID);
+	LobbyUser* Find(uint32 _lobbyID, uint32 _connID);
+	void Leave(uint32 _lobbyID, uint32 _connID);
 
 	uint32 GetUserCount() const { return m_userCount; }
 	RoomManager* GetRoomManager() { return &m_roomManager; }

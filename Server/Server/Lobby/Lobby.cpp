@@ -21,7 +21,7 @@ void Lobby::Enter(Connection& _conn, User* _pUser)
 		{
 			uint32 lobbyId = m_vecUnusedUserIDs.back();
 			m_vecUnusedUserIDs.pop_back();
-			m_setAllLobbyUser.insert(lobbyId);
+			m_setAllLobbyUser.insert(_stLobbyUser(lobbyId, _conn.GetId()));
 			m_usetUserInLobby.insert(lobbyId);
 			m_arrUser[lobbyId].Init(_conn, _pUser);
 
@@ -37,14 +37,14 @@ void Lobby::Enter(Connection& _conn, User* _pUser)
 	m_lock.Leave();
 }
 
-LobbyUser* Lobby::Find(uint32 _lobbyID)
+LobbyUser* Lobby::Find(uint32 _lobbyID, uint32 _connID)
 {
 	if (_lobbyID >= USER_LOBBY_MAX) return nullptr;
 
 	LobbyUser* pUser = nullptr;
 
 	//m_userLock.Enter();
-	if (m_setAllLobbyUser.find(_lobbyID) != m_setAllLobbyUser.cend())
+	if (m_setAllLobbyUser.find(_stLobbyUser(_lobbyID, _connID)) != m_setAllLobbyUser.cend())
 	{
 		pUser = &m_arrUser[_lobbyID];
 	}
@@ -52,15 +52,15 @@ LobbyUser* Lobby::Find(uint32 _lobbyID)
 	return pUser;
 }
 
-void Lobby::Leave(uint32 _lobbyID)
+void Lobby::Leave(uint32 _lobbyID, uint32 _connID)
 {
 	m_lock.Enter();
 	{
-		if (Find(_lobbyID))
+		if (Find(_lobbyID, _connID))
 		{
 			m_arrUser[_lobbyID].Clear();
 			m_vecUnusedUserIDs.push_back(_lobbyID);
-			m_setAllLobbyUser.erase(_lobbyID);
+			m_setAllLobbyUser.erase(_stLobbyUser(_lobbyID, _connID));
 			m_usetUserInLobby.erase(_lobbyID);
 			--m_userCount;
 		}
@@ -98,17 +98,17 @@ void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 
 		uint32 lobbyID = 0;
 		uint32 count = 0;
-		std::set<uint32>::iterator iter = m_setAllLobbyUser.begin();
+		std::set<_stLobbyUser>::iterator iter = m_setAllLobbyUser.begin();
 
 		if (_page != 0)		std::advance(iter, startPos);
 
 		eSceneState eState;
-		std::set<uint32>::iterator iterEnd = m_setAllLobbyUser.end();
+		std::set<_stLobbyUser>::iterator iterEnd = m_setAllLobbyUser.end();
 		for (; iter != iterEnd; ++count, ++iter)
 		{
 			if (count >= result) break;
 
-			lobbyID = *iter;
+			lobbyID = iter->lobbyID;
 			_pkt.AddWString(m_arrUser[lobbyID].GetNickname());
 			eState = m_arrUser[lobbyID].GetSceneState();
 			_pkt.Add<int8>((int8)eState);
