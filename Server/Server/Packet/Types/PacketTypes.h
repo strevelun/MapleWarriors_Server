@@ -2,6 +2,9 @@
 
 #include "../../Types.h"
 
+//LS2C_ROOM_ENTER_ANS
+//C2LS_ROOM_CREATE
+
 enum class eServer : PacketType
 {
 	None = 0,
@@ -32,6 +35,10 @@ enum class eServer : PacketType
 	ResInitInfo,
 	BeginMove,
 	EndMove,
+	BeginMoveMonster,
+	InGameExit,
+	Attack,
+	Max,
 };
 
 enum class eClient : PacketType
@@ -55,4 +62,8 @@ enum class eClient : PacketType
 	ReqInitInfo,
 	BeginMove,
 	EndMove,
+	BeginMoveMonster,
+	InGameExit,
+	Attack,
+	Max,
 };

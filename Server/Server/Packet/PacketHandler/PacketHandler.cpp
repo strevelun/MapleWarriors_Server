@@ -78,6 +78,12 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::EndMove:
 		NInGame::EndMove(_conn, _packet);
 		break;
+	case eClient::BeginMoveMonster:
+		NInGame::BeginMoveMonster(_conn, _packet);
+		break;
+	case eClient::Attack:
+		NInGame::Attack(_conn, _packet);
+		break;
 #pragma endregion
 	}
 	//printf("[%d] Handle over\n", (int32)_conn.GetSocket());

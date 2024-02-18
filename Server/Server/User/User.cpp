@@ -24,6 +24,9 @@ void User::Leave()
 	switch (m_eSceneState)
 	{
 	case eSceneState::InGame:
+		 // 인게임에서 나가면 로비에서도 나가고, 룸에서도 나가는 처리 해야
+
+		break;
 	case eSceneState::Room:
 	{
 		uint32 roomID = m_roomID;
