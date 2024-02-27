@@ -9,5 +9,4 @@ namespace NInGame
 	void EndMove(Connection& _conn, PacketReader& _packet);
 	void BeginMoveMonster(Connection& _conn, PacketReader& _packet);
 	void Attack(Connection& _conn, PacketReader& _packet);
-
 }

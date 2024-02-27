@@ -24,7 +24,7 @@ private:
 private:
 	CSLock m_lock;
 	std::vector<uint32>						m_vecUnusedUserIDs;
-	std::set<_stLobbyUser>			m_setAllLobbyUser;
+	std::set<_stLobbyUser>					m_setAllLobbyUser;
 	std::unordered_set<uint32>				m_usetUserInLobby;
 	
 	std::array<LobbyUser, USER_LOBBY_MAX>	m_arrUser;

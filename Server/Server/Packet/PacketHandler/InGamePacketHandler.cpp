@@ -108,9 +108,7 @@ void NInGame::BeginMoveMonster(Connection& _conn, PacketReader& _packet)
 
 void NInGame::Attack(Connection& _conn, PacketReader& _packet)
 {
-	std::wstring monsterName = _packet.GetWString();
-	uint16 cellXPos = _packet.GetUShort();
-	uint16 cellYPos = _packet.GetUShort();
+	uint16 count = _packet.GetUShort();
 
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	if (!pUser) return;
@@ -126,7 +124,12 @@ void NInGame::Attack(Connection& _conn, PacketReader& _packet)
 	pkt
 		.Add<PacketType>((PacketType)eServer::Attack)
 		.Add<int8>(roomSlot)
-		.AddWString(monsterName);
+		.Add<uint16>(count);
+
+	for (int i = 0; i < count; ++i)
+		pkt.AddWString(_packet.GetWString());
+
+	pkt.Add<uint8>(_packet.GetInt8());
 
 	pRoom->SendAll(pkt, pUser->GetRoomUserIdx());
 }

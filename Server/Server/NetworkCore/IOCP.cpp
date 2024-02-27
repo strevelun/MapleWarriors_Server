@@ -60,7 +60,7 @@ uint32 __stdcall IOCP::Worker(void* _pArgs)
 		if (!result)
 		{
 			auto start = std::chrono::high_resolution_clock::now();
-			printf("false returned : %d\n", WSAGetLastError()); 
+			//printf("false returned : %d\n", WSAGetLastError()); 
 	
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if (pUser) pUser->Leave();

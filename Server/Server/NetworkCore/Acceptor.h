@@ -10,7 +10,7 @@ class Acceptor
 private:
 	SOCKET					m_serverSocket;
 	SOCKADDR_IN				m_clientAddr;
-	int32						m_clientAddrSize;
+	int32					m_clientAddrSize;
 
 public:
 	Acceptor();

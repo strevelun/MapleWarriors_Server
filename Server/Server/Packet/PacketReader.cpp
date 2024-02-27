@@ -121,7 +121,7 @@ int32 PacketReader::GetInt32()
 {
 	int32 pos = m_getPos;
 	m_getPos = (sizeof(int32) + m_getPos) % BUFFER_MAX;
-	int32 result;
+	int32 result = 0;
 	if (pos + sizeof(int32) > BUFFER_MAX)
 	{
 		int32 i = pos;
@@ -140,11 +140,11 @@ int32 PacketReader::GetInt32()
 	return result;
 }
 
-int32 PacketReader::GetUInt32()
+uint32 PacketReader::GetUInt32()
 {
 	uint32 pos = m_getPos;
 	m_getPos = (sizeof(uint32) + m_getPos) % BUFFER_MAX;
-	uint32 result;
+	uint32 result = 0;
 	if (pos + sizeof(uint32) > BUFFER_MAX)
 	{
 		uint32 i = pos;
@@ -167,7 +167,7 @@ int64 PacketReader::GetInt64()
 {
 	int64 pos = m_getPos;
 	m_getPos = (sizeof(int64) + m_getPos) % BUFFER_MAX;
-	int64 result;
+	int64 result = 0;
 	if (pos + sizeof(int64) > BUFFER_MAX)
 	{
 		int64 i = pos;

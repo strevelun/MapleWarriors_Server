@@ -26,7 +26,7 @@ public:
 	int8 GetInt8();
 	uint16 GetUShort();
 	int32 GetInt32();
-	int32 GetUInt32();
+	uint32 GetUInt32();
 	int64 GetInt64();
 	const wchar_t* GetWString();
 

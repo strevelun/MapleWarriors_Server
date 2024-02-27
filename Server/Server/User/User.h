@@ -3,7 +3,6 @@
 #include "../Defines.h"
 #include "../Types.h"
 #include "../NetworkCore/Connection.h"
-#include "../CSLock.h"
 
 class User
 {

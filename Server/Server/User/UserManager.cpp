@@ -35,6 +35,7 @@ User* UserManager::FindConnectedUser(uint32 _connectionId)
 	if (_connectionId == USER_NOT_CONNECTED) return nullptr;
 
 	User* pUser = nullptr;
+
 	m_lock.Enter();
 	std::unordered_map<uint32, User*>::const_iterator iter = m_mapConnectedUser.find(_connectionId);
 	if (iter != m_mapConnectedUser.cend()) pUser = iter->second;
@@ -77,8 +78,7 @@ void UserManager::Disconnect(uint32 _connectionId)
 	m_lock.Leave();
 }
 
-UserManager::UserManager() :
-	m_lock(false)
+UserManager::UserManager() 
 {
 }
 
