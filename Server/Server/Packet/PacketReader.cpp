@@ -101,6 +101,22 @@ int8 PacketReader::GetInt8()
 	return m_pBuffer[pos];
 }
 
+uint16 PacketReader::GetShort()
+{
+	int32 pos = m_getPos;
+	m_getPos = (sizeof(int16) + m_getPos) % BUFFER_MAX;
+	int16 result;
+	if (pos + sizeof(int16) > BUFFER_MAX)
+	{
+		int8 first = m_pBuffer[pos];
+		int8 second = m_pBuffer[0];
+		result = (second << 8) | first;
+	}
+	else
+		result = *reinterpret_cast<const int16*>(&m_pBuffer[pos]);
+	return result;
+}
+
 uint16 PacketReader::GetUShort()
 {
 	int32 pos = m_getPos;

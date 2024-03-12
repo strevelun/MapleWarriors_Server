@@ -51,15 +51,19 @@ void NRoom::ExitRoom(Connection& _conn, PacketReader& _packet)
 	_conn.Send(pkt);
 }
 
+// ReqRoomInfo
 void NRoom::ReqRoomUsersInfo(Connection& _conn, PacketReader& _packet)
 {
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
+	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
 	Packet pkt;
 	pkt.Add<PacketType>((PacketType)eServer::RoomUsersInfo);
 	pRoomManager->MakePacketUserSlotInfo(pUser->GetRoomId(), pkt);
+	pkt.Add<int8>((int8)pRoom->GetMapID());
+
 
 	_conn.Send(pkt);
 }
@@ -131,5 +135,40 @@ void NRoom::RoomStandby(Connection& _conn, PacketReader& _packet)
 			.Add<uint16>(_conn.GetId());
 	}
 
+	pRoom->SendAll(pkt);
+}
+
+void NRoom::RoomMapChoice(Connection& _conn, PacketReader& _packet)
+{
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	RoomManager* pRoomManager = pLobby->GetRoomManager();
+	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
+
+	int8 mapID = _packet.GetInt8();
+	pRoom->SetMapID((eGameMap)mapID);
+
+	Packet pkt;
+	pkt
+		.Add<PacketType>((PacketType)eServer::RoomMapChoice)
+		.Add<int8>(mapID);
+	pRoom->SendAll(pkt);
+}
+
+void NRoom::RoomCharacterChoice(Connection& _conn, PacketReader& _packet)
+{
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	RoomManager* pRoomManager = pLobby->GetRoomManager();
+	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
+
+	int8 characterIdx = _packet.GetInt8();
+	pRoom->SetMemberCharacterChoice(pUser->GetRoomUserIdx(), characterIdx);
+
+	Packet pkt;
+	pkt
+		.Add<PacketType>((PacketType)eServer::RoomCharacterChoice)
+		.Add<int8>(pUser->GetRoomUserIdx())
+		.Add<int8>(characterIdx);
 	pRoom->SendAll(pkt);
 }

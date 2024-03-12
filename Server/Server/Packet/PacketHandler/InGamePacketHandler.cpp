@@ -15,13 +15,12 @@ void NInGame::ReqInitInfo(Connection& _conn, PacketReader& _packet)
 	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 	if (!pRoom) return;
 
-	int64 seed = time(nullptr);
+	//int64 seed = time(nullptr);
 	eGameMap mapID = pRoom->GetMapID();
 
 	Packet pkt;
 	pkt
 		.Add<PacketType>((PacketType)eServer::ResInitInfo)
-		.Add<int64>(seed)
 		.Add<int8>((int8)mapID);
 
 	pRoom->PacketStartGameReqInitInfo(pkt);
@@ -31,6 +30,8 @@ void NInGame::ReqInitInfo(Connection& _conn, PacketReader& _packet)
 
 void NInGame::BeginMove(Connection& _conn, PacketReader& _packet)
 {
+	int32 xpos = _packet.GetInt32();
+	int32 ypos = _packet.GetInt32();
 	int8 dir = _packet.GetInt8();
 
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
@@ -47,6 +48,8 @@ void NInGame::BeginMove(Connection& _conn, PacketReader& _packet)
 	pkt
 		.Add<PacketType>((PacketType)eServer::BeginMove)
 		.Add<int8>(roomSlot)
+		.Add<int32>(xpos)
+		.Add<int32>(ypos)
 		.Add<int8>(dir);
 
 	//Sleep(1000);
@@ -132,4 +135,55 @@ void NInGame::Attack(Connection& _conn, PacketReader& _packet)
 	pkt.Add<uint8>(_packet.GetInt8());
 
 	pRoom->SendAll(pkt, pUser->GetRoomUserIdx());
+}
+
+void NInGame::RangedAttack(Connection& _conn, PacketReader& _packet)
+{
+	uint16 count = _packet.GetUShort();
+	int16 x = _packet.GetShort();
+	int16 y = _packet.GetShort();
+
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	if (!pUser) return;
+
+	int8 roomSlot = pUser->GetRoomUserIdx();
+
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	if (!pLobby) return;
+
+	Room* pRoom = pLobby->GetRoomManager()->Find(pUser->GetRoomId());
+
+	Packet pkt;
+	pkt
+		.Add<PacketType>((PacketType)eServer::RangedAttack)
+		.Add<int8>(roomSlot)
+		.Add<uint16>(count)
+		.Add<int16>(x)
+		.Add<int16>(y);
+
+	for (int i = 0; i < count; ++i)
+		pkt.AddWString(_packet.GetWString());
+
+	pkt.Add<uint8>(_packet.GetInt8());
+
+	pRoom->SendAll(pkt, pUser->GetRoomUserIdx());
+}
+
+void NInGame::GameOver(Connection& _conn, PacketReader& _packet)
+{
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	if (!pUser) return;
+
+	int8 roomSlot = pUser->GetRoomUserIdx();
+
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	if (!pLobby) return;
+
+	Room* pRoom = pLobby->GetRoomManager()->Find(pUser->GetRoomId());
+
+	pRoom->SetState(eRoomState::Standby);
+	Packet pkt;
+	pkt.
+		Add<PacketType>((PacketType)eServer::GameOver);
+	pRoom->SendAll(pkt);
 }

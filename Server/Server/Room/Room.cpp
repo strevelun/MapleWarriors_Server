@@ -2,7 +2,7 @@
 #include "../User/UserManager.h"
 
 Room::Room() :
-	m_id(), m_title{}, m_pOwnerNickname(nullptr), m_ownerIdx(0), m_numOfUser(0), m_eState(eRoomState::None), m_readyCnt(0), m_eMap(eGameMap::None)
+	m_id(), m_title{}, m_pOwnerNickname(nullptr), m_ownerIdx(0), m_numOfUser(0), m_eState(eRoomState::None), m_readyCnt(0), m_eMap(eGameMap::Map0)
 {
 }
 
@@ -27,7 +27,7 @@ void Room::Init(Connection& _conn, const wchar_t* _pTitle, uint32 _id)
 	m_numOfUser = 1;
 	m_eState = eRoomState::Standby;
 	m_readyCnt = 1; // 항상 방장때문에 1로 초기화
-	m_eMap = eGameMap::Test;
+	//m_eMap = eGameMap::Map0;
 }
 
 void Room::Clear()
@@ -103,6 +103,7 @@ void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 			_pkt.Add<bool>(user.IsOwner());
 			_pkt.AddWString(user.GetNickname());
 			_pkt.Add<int8>((int8)user.GetState());
+			_pkt.Add<int8>((int8)user.GetCharacterChoice());
 		}
 		++idx;
 	}
@@ -122,7 +123,7 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt)
 			_pkt.Add<uint16>(user.GetConnectionID());
 			_pkt.Add<int8>(idx);
 			_pkt.AddWString(user.GetNickname());
-			//_pkt.Add<int8>(user.GetCharacterChoice());
+			_pkt.Add<int8>((int8)user.GetCharacterChoice());
 		}
 		++idx;
 	}

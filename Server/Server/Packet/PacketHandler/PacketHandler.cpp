@@ -66,6 +66,12 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::RoomStandby:
 		NRoom::RoomStandby(_conn, _packet);
 		break;
+	case eClient::RoomMapChoice:
+		NRoom::RoomMapChoice(_conn, _packet);
+		break;
+	case eClient::RoomCharacterChoice:
+		NRoom::RoomCharacterChoice(_conn, _packet);
+		break;
 #pragma endregion
 
 #pragma region InGame
@@ -83,6 +89,12 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 		break;
 	case eClient::Attack:
 		NInGame::Attack(_conn, _packet);
+		break;	
+	case eClient::RangedAttack:
+		NInGame::RangedAttack(_conn, _packet);
+		break;
+	case eClient::GameOver:
+		NInGame::GameOver(_conn, _packet);
 		break;
 #pragma endregion
 	}

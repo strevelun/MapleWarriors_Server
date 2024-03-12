@@ -60,6 +60,13 @@ enum class eEnterRoomResult
 
 enum class eGameMap 
 {
+	Map0, // test
+	Map1,
+};
+
+enum class eCharacterChoice
+{
 	None,
-	Test,
+	Player1,
+	Player2
 };

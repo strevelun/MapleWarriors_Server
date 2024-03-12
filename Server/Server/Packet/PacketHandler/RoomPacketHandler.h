@@ -11,5 +11,7 @@ namespace NRoom
 	void StartGame(Connection& _conn, PacketReader& _packet);
 	void RoomReady(Connection& _conn, PacketReader& _packet);
 	void RoomStandby(Connection& _conn, PacketReader& _packet);
+	void RoomMapChoice(Connection& _conn, PacketReader& _packet);
+	void RoomCharacterChoice(Connection& _conn, PacketReader& _packet);
 }
 
