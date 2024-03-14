@@ -84,6 +84,9 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::EndMove:
 		NInGame::EndMove(_conn, _packet);
 		break;
+	case eClient::MonsterAttack:
+		NInGame::MonsterAttack(_conn, _packet);
+		break;
 	case eClient::BeginMoveMonster:
 		NInGame::BeginMoveMonster(_conn, _packet);
 		break;

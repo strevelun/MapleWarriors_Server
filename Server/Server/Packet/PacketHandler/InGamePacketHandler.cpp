@@ -84,9 +84,40 @@ void NInGame::EndMove(Connection& _conn, PacketReader& _packet)
 	pRoom->SendAll(pkt, pUser->GetRoomUserIdx());
 }
 
+void NInGame::MonsterAttack(Connection& _conn, PacketReader& _packet)
+{
+	int8 targetCnt = _packet.GetInt8();
+	Packet pkt;
+	pkt
+		.Add<PacketType>((PacketType)eServer::MonsterAttack)
+		.Add<int8>(targetCnt);
+
+	for (int32 i = 0; i < targetCnt; ++i)
+		pkt.Add<int8>(_packet.GetInt8());
+
+	int8 monsterIdx = _packet.GetInt8();
+	int8 monsterNum = _packet.GetInt8();
+	pkt
+		.Add<int8>(monsterIdx)
+		.Add<int8>(monsterNum);
+
+	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	if (!pUser) return;
+
+	int8 roomSlot = pUser->GetRoomUserIdx();
+
+	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
+	if (!pLobby) return;
+
+	Room* pRoom = pLobby->GetRoomManager()->Find(pUser->GetRoomId());
+
+	pRoom->SendAll(pkt);
+}
+
 void NInGame::BeginMoveMonster(Connection& _conn, PacketReader& _packet)
 {
-	std::wstring name = _packet.GetWString();
+	int8 monsterIdx = _packet.GetInt8();
+	int8 monsterNum = _packet.GetInt8();
 	uint16 pathIdx = _packet.GetUShort();
 	uint16 cellXPos = _packet.GetUShort();
 	uint16 cellYPos = _packet.GetUShort();
@@ -94,7 +125,8 @@ void NInGame::BeginMoveMonster(Connection& _conn, PacketReader& _packet)
 	Packet pkt;
 	pkt
 		.Add<PacketType>((PacketType)eServer::BeginMoveMonster)
-		.AddWString(name)
+		.Add<int8>(monsterIdx)
+		.Add<int8>(monsterNum)
 		.Add<uint16>(pathIdx)
 		.Add<uint16>(cellXPos)
 		.Add<uint16>(cellYPos);
@@ -129,10 +161,20 @@ void NInGame::Attack(Connection& _conn, PacketReader& _packet)
 		.Add<int8>(roomSlot)
 		.Add<uint16>(count);
 
-	for (int i = 0; i < count; ++i)
-		pkt.AddWString(_packet.GetWString());
+	int8 monsterIdx;
+	int8 monsterNum;
 
-	pkt.Add<uint8>(_packet.GetInt8());
+	for (int i = 0; i < count; ++i)
+	{
+		monsterIdx = _packet.GetInt8();
+		monsterNum = _packet.GetInt8();
+		pkt
+			.Add<int8>(monsterIdx)
+			.Add<int8>(monsterNum);
+	}
+
+	int8 skill = _packet.GetInt8();
+	pkt.Add<uint8>(skill);
 
 	pRoom->SendAll(pkt, pUser->GetRoomUserIdx());
 }
@@ -161,10 +203,20 @@ void NInGame::RangedAttack(Connection& _conn, PacketReader& _packet)
 		.Add<int16>(x)
 		.Add<int16>(y);
 
-	for (int i = 0; i < count; ++i)
-		pkt.AddWString(_packet.GetWString());
+	int8 monsterIdx;
+	int8 monsterNum;
 
-	pkt.Add<uint8>(_packet.GetInt8());
+	for (int i = 0; i < count; ++i)
+	{
+		monsterIdx = _packet.GetInt8();
+		monsterNum = _packet.GetInt8();
+		pkt
+			.Add<int8>(monsterIdx)
+			.Add<int8>(monsterNum);
+	}
+
+	int8 skill = _packet.GetInt8();
+	pkt.Add<uint8>(skill);
 
 	pRoom->SendAll(pkt, pUser->GetRoomUserIdx());
 }
