@@ -17,6 +17,6 @@ public:
 	~Acceptor();
 
 	bool Start(const int8* _ip, uint16 _port, int32 _backlog);
-	SOCKET Accept();
+	tAcceptedClient* Accept();
 };
 

@@ -118,7 +118,6 @@ void NInGame::BeginMoveMonster(Connection& _conn, PacketReader& _packet)
 {
 	int8 monsterIdx = _packet.GetInt8();
 	int8 monsterNum = _packet.GetInt8();
-	uint16 pathIdx = _packet.GetUShort();
 	uint16 cellXPos = _packet.GetUShort();
 	uint16 cellYPos = _packet.GetUShort();
 
@@ -127,7 +126,6 @@ void NInGame::BeginMoveMonster(Connection& _conn, PacketReader& _packet)
 		.Add<PacketType>((PacketType)eServer::BeginMoveMonster)
 		.Add<int8>(monsterIdx)
 		.Add<int8>(monsterNum)
-		.Add<uint16>(pathIdx)
 		.Add<uint16>(cellXPos)
 		.Add<uint16>(cellYPos);
 

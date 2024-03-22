@@ -15,7 +15,7 @@ private:
 	std::unordered_map<uint32, Connection*> m_mapConnection;
 
 public:
-	Connection* Create(SOCKET _socket);
+	Connection* Create(tAcceptedClient* _pAcceptedClient);
 	void Delete(uint32 _id);
 
 	uint32 GetCount() const { return m_count; }

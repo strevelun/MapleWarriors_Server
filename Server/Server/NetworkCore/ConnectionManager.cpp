@@ -3,10 +3,10 @@
 
 ConnectionManager* ConnectionManager::s_pInst = nullptr;
 
-Connection* ConnectionManager::Create(SOCKET _socket)
+Connection* ConnectionManager::Create(tAcceptedClient* _pAcceptedClient)
 {
 	m_lock.Enter();
-	Connection* pConn = new Connection(m_connectionId, _socket);
+	Connection* pConn = new Connection(m_connectionId, _pAcceptedClient);
 	m_mapConnection.insert({ m_connectionId, pConn });
 	++m_connectionId;
 	++m_count;
@@ -21,11 +21,12 @@ void ConnectionManager::Delete(uint32 _id)
 	if (iter != m_mapConnection.cend())
 	{
 		--m_count;
+		printf("id[%d], socket[%d], IP[%s]		접속 종료됨		(현재 접속자 수 : %d)\n", _id, (int32)iter->second->GetSocket(), iter->second->GetIP(), m_count);
 		delete iter->second;
 		m_mapConnection.erase(_id);
 	}
 	m_lock.Leave();
-	printf("id(%d) 접속 종료됨 (현재 접속자 수 : %d)\n", _id, m_count);
+	
 }
 
 ConnectionManager::ConnectionManager() :

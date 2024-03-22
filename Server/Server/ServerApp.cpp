@@ -28,16 +28,16 @@ void ServerApp::Run()
 {
 	while (m_bIsRunning)
 	{
-		SOCKET clientSocket = m_acceptor.Accept();
-		if (clientSocket == INVALID_SOCKET)
+		tAcceptedClient* acceptedClient = m_acceptor.Accept();
+		if (acceptedClient->clientSocket == INVALID_SOCKET)
 		{
 			printf("socket 수락 실패 : %d\n", WSAGetLastError());
 			continue;
 		}
 
-		Connection* pConn = ConnectionManager::GetInst()->Create(clientSocket);
+		Connection* pConn = ConnectionManager::GetInst()->Create(acceptedClient);
 
-		printf("%d 연결됨 [현재접속수 : %d]\n", (int32)clientSocket, ConnectionManager::GetInst()->GetCount());
+		printf("id[%d], socket[%d], IP[%s]		연결됨			(현재 접속자 수 : %d)\n", pConn->GetId(), (int32)acceptedClient->clientSocket, acceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
 
 		m_engine.OnConnected(pConn);
 	}

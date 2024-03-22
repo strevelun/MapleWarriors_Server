@@ -70,3 +70,9 @@ enum class eCharacterChoice
 	Player1,
 	Player2
 };
+
+typedef struct _tAcceptedClient
+{
+	char			ipAddr[INET_ADDRSTRLEN] = { 0 };
+	SOCKET			clientSocket = { 0 };
+} tAcceptedClient;

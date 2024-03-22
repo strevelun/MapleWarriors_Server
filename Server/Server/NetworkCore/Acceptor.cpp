@@ -3,7 +3,7 @@
 #include "../Defines.h"
 
 Acceptor::Acceptor() :
-	m_serverSocket(0)
+	m_serverSocket{0}, m_clientAddr{0}, m_clientAddrSize(0)
 {
 
 }
@@ -44,7 +44,13 @@ bool Acceptor::Start(const int8* _ip, uint16 _port, int32 _backlog)
 	return true;
 }
 
-SOCKET Acceptor::Accept()
+tAcceptedClient* Acceptor::Accept()
 {
-	return accept(m_serverSocket, (SOCKADDR*)&m_clientAddr, &m_clientAddrSize);
+	SOCKET clientSocket = accept(m_serverSocket, (SOCKADDR*)&m_clientAddr, &m_clientAddrSize);
+
+	tAcceptedClient* pClient = new tAcceptedClient;
+	inet_ntop(AF_INET, &m_clientAddr.sin_addr, pClient->ipAddr, sizeof(pClient->ipAddr));
+	pClient->clientSocket = clientSocket;
+
+	return pClient;
 }

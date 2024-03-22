@@ -4,8 +4,8 @@
 #include "../User/UserManager.h"
 #include "../Lobby/LobbyManager.h"
 
-Connection::Connection(int32 _id, SOCKET _socket) :
-    m_id(_id), m_socket(_socket), m_overlapped{}, m_gonnaBeDeleted(false)
+Connection::Connection(int32 _id, tAcceptedClient* _pAcceptedClient) :
+    m_id(_id), m_pAcceptedClient(_pAcceptedClient), m_overlapped{}, m_gonnaBeDeleted(false)
 {
 	m_dataBuf.buf = m_ringBuffer.GetWriteAddr();
 	m_dataBuf.len = BUFFER_MAX;
@@ -13,7 +13,8 @@ Connection::Connection(int32 _id, SOCKET _socket) :
 
 Connection::~Connection()
 {
-	if (m_socket) closesocket(m_socket);
+	if (m_pAcceptedClient->clientSocket) closesocket(m_pAcceptedClient->clientSocket);
+	if(m_pAcceptedClient) delete m_pAcceptedClient;
 }
 
 void Connection::OnRecv(uint32 _recvBytes)
@@ -24,9 +25,7 @@ void Connection::OnRecv(uint32 _recvBytes)
 	while (reader.IsBufferReadable(m_ringBuffer))
 	{
 		//printf("[%d] while... : %d\n", (int32)m_socket, _recvBytes);
-		// 읽을 버퍼를 set 한다.. 
 		reader.SetBuffer(m_ringBuffer);
-		// 링버퍼에게 얼마나 읽었는지 알려준다.
 		PacketHandler::Handle(*this, reader);
 		//printf("[%d] handle 끝 : %d\n", (int32)m_socket, _recvBytes);
  		m_ringBuffer.MoveReadPos(reader.GetSize());
@@ -48,12 +47,12 @@ bool Connection::RecvWSA()
 		return false;
 	}
 
-	int32 rc = WSARecv(m_socket, &m_dataBuf, 1, &recvBytes, &flags, &m_overlapped, nullptr);
+	int32 rc = WSARecv(m_pAcceptedClient->clientSocket, &m_dataBuf, 1, &recvBytes, &flags, &m_overlapped, nullptr);
 	if (rc == SOCKET_ERROR)
 	{
 		if ((err = WSAGetLastError()) != WSA_IO_PENDING)
 		{
-			printf("[%d] WSARecv Error : %d\n", (int32)m_socket, err);
+			printf("[%d] WSARecv Error : %d\n", (int32)m_pAcceptedClient->clientSocket, err);
 			return false;
 		}
 		//else
@@ -70,6 +69,6 @@ void Connection::Send(const Packet& _packet)
 {
 	uint16 size = _packet.GetSize();
 	//printf(".");
-    send(m_socket, _packet.GetBuffer(), _packet.GetSize(), 0);
+    send(m_pAcceptedClient->clientSocket, _packet.GetBuffer(), _packet.GetSize(), 0);
 	//printf("[ %d ] 보낸 바이트 : %d, 남은 처리바이트 : %d\n", (int32)m_socket, size, m_ringBuffer.GetWrittenBytes());
 }
