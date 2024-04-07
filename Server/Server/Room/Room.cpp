@@ -78,9 +78,11 @@ bool Room::StartGame()
 			if (user.GetState() != eRoomUserState::None)
 			{
 				user.SetUserSceneState(eSceneState::InGame);
+				user.SetState(eRoomUserState::Standby);
 			}
 		}
 		bSuccess = true;
+		m_readyCnt = 1;
 	}
 	m_lock.Leave();
 
@@ -110,11 +112,13 @@ void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 	m_lock.Leave();
 }
 
-void Room::PacketStartGameReqInitInfo(Packet& _pkt)
+void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 {
 	m_lock.Enter();
 	_pkt.Add<int8>(m_numOfUser);
 
+	std::string seg;
+	int32 ipNum;
 	uint32 idx = 0;
 	for (RoomUser& user : m_arrUser)
 	{
@@ -124,6 +128,20 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt)
 			_pkt.Add<int8>(idx);
 			_pkt.AddWString(user.GetNickname());
 			_pkt.Add<int8>((int8)user.GetCharacterChoice());
+			_pkt.Add<uint16>(user.GetPort());
+			
+			if (_roomUserIdx != idx)
+			{
+				std::string ip = user.GetIP();
+				std::istringstream ipStream(ip);
+
+				while (std::getline(ipStream, seg, '.'))
+				{
+					ipNum = std::stoi(seg);
+					_pkt.Add<uint8>(ipNum);
+					std::cout << ipNum << '\n';
+				}
+			}
 		}
 		++idx;
 	}

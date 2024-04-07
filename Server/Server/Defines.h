@@ -11,6 +11,9 @@
 #include <array>
 #include <set>
 #include <map>
+#include <sstream>
+
+#include "Types.h"
 
 #define BUFFER_MAX					4096
 
@@ -75,4 +78,5 @@ typedef struct _tAcceptedClient
 {
 	char			ipAddr[INET_ADDRSTRLEN] = { 0 };
 	SOCKET			clientSocket = { 0 };
+	uint16			port = 0;
 } tAcceptedClient;

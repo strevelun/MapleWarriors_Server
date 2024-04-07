@@ -21,11 +21,11 @@ HANDLE IOCP::CreateIOCP()
     return m_hCPObject;
 }
 
-bool IOCP::AssociateIOCP(SOCKET _socket, Connection* _completionKey)
+bool IOCP::AssociateIOCP(Connection* _completionKey)
 {
     if (m_hCPObject == nullptr) return false;
 
-    HANDLE h = CreateIoCompletionPort((HANDLE)_socket, m_hCPObject, (ULONG_PTR)_completionKey, 0);
+    HANDLE h = CreateIoCompletionPort((HANDLE)_completionKey->GetSocket(), m_hCPObject, (ULONG_PTR)_completionKey, 0);
     return m_hCPObject == h;
 }
 
@@ -61,7 +61,7 @@ uint32 __stdcall IOCP::Worker(void* _pArgs)
 		{
 			auto start = std::chrono::high_resolution_clock::now();
 			//printf("false returned : %d\n", WSAGetLastError()); 
-	
+
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if (pUser) pUser->Leave();
 			UserManager::GetInst()->Disconnect(pConn->GetId());
@@ -88,13 +88,13 @@ uint32 __stdcall IOCP::Worker(void* _pArgs)
 		if (pConn->GonnaBeDeleted())
 		{
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
-			if(pUser) pUser->Leave();
+			if (pUser) pUser->Leave();
 			UserManager::GetInst()->Disconnect(pConn->GetId());
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
 			continue;
 		}
 
-		if (!pConn->RecvWSA()) 
+		if (!pConn->RecvWSA())
 		{
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if (pUser) pUser->Leave();
@@ -105,4 +105,3 @@ uint32 __stdcall IOCP::Worker(void* _pArgs)
 	}
 	return 0;
 }
-

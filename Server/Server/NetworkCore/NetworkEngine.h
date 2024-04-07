@@ -7,7 +7,7 @@
 class NetworkEngine
 {
 private:
-	IOCP		m_iocp;
+	IOCP			m_iocp;
 
 public:
 	NetworkEngine();

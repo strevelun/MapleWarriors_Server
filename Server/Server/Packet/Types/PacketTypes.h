@@ -36,6 +36,7 @@ enum class eServer : PacketType
 	RoomCharacterChoice,
 	ResInitInfo,
 	BeginMove,
+	Moving,
 	EndMove,
 	MonsterAttack,
 	BeginMoveMonster,

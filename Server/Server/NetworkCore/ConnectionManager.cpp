@@ -21,7 +21,7 @@ void ConnectionManager::Delete(uint32 _id)
 	if (iter != m_mapConnection.cend())
 	{
 		--m_count;
-		printf("id[%d], socket[%d], IP[%s]		접속 종료됨		(현재 접속자 수 : %d)\n", _id, (int32)iter->second->GetSocket(), iter->second->GetIP(), m_count);
+		printf("id[%d], socket[%d], IP[%s], Port[%d]		접속 종료됨		(현재 접속자 수 : %d)\n", _id, (int32)iter->second->GetSocket(), iter->second->GetIP(), iter->second->GetPort(), m_count);
 		delete iter->second;
 		m_mapConnection.erase(_id);
 	}

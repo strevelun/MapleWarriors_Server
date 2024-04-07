@@ -32,6 +32,9 @@ public:
 	const wchar_t* GetNickname() const { return m_pUser->GetNickname(); }
 	uint32 GetConnectionID() const { return m_pConn->GetId(); }
 	eCharacterChoice GetCharacterChoice() const { return m_eCharacter; }
+	const char* GetIP() const { return m_pConn->GetIP(); }
+	SOCKET GetSocket() const { return m_pConn->GetSocket(); }
+	uint16 GetPort() const { return m_pConn->GetPort(); }
 
 	void SetOwner(bool _bIsOwner) { m_bOwner = _bIsOwner; }
 	void SetState(eRoomUserState _eState) { m_eState = _eState; }

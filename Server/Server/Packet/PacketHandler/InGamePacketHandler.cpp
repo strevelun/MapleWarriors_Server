@@ -6,7 +6,7 @@ void NInGame::ReqInitInfo(Connection& _conn, PacketReader& _packet)
 {
 	// 맵정보, 닉네임, 캐릭터 선택, 
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
-	if (!pUser) return;
+	if (!pUser) return; // User가 없는 경우는 비정상적
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	if (!pLobby) return;
@@ -22,8 +22,8 @@ void NInGame::ReqInitInfo(Connection& _conn, PacketReader& _packet)
 	pkt
 		.Add<PacketType>((PacketType)eServer::ResInitInfo)
 		.Add<int8>((int8)mapID);
-
-	pRoom->PacketStartGameReqInitInfo(pkt);
+	
+	pRoom->PacketStartGameReqInitInfo(pkt, pUser->GetRoomUserIdx());
 
 	_conn.Send(pkt);
 }
@@ -103,8 +103,6 @@ void NInGame::MonsterAttack(Connection& _conn, PacketReader& _packet)
 
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	if (!pUser) return;
-
-	int8 roomSlot = pUser->GetRoomUserIdx();
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	if (!pLobby) return;

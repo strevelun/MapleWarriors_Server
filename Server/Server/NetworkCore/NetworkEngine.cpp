@@ -27,7 +27,7 @@ bool NetworkEngine::Init()
 
 void NetworkEngine::OnConnected(Connection* _pConn)
 {
-	if (!m_iocp.AssociateIOCP(_pConn->GetSocket(), _pConn))
+	if (!m_iocp.AssociateIOCP(_pConn))
 	{
 		printf("IOCP Association Failed");
 		ConnectionManager::GetInst()->Delete(_pConn->GetId());

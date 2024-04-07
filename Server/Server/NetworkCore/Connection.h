@@ -27,6 +27,7 @@ public:
     int32   GetId() const { return m_id; }
     SOCKET  GetSocket() const { return m_pAcceptedClient->clientSocket; }
     const char* GetIP() const { return m_pAcceptedClient->ipAddr; }
+    uint16 GetPort() const { return m_pAcceptedClient->port; }
 
     bool GonnaBeDeleted() const { return m_gonnaBeDeleted; }
 

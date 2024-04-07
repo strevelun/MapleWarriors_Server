@@ -15,7 +15,7 @@ public:
 	ServerApp();
 	~ServerApp();
 
-	bool Init(const int8* _ip, unsigned short _port, int32 _backlog);
+	bool Init(const int8* _ip, uint16 _port, int32 _backlog);
 	void Run();
 	void Shutdown();
 };
