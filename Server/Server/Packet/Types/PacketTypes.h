@@ -38,12 +38,17 @@ enum class eServer : PacketType
 	BeginMove,
 	Moving,
 	EndMove,
+	EndMoveOK,
 	MonsterAttack,
 	BeginMoveMonster,
 	InGameExit,
 	Attack,
+	AttackReq,
 	RangedAttack,
+	RangedAttackReq,
 	GameOver,
+	Awake,
+	AllMonstersInfo,
 	Max,
 };
 

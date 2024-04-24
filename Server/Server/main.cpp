@@ -5,8 +5,8 @@
 int32 main()
 {
 	ServerApp app;
-
-	if (app.Init("192.168.219.149", 30001, SOMAXCONN) == true)
+	
+	if (app.Init(SERVER_INTERNAL_IP, 30001, SOMAXCONN) == true)
 	{
 		app.Run();
 	}

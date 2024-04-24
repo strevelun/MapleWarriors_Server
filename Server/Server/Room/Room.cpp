@@ -92,6 +92,7 @@ bool Room::StartGame()
 void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 {
 	m_lock.Enter();
+	_pkt.Add<int8>(m_ownerIdx);
 	_pkt.Add<int8>(m_numOfUser);
 
 	uint32 idx = 0;
@@ -118,6 +119,12 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 	_pkt.Add<int8>(m_numOfUser);
 
 	std::string seg;
+	std::string myIP = m_arrUser[_roomUserIdx].GetIP();
+	std::istringstream myIPStream(myIP);
+	std::getline(myIPStream, seg, '.');
+	uint32 myIPNum = std::stoi(seg);
+
+
 	int32 ipNum;
 	uint32 idx = 0;
 	for (RoomUser& user : m_arrUser)
@@ -134,12 +141,33 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 			{
 				std::string ip = user.GetIP();
 				std::istringstream ipStream(ip);
+				std::getline(ipStream, seg, '.');
+				ipNum = std::stoi(seg);
+				printf("%s,%d에서 %s,%d로\n", myIP.c_str(), m_arrUser[_roomUserIdx].GetPort(), ip.c_str(), user.GetPort());
 
-				while (std::getline(ipStream, seg, '.'))
+				// 테스트 목적
+				if ((ipNum == 192 || ipNum == 172 || ipNum == 10) && myIPNum != ipNum)
 				{
-					ipNum = std::stoi(seg);
+					ipStream.str(SERVER_EXTERNAL_IP);
+					std::getline(ipStream, seg, '.');
+					printf("->  %s\n", SERVER_EXTERNAL_IP);
+
+					do 
+					{
+						ipNum = std::stoi(seg);
+						_pkt.Add<uint8>(ipNum);
+					} while (std::getline(ipStream, seg, '.'));
+				}
+				else
+				{
 					_pkt.Add<uint8>(ipNum);
-					std::cout << ipNum << '\n';
+
+					while (std::getline(ipStream, seg, '.'))
+					{
+						ipNum = std::stoi(seg);
+						_pkt.Add<uint8>(ipNum);
+						//std::cout << ipNum << '\n';
+					}
 				}
 			}
 		}

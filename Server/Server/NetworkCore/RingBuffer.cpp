@@ -50,7 +50,9 @@ void RingBuffer::MoveReadPos(uint32 _readBytes)
 
 void RingBuffer::MoveWritePos(uint32 _recvBytes)
 {
+#ifdef _DEBUG
 	m_totalRecvBytes += _recvBytes;
+#endif
 
 	m_writtenBytes += _recvBytes;
 	m_writePos = (_recvBytes + m_writePos) % BUFFER_MAX;

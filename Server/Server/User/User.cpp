@@ -42,6 +42,7 @@ void User::Leave()
 		if (leftNum != 0 && leftNum != ROOM_ID_NOT_FOUND)
 		{
 			pLobby->SendRoom(pkt, roomID, roomUserIdx);
+			printf("InGameExit sent\n");
 		}
 
 		pLobby->Leave(m_lobbyID, m_connectionId);

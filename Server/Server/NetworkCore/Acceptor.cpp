@@ -58,6 +58,7 @@ tAcceptedClient* Acceptor::Accept()
 
 	tAcceptedClient* pClient = new tAcceptedClient;
 	inet_ntop(AF_INET, &m_clientAddr.sin_addr, pClient->ipAddr, sizeof(pClient->ipAddr));
+
 	pClient->clientSocket = clientSocket;
 	pClient->port = m_clientAddr.sin_port;
 

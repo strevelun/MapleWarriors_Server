@@ -32,6 +32,7 @@ public:
     bool GonnaBeDeleted() const { return m_gonnaBeDeleted; }
 
     void SetDeleted() { m_gonnaBeDeleted = true; }
+    void SetMyPort(uint16 _port) { m_pAcceptedClient->port = _port; } 
 
     void OnRecv(uint32 _recvBytes);
 

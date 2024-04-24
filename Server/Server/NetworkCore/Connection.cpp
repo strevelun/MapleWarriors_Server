@@ -50,7 +50,8 @@ bool Connection::RecvWSA()
 	int32 rc = WSARecv(m_pAcceptedClient->clientSocket, &m_dataBuf, 1, &recvBytes, &flags, &m_overlapped, nullptr);
 	if (rc == SOCKET_ERROR)
 	{
-		if ((err = WSAGetLastError()) != WSA_IO_PENDING)
+		err = WSAGetLastError();
+		if (err != WSA_IO_PENDING)
 		{
 			printf("[%d] WSARecv Error : %d\n", (int32)m_pAcceptedClient->clientSocket, err);
 			return false;
@@ -67,8 +68,9 @@ bool Connection::RecvWSA()
 
 void Connection::Send(const Packet& _packet)
 {
-	uint16 size = _packet.GetSize();
+	//uint16 size = _packet.GetSize();
 	//printf(".");
     send(m_pAcceptedClient->clientSocket, _packet.GetBuffer(), _packet.GetSize(), 0);
+	
 	//printf("[ %d ] 보낸 바이트 : %d, 남은 처리바이트 : %d\n", (int32)m_socket, size, m_ringBuffer.GetWrittenBytes());
 }

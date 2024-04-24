@@ -21,6 +21,14 @@ void NLogin::Exit(Connection& _conn, PacketReader& _packet)
 void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pNickname = _packet.GetWString();
+	bool isPort = _packet.GetInt8();
+	uint16 port = 0;
+	if (isPort)
+	{
+		port = _packet.GetUShort();
+		_conn.SetMyPort(port);
+	}
+
 	User* pUser = UserManager::GetInst()->Create(pNickname);
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 

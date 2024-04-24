@@ -12,8 +12,15 @@
 #include <set>
 #include <map>
 #include <sstream>
+#include <string>
 
 #include "Types.h"
+
+#define SERVER_INTERNAL_IP					"192.168.219.126"
+#define SERVER_EXTERNAL_IP					"119.67.216.164"
+
+//#define SERVER_INTERNAL_IP					"192.168.10.102"
+//#define SERVER_EXTERNAL_IP					"111.65.173.9"
 
 #define BUFFER_MAX					4096
 
@@ -76,7 +83,7 @@ enum class eCharacterChoice
 
 typedef struct _tAcceptedClient
 {
-	char			ipAddr[INET_ADDRSTRLEN] = { 0 };
+	char			ipAddr[INET_ADDRSTRLEN] = { 0 }; // ¿ÜºÎip
 	SOCKET			clientSocket = { 0 };
 	uint16			port = 0;
 } tAcceptedClient;

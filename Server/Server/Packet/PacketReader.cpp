@@ -1,7 +1,7 @@
 #include "PacketReader.h"
 
 PacketReader::PacketReader() :
-	m_pBuffer(nullptr), m_getPos(2), m_startOffset(0)
+	m_pBuffer(nullptr), m_tempBuf{ 0 }, m_getPos(2), m_startOffset(0)
 {
 }
 
@@ -60,10 +60,10 @@ const wchar_t* PacketReader::GetWString()
 	uint16 pos = m_getPos;
 	const wchar_t* str = reinterpret_cast<const wchar_t*>(&m_pBuffer[pos]);
 	uint32 maxCnt = (BUFFER_MAX - pos) / 2;
-	uint32 len = wcsnlen_s(str, maxCnt);
+	uint32 len = (uint32)wcsnlen_s(str, maxCnt);
 	if (len < maxCnt) // 정상적인 경우
 	{
-		m_getPos += int32(len * sizeof(wchar_t) + sizeof(wchar_t));
+		m_getPos += uint16(len * sizeof(wchar_t) + sizeof(wchar_t));
 		return str;
 	}
 	else
@@ -74,14 +74,14 @@ const wchar_t* PacketReader::GetWString()
 		{
 			m_tempBuf[tempPos++] = m_pBuffer[0];
 			str = reinterpret_cast<const wchar_t*>(&m_pBuffer[1]);
-			uint32 cpySize = wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t);
+			uint32 cpySize = (uint32)wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t);
 			memcpy(&m_tempBuf[tempPos], &m_pBuffer[1], cpySize);
 			m_getPos += tempPos + cpySize;
 		}
 		else
 		{
 			str = reinterpret_cast<const wchar_t*>(m_pBuffer);
-			uint32 cpySize = wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t);
+			uint32 cpySize = (uint32)wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t);
 			memcpy(&m_tempBuf[tempPos], m_pBuffer, cpySize);
 			m_getPos += tempPos + cpySize;
 		}
@@ -142,7 +142,7 @@ int32 PacketReader::GetInt32()
 	{
 		int32 i = pos;
 		int32 bit = 0;
-		int8 temp;
+		int32 temp;
 		while (bit < sizeof(int32))
 		{
 			temp = m_pBuffer[i];
@@ -165,7 +165,7 @@ uint32 PacketReader::GetUInt32()
 	{
 		uint32 i = pos;
 		uint32 bit = 0;
-		int8 temp;
+		uint32 temp;
 		while (bit < sizeof(uint32))
 		{
 			temp = m_pBuffer[i];
@@ -188,7 +188,7 @@ int64 PacketReader::GetInt64()
 	{
 		int64 i = pos;
 		int64 bit = 0;
-		int8 temp;
+		int64 temp;
 		while (bit < sizeof(int64))
 		{
 			temp = m_pBuffer[i];
