@@ -53,7 +53,14 @@ bool Connection::RecvWSA()
 		err = WSAGetLastError();
 		if (err != WSA_IO_PENDING)
 		{
-			printf("[%d] WSARecv Error : %d\n", (int32)m_pAcceptedClient->clientSocket, err);
+			printf("[%d] WSARecv Error : %d", (int32)m_pAcceptedClient->clientSocket, err);
+			switch (err)
+			{
+			case WSAECONNRESET:
+				printf(" (클라이언트가 이미 소켓을 닫았습니다.)");
+				break;
+			}
+			printf("\n");
 			return false;
 		}
 		//else

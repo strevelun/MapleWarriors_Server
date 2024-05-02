@@ -13,11 +13,6 @@ void NLogin::Test(Connection& _conn, PacketReader& _packet)
 	_conn.Send(pkt);
 }
 
-void NLogin::Exit(Connection& _conn, PacketReader& _packet)
-{
-	_conn.SetDeleted();
-}
-
 void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pNickname = _packet.GetWString();

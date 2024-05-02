@@ -38,7 +38,6 @@ enum class eServer : PacketType
 	BeginMove,
 	Moving,
 	EndMove,
-	EndMoveOK,
 	MonsterAttack,
 	BeginMoveMonster,
 	InGameExit,
@@ -56,7 +55,6 @@ enum class eClient : PacketType
 {
 	None = 0,
 	Test,
-	Exit,
 	LoginReq,
 	LobbyChat,
 	LobbyUpdateInfo,

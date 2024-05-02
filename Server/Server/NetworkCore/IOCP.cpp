@@ -71,7 +71,7 @@ uint32 __stdcall IOCP::Worker(void* _pArgs)
 		}
 		//printf("[%d] GetQUeuedCS È£Ãâ ÈÄ\n", (int32)pConn->GetSocket());
 
-		if (bytesTransferred == 0)
+		if (bytesTransferred == 0) 
 		{
 			//printf("bytesTransferred : 0 (disconnect)\n");
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
@@ -81,18 +81,7 @@ uint32 __stdcall IOCP::Worker(void* _pArgs)
 			continue;
 		}
 
-		//printf("%d, ", (int32)bytesTransferred);
-
 		pConn->OnRecv(bytesTransferred);
-
-		if (pConn->GonnaBeDeleted())
-		{
-			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
-			if (pUser) pUser->Leave();
-			UserManager::GetInst()->Disconnect(pConn->GetId());
-			ConnectionManager::GetInst()->Delete(pConn->GetId());
-			continue;
-		}
 
 		if (!pConn->RecvWSA())
 		{

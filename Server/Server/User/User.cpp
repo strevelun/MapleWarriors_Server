@@ -2,6 +2,9 @@
 #include "../Lobby/LobbyManager.h"
 
 User::User(const wchar_t* _pNickname) : 
+	m_lobbyID(0),
+	m_roomID(0),
+	m_roomUserIdx(0),
 	m_eLoginState(eLoginState::Logout),
 	m_eSceneState(eSceneState::Login),
 	m_connectionId(USER_NOT_CONNECTED),

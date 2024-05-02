@@ -29,9 +29,9 @@ public:
     const char* GetIP() const { return m_pAcceptedClient->ipAddr; }
     uint16 GetPort() const { return m_pAcceptedClient->port; }
 
-    bool GonnaBeDeleted() const { return m_gonnaBeDeleted; }
+   // bool GonnaBeDeleted() const { return m_gonnaBeDeleted; }
 
-    void SetDeleted() { m_gonnaBeDeleted = true; }
+   // void SetDeleted() { m_gonnaBeDeleted = true; }
     void SetMyPort(uint16 _port) { m_pAcceptedClient->port = _port; } 
 
     void OnRecv(uint32 _recvBytes);

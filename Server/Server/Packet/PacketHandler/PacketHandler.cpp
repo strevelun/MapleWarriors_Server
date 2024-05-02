@@ -15,9 +15,6 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::Test:
 		NLogin::Test(_conn, _packet);
 		break;
-	case eClient::Exit:
-		NLogin::Exit(_conn, _packet);
-		break;
 	case eClient::LoginReq:
 		NLogin::LoginReq(_conn, _packet);
 		break;
