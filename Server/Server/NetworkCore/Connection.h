@@ -18,8 +18,6 @@ private:
     WSABUF              m_dataBuf;
     WSAOVERLAPPED       m_overlapped;
 
-    bool                m_gonnaBeDeleted;
-
 public:
     Connection(int32 _id, tAcceptedClient* _pAcceptedClient);
     ~Connection();

@@ -124,7 +124,6 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 	std::getline(myIPStream, seg, '.');
 	uint32 myIPNum = std::stoi(seg);
 
-
 	int32 ipNum;
 	uint32 idx = 0;
 	for (RoomUser& user : m_arrUser)
@@ -137,7 +136,7 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 			_pkt.Add<int8>((int8)user.GetCharacterChoice());
 			_pkt.Add<uint16>(user.GetPort());
 			
-			if (_roomUserIdx != idx)
+			//if (_roomUserIdx != idx)
 			{
 				std::string ip = user.GetIP();
 				std::istringstream ipStream(ip);
@@ -145,7 +144,6 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 				ipNum = std::stoi(seg);
 				printf("%s,%d에서 %s,%d로\n", myIP.c_str(), m_arrUser[_roomUserIdx].GetPort(), ip.c_str(), user.GetPort());
 
-				// 테스트 목적
 				if ((ipNum == 192 || ipNum == 172 || ipNum == 10) && myIPNum != ipNum)
 				{
 					ipStream.str(SERVER_EXTERNAL_IP);

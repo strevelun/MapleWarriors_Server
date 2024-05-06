@@ -48,6 +48,12 @@ enum class eServer : PacketType
 	GameOver,
 	Awake,
 	AllMonstersInfo,
+	Ready,
+	Start,
+	NextStage,
+	MapClear,
+	StageClear,
+	Annihilated,
 	Max,
 };
 

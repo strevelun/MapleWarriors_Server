@@ -5,7 +5,7 @@
 #include "../Lobby/LobbyManager.h"
 
 Connection::Connection(int32 _id, tAcceptedClient* _pAcceptedClient) :
-    m_id(_id), m_pAcceptedClient(_pAcceptedClient), m_overlapped{}, m_gonnaBeDeleted(false)
+    m_id(_id), m_pAcceptedClient(_pAcceptedClient), m_overlapped{}
 {
 	m_dataBuf.buf = m_ringBuffer.GetWriteAddr();
 	m_dataBuf.len = BUFFER_MAX;
@@ -24,20 +24,15 @@ void Connection::OnRecv(uint32 _recvBytes)
 	PacketReader reader;
 	while (reader.IsBufferReadable(m_ringBuffer))
 	{
-		//printf("[%d] while... : %d\n", (int32)m_socket, _recvBytes);
 		reader.SetBuffer(m_ringBuffer);
 		PacketHandler::Handle(*this, reader);
-		//printf("[%d] handle 끝 : %d\n", (int32)m_socket, _recvBytes);
  		m_ringBuffer.MoveReadPos(reader.GetSize());
-		//printf("[%d] MoveReadPos 끝 : %d\n", (int32)m_socket, reader.GetSize());
 	}
 	//m_ringBuffer.HandleVerge();
 }
 
 bool Connection::RecvWSA()
 {
-	if (m_gonnaBeDeleted) return false;
-
 	DWORD recvBytes = 0, flags = 0;
 	int32 err = 0;
 
@@ -63,21 +58,12 @@ bool Connection::RecvWSA()
 			printf("\n");
 			return false;
 		}
-		//else
-		//	printf("WSA_IO_PENDING\n");
 	}
-	//else
-		//printf("I/O started : %d\n", rc);
-
-	//printf("RecvWSA\n");
 	return true;
 }
 
 void Connection::Send(const Packet& _packet)
 {
-	//uint16 size = _packet.GetSize();
-	//printf(".");
     send(m_pAcceptedClient->clientSocket, _packet.GetBuffer(), _packet.GetSize(), 0);
-	
 	//printf("[ %d ] 보낸 바이트 : %d, 남은 처리바이트 : %d\n", (int32)m_socket, size, m_ringBuffer.GetWrittenBytes());
 }

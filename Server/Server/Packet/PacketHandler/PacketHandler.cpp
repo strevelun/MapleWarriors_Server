@@ -73,24 +73,6 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 	case eClient::ReqInitInfo:
 		NInGame::ReqInitInfo(_conn, _packet);
 		break;
-	case eClient::BeginMove:
-		NInGame::BeginMove(_conn, _packet);
-		break;	
-	case eClient::EndMove:
-		NInGame::EndMove(_conn, _packet);
-		break;
-	case eClient::MonsterAttack:
-		NInGame::MonsterAttack(_conn, _packet);
-		break;
-	case eClient::BeginMoveMonster:
-		NInGame::BeginMoveMonster(_conn, _packet);
-		break;
-	case eClient::Attack:
-		NInGame::Attack(_conn, _packet);
-		break;	
-	case eClient::RangedAttack:
-		NInGame::RangedAttack(_conn, _packet);
-		break;
 	case eClient::GameOver:
 		NInGame::GameOver(_conn, _packet);
 		break;
