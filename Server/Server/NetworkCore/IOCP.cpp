@@ -55,16 +55,7 @@ uint32 __stdcall IOCP::Worker(void* _pArgs)
 	while (1)
 	{
 		bool result = GetQueuedCompletionStatus(hIOCP, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE);
-		if (!result)
-		{
-			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
-			if (pUser) pUser->Leave();
-			UserManager::GetInst()->Disconnect(pConn->GetId());
-			ConnectionManager::GetInst()->Delete(pConn->GetId());
-			continue;
-		}
-
-		if (bytesTransferred == 0) 
+		if (!result || bytesTransferred == 0) 
 		{
 			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
 			if (pUser) pUser->Leave();
@@ -74,15 +65,7 @@ uint32 __stdcall IOCP::Worker(void* _pArgs)
 		}
 
 		pConn->OnRecv(bytesTransferred);
-
-		if (!pConn->RecvWSA())
-		{
-			User* pUser = UserManager::GetInst()->FindConnectedUser(pConn->GetId());
-			if (pUser) pUser->Leave();
-			UserManager::GetInst()->Disconnect(pConn->GetId());
-			ConnectionManager::GetInst()->Delete(pConn->GetId());
-			continue;
-		}
+		pConn->RecvWSA();
 	}
 	return 0;
 }

@@ -3,6 +3,7 @@
 #include "../Packet/PacketHandler/PacketHandler.h"
 #include "../User/UserManager.h"
 #include "../Lobby/LobbyManager.h"
+#include "ConnectionManager.h"
 
 Connection::Connection(int32 _id, tAcceptedClient* _pAcceptedClient) :
     m_id(_id), m_pAcceptedClient(_pAcceptedClient), m_overlapped{}
@@ -31,16 +32,12 @@ void Connection::OnRecv(uint32 _recvBytes)
 	//m_ringBuffer.HandleVerge();
 }
 
-bool Connection::RecvWSA()
+void Connection::RecvWSA()
 {
 	DWORD recvBytes = 0, flags = 0;
 	int32 err = 0;
 
-	if (m_ringBuffer.SetWriteBuf(m_dataBuf) == false)
-	{
-		printf("SetWriteBuf failed\n");
-		return false;
-	}
+	m_ringBuffer.SetWriteBuf(m_dataBuf);
 
 	int32 rc = WSARecv(m_pAcceptedClient->clientSocket, &m_dataBuf, 1, &recvBytes, &flags, &m_overlapped, nullptr);
 	if (rc == SOCKET_ERROR)
@@ -56,10 +53,8 @@ bool Connection::RecvWSA()
 				break;
 			}
 			printf("\n");
-			return false;
 		}
 	}
-	return true;
 }
 
 void Connection::Send(const Packet& _packet)

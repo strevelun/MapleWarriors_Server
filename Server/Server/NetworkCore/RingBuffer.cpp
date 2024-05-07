@@ -31,15 +31,12 @@ uint32 RingBuffer::GetTotalReadableSize() const
 	return (m_writePos < m_readPos) ? BUFFER_MAX - m_readPos + m_writePos : m_writePos - m_readPos; ;
 }
 
-bool RingBuffer::SetWriteBuf(WSABUF& _buf)
+void RingBuffer::SetWriteBuf(WSABUF& _buf)
 {
 	uint32 writableSize = GetWritableSize();
-	if (writableSize == 0) return false;
 
 	_buf.buf = &m_buffer[m_writePos];
 	_buf.len = writableSize;
-
-	return true;
 }
 
 void RingBuffer::MoveReadPos(uint32 _readBytes)
