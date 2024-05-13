@@ -2,8 +2,6 @@
 
 #include "IOCP.h"
 
-#include <vector>
-
 class NetworkEngine
 {
 private:

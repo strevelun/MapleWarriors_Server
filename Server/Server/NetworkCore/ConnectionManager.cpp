@@ -26,14 +26,11 @@ void ConnectionManager::Delete(uint32 _id)
 		m_mapConnection.erase(_id);
 	}
 	m_lock.Leave();
-	
 }
 
 ConnectionManager::ConnectionManager() :
 	m_connectionId(1), m_count(0)
-{
-}
+{}
 
 ConnectionManager::~ConnectionManager()
-{
-}
+{}

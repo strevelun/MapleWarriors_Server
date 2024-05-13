@@ -34,9 +34,5 @@ void NetworkEngine::OnConnected(Connection* _pConn)
 		return;
 	}
 	
-	if (!_pConn->RecvWSA())
-	{
-		ConnectionManager::GetInst()->Delete(_pConn->GetId());
-		return;
-	}
+	_pConn->RecvWSA();
 }

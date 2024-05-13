@@ -14,7 +14,6 @@ public:
 	~Packet();
 
 	const int8* GetBuffer() const { return m_buffer; }
-	//uint16 GetAddedSize() const { return m_addPos; }
 	uint16 GetSize() const { return *reinterpret_cast<const uint16*>(m_buffer); }
 
 	template<typename Type>

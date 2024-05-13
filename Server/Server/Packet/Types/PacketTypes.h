@@ -54,6 +54,7 @@ enum class eServer : PacketType
 	MapClear,
 	StageClear,
 	Annihilated,
+	PlayerHit,
 	Max,
 };
 

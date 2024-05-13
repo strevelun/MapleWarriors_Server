@@ -1,4 +1,5 @@
 #include "UserManager.h"
+#include "../NetworkCore/ConnectionManager.h"
 
 UserManager* UserManager::s_pInst = nullptr;
 
@@ -68,6 +69,7 @@ void UserManager::Disconnect(uint32 _connectionId)
 	{
 		User* pUser = iter->second;
 		m_mapConnectedUser.erase(_connectionId);
+		pUser->Leave();
 		pUser->SetConnectionId(USER_NOT_CONNECTED);
 		pUser->SetState(eLoginState::Logout);
 		pUser->SetSceneState(eSceneState::None);

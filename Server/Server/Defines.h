@@ -13,10 +13,11 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <chrono>
 
 #include "Types.h"
 
-#define SERVER_INTERNAL_IP					"192.168.219.126"
+#define SERVER_INTERNAL_IP					"192.168.219.104"
 #define SERVER_EXTERNAL_IP					"119.67.216.164"
 
 //#define SERVER_INTERNAL_IP					"192.168.10.102"

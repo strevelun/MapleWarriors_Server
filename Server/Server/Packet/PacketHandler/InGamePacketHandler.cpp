@@ -2,6 +2,7 @@
 #include "../../Lobby/LobbyManager.h"
 #include "../../User/UserManager.h"
 
+
 void NInGame::ReqInitInfo(Connection& _conn, PacketReader& _packet)
 {
 	// 맵정보, 닉네임, 캐릭터 선택, 
@@ -17,10 +18,13 @@ void NInGame::ReqInitInfo(Connection& _conn, PacketReader& _packet)
 
 	eGameMap mapID = pRoom->GetMapID();
 
+	//int64 milli = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
 	Packet pkt;
 	pkt
 		.Add<PacketType>((PacketType)eServer::ResInitInfo)
 		.Add<int8>((int8)mapID);
+		//.Add<int64>(milli);
 	
 	pRoom->PacketStartGameReqInitInfo(pkt, pUser->GetRoomUserIdx());
 

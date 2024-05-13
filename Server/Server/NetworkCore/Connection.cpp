@@ -20,16 +20,17 @@ Connection::~Connection()
 
 void Connection::OnRecv(uint32 _recvBytes)
 {
-	m_ringBuffer.MoveWritePos(_recvBytes); // 3110
+	m_ringBuffer.MoveWritePos(_recvBytes); 
 
 	PacketReader reader;
-	while (reader.IsBufferReadable(m_ringBuffer))
+	while (reader.IsBufferReadable(m_ringBuffer)) // 무한 루프
 	{
 		reader.SetBuffer(m_ringBuffer);
 		PacketHandler::Handle(*this, reader);
  		m_ringBuffer.MoveReadPos(reader.GetSize());
 	}
-	//m_ringBuffer.HandleVerge();
+
+	RecvWSA();
 }
 
 void Connection::RecvWSA()
@@ -60,5 +61,4 @@ void Connection::RecvWSA()
 void Connection::Send(const Packet& _packet)
 {
     send(m_pAcceptedClient->clientSocket, _packet.GetBuffer(), _packet.GetSize(), 0);
-	//printf("[ %d ] 보낸 바이트 : %d, 남은 처리바이트 : %d\n", (int32)m_socket, size, m_ringBuffer.GetWrittenBytes());
 }
