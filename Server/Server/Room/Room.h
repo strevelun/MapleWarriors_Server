@@ -25,7 +25,6 @@ private:
 	uint32					m_ownerIdx;
 	uint32					m_numOfUser;
 	eRoomState				m_eState;
-	uint32					m_readyCnt;
 	eGameMap				m_eMap;
 
 public:
@@ -62,5 +61,6 @@ public:
 
 private:
 	uint32 FindNextOwner(uint32 _prevOwnerIdx);
+	bool CheckAllReady();
 };
 

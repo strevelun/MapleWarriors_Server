@@ -2,7 +2,7 @@
 #include "../User/UserManager.h"
 
 Room::Room() :
-	m_id(), m_title{}, m_pOwnerNickname(nullptr), m_ownerIdx(0), m_numOfUser(0), m_eState(eRoomState::None), m_readyCnt(0), m_eMap(eGameMap::Map0)
+	m_id(), m_title{}, m_pOwnerNickname(nullptr), m_ownerIdx(0), m_numOfUser(0), m_eState(eRoomState::None), m_eMap(eGameMap::Map0)
 {
 }
 
@@ -26,7 +26,6 @@ void Room::Init(Connection& _conn, const wchar_t* _pTitle, uint32 _id)
 	pUser->SetRoomUserIdx(0);
 	m_numOfUser = 1;
 	m_eState = eRoomState::Standby;
-	m_readyCnt = 1; // 항상 방장때문에 1로 초기화
 	//m_eMap = eGameMap::Map0;
 }
 
@@ -58,8 +57,8 @@ bool Room::SetMemberState(uint32 _idx, eRoomUserState _eState)
 		m_arrUser[_idx].GetState() != eRoomUserState::None)
 	{
 		m_arrUser[_idx].SetState(_eState);
-		if (_eState == eRoomUserState::Ready) ++m_readyCnt;
-		else if (_eState == eRoomUserState::Standby) --m_readyCnt;
+		//if (_eState == eRoomUserState::Ready) ++m_readyCnt;
+		//else if (_eState == eRoomUserState::Standby) --m_readyCnt;
 		bSuccess = true;
 	}
 	m_lock.Leave();
@@ -70,7 +69,7 @@ bool Room::StartGame()
 {
 	bool bSuccess = false;
 	m_lock.Enter();
-	if (m_readyCnt == m_numOfUser)
+	if (CheckAllReady())
 	{
 		m_eState = eRoomState::InGame;
 		for (RoomUser& user : m_arrUser)
@@ -82,7 +81,7 @@ bool Room::StartGame()
 			}
 		}
 		bSuccess = true;
-		m_readyCnt = 1;
+		//m_readyCnt = 1;
 	}
 	m_lock.Leave();
 
@@ -225,10 +224,10 @@ uint32 Room::Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 				m_arrUser[_prevOwnerIdx].SetOwner(false);
 				m_arrUser[_newOwnerIdx].SetOwner(true);
 				m_arrUser[_newOwnerIdx].SetState(eRoomUserState::Ready);
-				if (m_arrUser[_newOwnerIdx].GetState() == eRoomUserState::Ready) --m_readyCnt; // 방장 양도된 애가 레디 중일때 카운트--
+				//if (m_arrUser[_newOwnerIdx].GetState() == eRoomUserState::Ready) --m_readyCnt; // 방장 양도된 애가 레디 중일때 카운트--
 			}
 		}
-		if (m_arrUser[idx].GetState() == eRoomUserState::Ready) --m_readyCnt;
+		//if (m_arrUser[idx].GetState() == eRoomUserState::Ready) --m_readyCnt;
 
 		m_arrUser[idx].Clear();
 		_pUser->SetRoomUserIdx(USER_NOT_IN_THE_ROOM);
@@ -267,5 +266,15 @@ uint32 Room::FindNextOwner(uint32 _prevOwnerIdx)
 		++idx;
 	}
 	return USER_NOT_IN_THE_ROOM;
+}
+
+bool Room::CheckAllReady()
+{
+	for (RoomUser user : m_arrUser)
+	{
+		if (!user.IsOwner() && user.GetState() == eRoomUserState::Standby) return false;
+	}
+
+	return true;
 }
 
