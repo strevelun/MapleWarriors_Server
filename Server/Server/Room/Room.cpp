@@ -120,11 +120,17 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 	std::string seg;
 	std::string myIP = m_arrUser[_roomUserIdx].GetIP();
 	std::istringstream myIPStream(myIP);
-	std::getline(myIPStream, seg, '.');
-	uint32 myIPNum = std::stoi(seg);
 
-	int32 ipNum;
+	const uint8* myPrivateIPBytes = m_arrUser[_roomUserIdx].GetPrivateIP();
+	uint8 myIPBytes[4];
+	uint32 i = 0;
+	while (std::getline(myIPStream, seg, '.'))
+	{
+		myIPBytes[i++] = std::stoi(seg);
+	}
+
 	uint32 idx = 0;
+	int32 ipNum;
 	for (RoomUser& user : m_arrUser)
 	{
 		if (user.GetState() != eRoomUserState::None)
@@ -133,39 +139,33 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 			_pkt.Add<int8>(idx);
 			_pkt.AddWString(user.GetNickname());
 			_pkt.Add<int8>((int8)user.GetCharacterChoice());
-			_pkt.Add<uint16>(user.GetPort());
+			_pkt.Add<uint16>(user.GetUDPPort());
 			
-			//if (_roomUserIdx != idx)
+			std::string ip = user.GetIP();
+			std::istringstream ipStream(ip);
+
+			uint8 otherIPBytes[4];
+			i = 0;
+			while (std::getline(ipStream, seg, '.'))
 			{
-				std::string ip = user.GetIP();
-				std::istringstream ipStream(ip);
-				std::getline(ipStream, seg, '.');
-				ipNum = std::stoi(seg);
-				printf("%s,%d¿¡¼­ %s,%d·Î\n", myIP.c_str(), m_arrUser[_roomUserIdx].GetPort(), ip.c_str(), user.GetPort());
+				otherIPBytes[i++] = std::stoi(seg);
+			}
 
-				if ((ipNum == 192 || ipNum == 172 || ipNum == 10) && myIPNum != ipNum)
+			i = 0;
+			if (HasSameIP(myIPBytes, otherIPBytes))
+			{
+				if (_roomUserIdx == idx)
 				{
-					ipStream.str(SERVER_EXTERNAL_IP);
-					std::getline(ipStream, seg, '.');
-					printf("->  %s\n", SERVER_EXTERNAL_IP);
-
-					do 
-					{
-						ipNum = std::stoi(seg);
-						_pkt.Add<uint8>(ipNum);
-					} while (std::getline(ipStream, seg, '.'));
+					while (i < 4) _pkt.Add<uint8>(myIPBytes[i++]);
 				}
 				else
 				{
-					_pkt.Add<uint8>(ipNum);
-
-					while (std::getline(ipStream, seg, '.'))
-					{
-						ipNum = std::stoi(seg);
-						_pkt.Add<uint8>(ipNum);
-						//std::cout << ipNum << '\n';
-					}
+					while (i < 4) _pkt.Add<uint8>(myPrivateIPBytes[i++]);
 				}
+			}
+			else
+			{
+				while (i < 4) _pkt.Add<uint8>(otherIPBytes[i++]);
 			}
 		}
 		++idx;
@@ -273,6 +273,18 @@ bool Room::CheckAllReady()
 	for (RoomUser user : m_arrUser)
 	{
 		if (!user.IsOwner() && user.GetState() == eRoomUserState::Standby) return false;
+	}
+
+	return true;
+}
+
+bool Room::HasSameIP(const uint8* _myIP, const uint8* _otherIP)
+{
+	if (_myIP == nullptr || _otherIP == nullptr) return false;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (_myIP[i] != _otherIP[i]) return false;
 	}
 
 	return true;

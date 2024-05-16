@@ -24,6 +24,7 @@ public:
 	//Type Get();
 	PacketType GetPacketType();
 	int8 GetInt8();
+	uint8 GetUInt8();
 	uint16 GetShort();
 	uint16 GetUShort();
 	int32 GetInt32();

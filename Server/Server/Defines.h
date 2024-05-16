@@ -84,7 +84,8 @@ enum class eCharacterChoice
 
 typedef struct _tAcceptedClient
 {
-	char			ipAddr[INET_ADDRSTRLEN] = { 0 }; // ¿ÜºÎip
+	int8			ipAddr[INET_ADDRSTRLEN] = { 0 };
+	uint8			privateIPAddr[4] = { 0 };
 	SOCKET			clientSocket = { 0 };
-	uint16			port = 0;
+	uint16			udpPort = 0;
 } tAcceptedClient;

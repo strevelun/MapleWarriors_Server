@@ -62,5 +62,6 @@ public:
 private:
 	uint32 FindNextOwner(uint32 _prevOwnerIdx);
 	bool CheckAllReady();
+	bool HasSameIP(const uint8* _myIP, const uint8* _otherIP);
 };
 

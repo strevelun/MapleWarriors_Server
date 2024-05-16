@@ -42,8 +42,8 @@ void ServerApp::Run()
 
 		pConn = ConnectionManager::GetInst()->Create(acceptedClient);
 
-		printf("id[%d], socket[%d], IP[%s], Port[%d]		연결됨			(현재 접속자 수 : %d)\n", 
-			pConn->GetId(), (int32)acceptedClient->clientSocket, acceptedClient->ipAddr, acceptedClient->port, ConnectionManager::GetInst()->GetCount());
+		printf("id[%d], socket[%d], IP[%s]		연결됨			(현재 접속자 수 : %d)\n", 
+			pConn->GetId(), (int32)acceptedClient->clientSocket, acceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
 
 		m_engine.OnConnected(pConn);
 	}

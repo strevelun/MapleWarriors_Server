@@ -101,6 +101,13 @@ int8 PacketReader::GetInt8()
 	return m_pBuffer[pos];
 }
 
+uint8 PacketReader::GetUInt8()
+{
+	int32 pos = m_getPos;
+	m_getPos = (sizeof(uint8) + m_getPos) % BUFFER_MAX;
+	return m_pBuffer[pos];
+}
+
 uint16 PacketReader::GetShort()
 {
 	int32 pos = m_getPos;

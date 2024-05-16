@@ -24,10 +24,12 @@ public:
 
     int32   GetId() const { return m_id; }
     SOCKET  GetSocket() const { return m_pAcceptedClient->clientSocket; }
-    const char* GetIP() const { return m_pAcceptedClient->ipAddr; }
-    uint16 GetPort() const { return m_pAcceptedClient->port; }
+    const int8* GetIP() const { return m_pAcceptedClient->ipAddr; }
+    const uint8* GetPrivateIP() const { return m_pAcceptedClient->privateIPAddr; }
+    uint16 GetUDPPort() const { return m_pAcceptedClient->udpPort; }
 
-    void SetMyPort(uint16 _port) { m_pAcceptedClient->port = _port; } 
+    void SetMyUDPPort(uint16 _port) { m_pAcceptedClient->udpPort = _port; } 
+    void SetPrivateIP(uint8 _a, uint8 _b, uint8 _c, uint8 _d);
 
     void OnRecv(uint32 _recvBytes);
 

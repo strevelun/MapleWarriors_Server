@@ -14,7 +14,6 @@ enum class eRoomUserState
 class RoomUser
 {
 	Connection*				m_pConn;
-	//const wchar_t*			m_pNickname;
 	User*					m_pUser;
 	eRoomUserState			m_eState;
 	bool					m_bOwner;
@@ -32,9 +31,10 @@ public:
 	const wchar_t* GetNickname() const { return m_pUser->GetNickname(); }
 	uint32 GetConnectionID() const { return m_pConn->GetId(); }
 	eCharacterChoice GetCharacterChoice() const { return m_eCharacter; }
-	const char* GetIP() const { return m_pConn->GetIP(); }
+	const int8* GetIP() const { return m_pConn->GetIP(); }
+	const uint8* GetPrivateIP() const { return m_pConn->GetPrivateIP(); }
 	SOCKET GetSocket() const { return m_pConn->GetSocket(); }
-	uint16 GetPort() const { return m_pConn->GetPort(); }
+	uint16 GetUDPPort() const { return m_pConn->GetUDPPort(); }
 
 	void SetOwner(bool _bIsOwner) { m_bOwner = _bIsOwner; }
 	void SetState(eRoomUserState _eState) { m_eState = _eState; }

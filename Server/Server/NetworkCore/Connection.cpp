@@ -18,6 +18,14 @@ Connection::~Connection()
 	if(m_pAcceptedClient) delete m_pAcceptedClient;
 }
 
+void Connection::SetPrivateIP(uint8 _a, uint8 _b, uint8 _c, uint8 _d)
+{
+	m_pAcceptedClient->privateIPAddr[0] = _a;
+	m_pAcceptedClient->privateIPAddr[1] = _b;
+	m_pAcceptedClient->privateIPAddr[2] = _c;
+	m_pAcceptedClient->privateIPAddr[3] = _d;
+}
+
 void Connection::OnRecv(uint32 _recvBytes)
 {
 	m_ringBuffer.MoveWritePos(_recvBytes); 

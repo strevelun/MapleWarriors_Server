@@ -31,11 +31,11 @@ HANDLE IOCP::CreateIOCP()
     return m_hCPObject;
 }
 
-bool IOCP::AssociateIOCP(Connection* _completionKey)
+bool IOCP::AssociateIOCP(Connection* _pCompletionKey)
 {
 	if (m_hCPObject == nullptr) return false;
 
-	HANDLE h = CreateIoCompletionPort((HANDLE)_completionKey->GetSocket(), m_hCPObject, (ULONG_PTR)_completionKey, 0);
+	HANDLE h = CreateIoCompletionPort((HANDLE)_pCompletionKey->GetSocket(), m_hCPObject, (ULONG_PTR)_pCompletionKey, 0);
 	if (h == nullptr) return false;
 
 	return true;

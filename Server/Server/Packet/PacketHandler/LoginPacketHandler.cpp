@@ -17,7 +17,14 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pNickname = _packet.GetWString();
 	uint16 port = _packet.GetUShort();
-	_conn.SetMyPort(port);
+	_conn.SetMyUDPPort(port);
+
+	uint8 ipBytes[4];
+	ipBytes[0] = _packet.GetUInt8();
+	ipBytes[1] = _packet.GetUInt8();
+	ipBytes[2] = _packet.GetUInt8();
+	ipBytes[3] = _packet.GetUInt8();
+	_conn.SetPrivateIP(ipBytes[0], ipBytes[1], ipBytes[2], ipBytes[3]);
 
 	User* pUser = UserManager::GetInst()->Create(pNickname);
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
