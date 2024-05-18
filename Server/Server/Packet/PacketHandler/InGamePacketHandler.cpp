@@ -18,14 +18,10 @@ void NInGame::ReqInitInfo(Connection& _conn, PacketReader& _packet)
 
 	eGameMap mapID = pRoom->GetMapID();
 
-	//int64 milli = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
 	Packet pkt;
 	pkt
 		.Add<PacketType>((PacketType)eServer::ResInitInfo)
 		.Add<int8>((int8)mapID);
-		//.Add<int64>(milli);
-	
 	pRoom->PacketStartGameReqInitInfo(pkt, pUser->GetRoomUserIdx());
 
 	_conn.Send(pkt);
@@ -44,6 +40,8 @@ void NInGame::GameOver(Connection& _conn, PacketReader& _packet)
 	Room* pRoom = pLobby->GetRoomManager()->Find(pUser->GetRoomId());
 
 	pRoom->SetState(eRoomState::Standby);
+	pRoom->GameOver();
+
 	Packet pkt;
 	pkt.
 		Add<PacketType>((PacketType)eServer::GameOver);

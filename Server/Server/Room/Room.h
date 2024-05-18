@@ -50,6 +50,7 @@ public:
 	void SetMemberCharacterChoice(uint32 _memberIdx, uint32 _characterIdx) { m_arrUser[_memberIdx].SetCharacterChoice((eCharacterChoice)_characterIdx); }
 
 	bool StartGame();
+	void GameOver();
 
 	void PacketRoomUserSlotInfo(Packet& _pkt); // change name
 	void PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx);

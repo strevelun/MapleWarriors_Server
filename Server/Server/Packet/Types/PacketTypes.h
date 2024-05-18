@@ -46,7 +46,6 @@ enum class eServer : PacketType
 	RangedAttack,
 	RangedAttackReq,
 	GameOver,
-	Awake,
 	AllCreaturesInfo,
 	Ready,
 	Start,

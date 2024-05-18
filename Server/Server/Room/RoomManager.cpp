@@ -178,7 +178,7 @@ void RoomManager::MakePacketUserSlotInfo(uint32 _roomID, Packet& _pkt)
 		return;
 	}
 
-	// TODO : ∏ ¡§∫∏ √ﬂ∞°
+	_pkt.Add<int8>(m_arrRoom[*iter].GetId());
 	_pkt.AddWString(m_arrRoom[*iter].GetTitle());
 
 	m_arrRoom[*iter].PacketRoomUserSlotInfo(_pkt);

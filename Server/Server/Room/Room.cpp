@@ -26,7 +26,7 @@ void Room::Init(Connection& _conn, const wchar_t* _pTitle, uint32 _id)
 	pUser->SetRoomUserIdx(0);
 	m_numOfUser = 1;
 	m_eState = eRoomState::Standby;
-	//m_eMap = eGameMap::Map0;
+	m_eMap = eGameMap::Map0;
 }
 
 void Room::Clear()
@@ -88,6 +88,16 @@ bool Room::StartGame()
 	return bSuccess;
 }
 
+void Room::GameOver()
+{
+	for (RoomUser user : m_arrUser)
+	{
+		if (user.GetState() == eRoomUserState::None) continue;
+
+		user.SetUserSceneState(eSceneState::Room);
+	}
+}
+
 void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 {
 	m_lock.Enter();
@@ -122,7 +132,7 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 	std::istringstream myIPStream(myIP);
 
 	const uint8* myPrivateIPBytes = m_arrUser[_roomUserIdx].GetPrivateIP();
-	uint8 myIPBytes[4];
+	uint8 myIPBytes[4] = { 0 };
 	uint32 i = 0;
 	while (std::getline(myIPStream, seg, '.'))
 	{
@@ -130,7 +140,6 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 	}
 
 	uint32 idx = 0;
-	int32 ipNum;
 	for (RoomUser& user : m_arrUser)
 	{
 		if (user.GetState() != eRoomUserState::None)
@@ -144,7 +153,7 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 			std::string ip = user.GetIP();
 			std::istringstream ipStream(ip);
 
-			uint8 otherIPBytes[4];
+			uint8 otherIPBytes[4] = { 0 };
 			i = 0;
 			while (std::getline(ipStream, seg, '.'))
 			{
