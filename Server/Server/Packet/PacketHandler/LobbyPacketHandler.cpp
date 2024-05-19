@@ -136,5 +136,5 @@ void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 		return;
 	}
 	_conn.Send(pkt);
-	wprintf(L"[%s] EnterRoom : %d\n", pUser->GetNickname(), (int32)eResult);
+	//wprintf(L"[%s] EnterRoom : %d\n", pUser->GetNickname(), (int32)eResult);
 }

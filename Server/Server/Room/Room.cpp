@@ -57,8 +57,6 @@ bool Room::SetMemberState(uint32 _idx, eRoomUserState _eState)
 		m_arrUser[_idx].GetState() != eRoomUserState::None)
 	{
 		m_arrUser[_idx].SetState(_eState);
-		//if (_eState == eRoomUserState::Ready) ++m_readyCnt;
-		//else if (_eState == eRoomUserState::Standby) --m_readyCnt;
 		bSuccess = true;
 	}
 	m_lock.Leave();
@@ -109,7 +107,6 @@ void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 	{
 		if (user.GetState() != eRoomUserState::None)
 		{
-			// TODO : 캐릭터 선택 정보 추가하기
 			_pkt.Add<uint16>(user.GetConnectionID());
 			_pkt.Add<int8>(idx);
 			_pkt.Add<bool>(user.IsOwner());
@@ -140,6 +137,7 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 	}
 
 	uint32 idx = 0;
+	const uint8* otherPrivateIP = nullptr;
 	for (RoomUser& user : m_arrUser)
 	{
 		if (user.GetState() != eRoomUserState::None)
@@ -169,7 +167,8 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 				}
 				else
 				{
-					while (i < 4) _pkt.Add<uint8>(myPrivateIPBytes[i++]);
+					const uint8* otherPrivateIP = user.GetPrivateIP();
+					while (i < 4) _pkt.Add<uint8>(otherPrivateIP[i++]);
 				}
 			}
 			else
@@ -233,10 +232,8 @@ uint32 Room::Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 				m_arrUser[_prevOwnerIdx].SetOwner(false);
 				m_arrUser[_newOwnerIdx].SetOwner(true);
 				m_arrUser[_newOwnerIdx].SetState(eRoomUserState::Ready);
-				//if (m_arrUser[_newOwnerIdx].GetState() == eRoomUserState::Ready) --m_readyCnt; // 방장 양도된 애가 레디 중일때 카운트--
 			}
 		}
-		//if (m_arrUser[idx].GetState() == eRoomUserState::Ready) --m_readyCnt;
 
 		m_arrUser[idx].Clear();
 		_pUser->SetRoomUserIdx(USER_NOT_IN_THE_ROOM);

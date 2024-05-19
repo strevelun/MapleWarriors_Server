@@ -29,7 +29,7 @@ void Lobby::Enter(Connection& _conn, User* _pUser)
 			_pUser->SetSceneState(eSceneState::Lobby);
 
 			++m_userCount;
-			printf("로비 입장! : %d명\n", m_userCount);
+			//printf("로비 입장! : %d명\n", m_userCount);
 		}
 		else
 			printf("입장 거부됨 [현재 인원 : %d]\n", m_userCount);
