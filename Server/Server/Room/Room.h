@@ -31,7 +31,7 @@ public:
 	Room();
 	~Room();
 
-	void Init(Connection& _conn, const wchar_t* _pTitle, uint32 _id);
+	void Init(Connection& _conn, User* _pUser, const wchar_t* _pTitle, uint32 _id);
 	void Clear();
 
 	uint32 GetId() const { return m_id; }

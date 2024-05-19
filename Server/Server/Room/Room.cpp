@@ -10,7 +10,7 @@ Room::~Room()
 {
 }
 
-void Room::Init(Connection& _conn, const wchar_t* _pTitle, uint32 _id)
+void Room::Init(Connection& _conn, User* _pUser, const wchar_t* _pTitle, uint32 _id)
 {
 	m_id = _id;
 
@@ -18,12 +18,13 @@ void Room::Init(Connection& _conn, const wchar_t* _pTitle, uint32 _id)
 	if (len > ROOMTITLE_LEN)			len = ROOMTITLE_LEN;
 	wcsncpy_s(m_title, _pTitle, len);
 
-	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
+	// 데드락 발생
+	// User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 
-	m_pOwnerNickname = pUser->GetNickname();
+	m_pOwnerNickname = _pUser->GetNickname();
 	m_ownerIdx = 0;
-	m_arrUser[0].Init(_conn, pUser, true);
-	pUser->SetRoomUserIdx(0);
+	m_arrUser[0].Init(_conn, _pUser, true);
+	_pUser->SetRoomUserIdx(0);
 	m_numOfUser = 1;
 	m_eState = eRoomState::Standby;
 	m_eMap = eGameMap::Map0;

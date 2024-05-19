@@ -23,7 +23,7 @@ Room* RoomManager::Create(Connection& _conn, User* _pUser, const wchar_t* _pTitl
 			uint32 roomId = m_vecUnusedRoomIDs.back();
 			m_vecUnusedRoomIDs.pop_back();
 			m_setRoom.insert(roomId);
-			m_arrRoom[roomId].Init(_conn, _pTitle, roomId);
+			m_arrRoom[roomId].Init(_conn, _pUser, _pTitle, roomId);
 			pRoom = &m_arrRoom[roomId];
 			_pUser->SetRoomID(roomId);
 			_pUser->SetSceneState(eSceneState::Room);

@@ -83,6 +83,7 @@ void IOCP::Worker()
 		{
 			UserManager::GetInst()->Disconnect(pConn->GetId());
 			ConnectionManager::GetInst()->Delete(pConn->GetId());
+			printf("ShutDown ¹ÞÀ½\n");
 			continue;
 		}
 
