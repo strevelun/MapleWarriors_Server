@@ -158,7 +158,7 @@ void RoomManager::MakePacketRoomListPage(uint32 _page, Packet& _pkt)
 			if (count >= result) break;
 
 			roomID = *iter;
-			_pkt.Add<uint32>(roomID);
+			_pkt.Add<uint16>(roomID);
 			_pkt.AddWString(m_arrRoom[roomID].GetTitle());
 			_pkt.AddWString(m_arrRoom[roomID].GetOwner());
 			_pkt.Add<int8>(m_arrRoom[roomID].GetNumOfUser());
@@ -178,7 +178,7 @@ void RoomManager::MakePacketUserSlotInfo(uint32 _roomID, Packet& _pkt)
 		return;
 	}
 
-	_pkt.Add<int8>(m_arrRoom[*iter].GetId());
+	_pkt.Add<uint16>(m_arrRoom[*iter].GetId());
 	_pkt.AddWString(m_arrRoom[*iter].GetTitle());
 
 	m_arrRoom[*iter].PacketRoomUserSlotInfo(_pkt);

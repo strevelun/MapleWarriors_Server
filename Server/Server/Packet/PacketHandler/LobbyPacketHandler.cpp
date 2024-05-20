@@ -97,7 +97,7 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 
 void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 {
-	uint32 roomID = _packet.GetUInt32();
+	uint32 roomID = _packet.GetUShort();
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
