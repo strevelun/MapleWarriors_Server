@@ -19,7 +19,7 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 	uint16 port = _packet.GetUShort();
 	_conn.SetMyUDPPort(port);
 
-	uint8 ipBytes[4];
+	uint8 ipBytes[4] = { 0 };
 	ipBytes[0] = _packet.GetUInt8();
 	ipBytes[1] = _packet.GetUInt8();
 	ipBytes[2] = _packet.GetUInt8();

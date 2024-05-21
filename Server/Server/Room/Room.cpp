@@ -124,21 +124,9 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 {
 	m_lock.Enter();
 	_pkt.Add<int8>(m_numOfUser);
-
-	std::string seg;
-	std::string myIP = m_arrUser[_roomUserIdx].GetIP();
-	std::istringstream myIPStream(myIP);
-
-	const uint8* myPrivateIPBytes = m_arrUser[_roomUserIdx].GetPrivateIP();
-	uint8 myIPBytes[4] = { 0 };
-	uint32 i = 0;
-	while (std::getline(myIPStream, seg, '.'))
-	{
-		myIPBytes[i++] = std::stoi(seg);
-	}
+	MakePacketIP(_pkt, m_arrUser[_roomUserIdx].GetIP());
 
 	uint32 idx = 0;
-	const uint8* otherPrivateIP = nullptr;
 	for (RoomUser& user : m_arrUser)
 	{
 		if (user.GetState() != eRoomUserState::None)
@@ -147,34 +135,11 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 			_pkt.Add<int8>(idx);
 			_pkt.AddWString(user.GetNickname());
 			_pkt.Add<int8>((int8)user.GetCharacterChoice());
-			_pkt.Add<uint16>(user.GetUDPPort());
-			
-			std::string ip = user.GetIP();
-			std::istringstream ipStream(ip);
-
-			uint8 otherIPBytes[4] = { 0 };
-			i = 0;
-			while (std::getline(ipStream, seg, '.'))
+			if (_roomUserIdx != idx)
 			{
-				otherIPBytes[i++] = std::stoi(seg);
-			}
-
-			i = 0;
-			if (HasSameIP(myIPBytes, otherIPBytes))
-			{
-				if (_roomUserIdx == idx)
-				{
-					while (i < 4) _pkt.Add<uint8>(myIPBytes[i++]);
-				}
-				else
-				{
-					const uint8* otherPrivateIP = user.GetPrivateIP();
-					while (i < 4) _pkt.Add<uint8>(otherPrivateIP[i++]);
-				}
-			}
-			else
-			{
-				while (i < 4) _pkt.Add<uint8>(otherIPBytes[i++]);
+				_pkt.Add<uint16>(user.GetUDPPort());
+				MakePacketIP(_pkt, user.GetIP());
+				MakePacketIP(_pkt, user.GetPrivateIP());
 			}
 		}
 		++idx;
@@ -285,15 +250,22 @@ bool Room::CheckAllReady()
 	return true;
 }
 
-bool Room::HasSameIP(const uint8* _myIP, const uint8* _otherIP)
+void Room::MakePacketIP(Packet& _pkt, const int8* _ip)
 {
-	if (_myIP == nullptr || _otherIP == nullptr) return false;
-
-	for (int i = 0; i < 4; ++i)
+	std::string seg;
+	std::string ip = _ip;
+	std::istringstream ipStream(ip);
+	while (std::getline(ipStream, seg, '.'))
 	{
-		if (_myIP[i] != _otherIP[i]) return false;
+		_pkt.Add<uint8>(std::stoi(seg));
 	}
-
-	return true;
 }
 
+void Room::MakePacketIP(Packet& _pkt, const uint8* _ip)
+{
+	int i = 0;
+	while (i < 4)
+	{
+		_pkt.Add<uint8>(_ip[i++]);
+	}
+}
