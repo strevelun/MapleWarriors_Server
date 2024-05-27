@@ -16,8 +16,8 @@ void NLogin::Test(Connection& _conn, PacketReader& _packet)
 void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pNickname = _packet.GetWString();
-	uint16 port = _packet.GetUShort();
-	_conn.SetMyUDPPort(port);
+	//uint16 port = _packet.GetUShort();
+	//_conn.SetMyUDPPort(port);
 
 	uint8 ipBytes[4] = { 0 };
 	ipBytes[0] = _packet.GetUInt8();
@@ -43,7 +43,6 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 		{
 			type = (PacketType)eServer::LoginSuccess;
 			p.Add<PacketType>(type);
-			p.Add<uint16>(_conn.GetId());
 			UserManager::GetInst()->Connect(_conn.GetId(), pUser);
 			pLobby->Enter(_conn, pUser);
 		}

@@ -9,6 +9,13 @@ PacketReader::~PacketReader()
 {
 }
 
+void PacketReader::SetBuffer(const int8* _pBuffer)
+{
+	m_pBuffer = _pBuffer;
+	m_getPos = sizeof(PacketSize);
+	m_startOffset = 0;
+}
+
 void PacketReader::SetBuffer(RingBuffer& _buffer)
 {
 	m_pBuffer = _buffer.GetBuffer();

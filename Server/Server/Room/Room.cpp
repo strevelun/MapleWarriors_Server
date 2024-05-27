@@ -179,7 +179,7 @@ bool Room::Enter(Connection& _conn, User* _pUser)
 
 uint32 Room::Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 {
-	printf("Leave : %d\n", m_numOfUser);
+	//printf("Leave : %d\n", m_numOfUser);
 	if (m_numOfUser == 0) return USER_NOT_IN_THE_ROOM;
 	
 	uint32 idx = _pUser->GetRoomUserIdx();

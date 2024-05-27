@@ -108,6 +108,9 @@
     <ClCompile Include="Room\RoomUser.cpp">
       <Filter>Room</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkCore\UDPHandler.cpp">
+      <Filter>NetworkCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Packet\Packet.h">
@@ -187,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="Room\RoomUser.h">
       <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCore\UDPHandler.h">
+      <Filter>NetworkCore</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

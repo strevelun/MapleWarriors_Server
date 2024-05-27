@@ -92,7 +92,7 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 	}
 
 	_conn.Send(pkt);
-	wprintf(L"[%s] CreateRoom\n", pUser->GetNickname());
+	//wprintf(L"[%s] CreateRoom\n", pUser->GetNickname());
 }
 
 void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)

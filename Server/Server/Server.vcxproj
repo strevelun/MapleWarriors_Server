@@ -138,6 +138,7 @@
     <ClCompile Include="NetworkCore\IOCP.cpp" />
     <ClCompile Include="NetworkCore\NetworkEngine.cpp" />
     <ClCompile Include="NetworkCore\RingBuffer.cpp" />
+    <ClCompile Include="NetworkCore\UDPHandler.cpp" />
     <ClCompile Include="Packet\Packet.cpp" />
     <ClCompile Include="Packet\PacketHandler\InGamePacketHandler.cpp" />
     <ClCompile Include="Packet\PacketHandler\LobbyPacketHandler.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="NetworkCore\IOCP.h" />
     <ClInclude Include="NetworkCore\NetworkEngine.h" />
     <ClInclude Include="NetworkCore\RingBuffer.h" />
+    <ClInclude Include="NetworkCore\UDPHandler.h" />
     <ClInclude Include="Packet\Packet.h" />
     <ClInclude Include="Packet\PacketHandler\InGamePacketHandler.h" />
     <ClInclude Include="Packet\PacketHandler\LobbyPacketHandler.h" />

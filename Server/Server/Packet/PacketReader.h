@@ -14,6 +14,7 @@ public:
 	PacketReader();
 	~PacketReader();
 
+	void SetBuffer(const int8* _pBuffer);
 	void SetBuffer(RingBuffer& _buffer);
 
 	bool IsBufferReadable(RingBuffer& _buffer);

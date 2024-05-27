@@ -25,7 +25,7 @@ public:
 	uint32 GetWritableSize() const;
 	uint32 GetReadableSize() const;
 	uint32 GetTotalReadableSize() const;
-	uint32 GetReadPos() { return m_readPos; }
+	uint32 GetReadPos() const { return m_readPos; }
 	
 	bool IsFull() const { return m_writtenBytes >= BUFFER_MAX; }
 

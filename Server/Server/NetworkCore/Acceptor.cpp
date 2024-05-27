@@ -5,29 +5,33 @@
 Acceptor::Acceptor() :
 	m_serverSocket{ 0 }, m_servAddr{ 0 }, m_clientAddr {0}, m_clientAddrSize(0)
 {
-
+	
 }
 
 Acceptor::~Acceptor()
 {
-	if (m_serverSocket) ::closesocket(m_serverSocket);
+	if (m_serverSocket)
+	{
+		::closesocket(m_serverSocket);
+		m_serverSocket = INVALID_SOCKET;
+	}
 }
 
 bool Acceptor::Start(const int8* _ip, uint16 _port)
 {
 	m_clientAddrSize = sizeof(SOCKADDR_IN);
 
-	m_serverSocket = ::WSASocketW(PF_INET, SOCK_STREAM, IPPROTO_TCP, nullptr, 0, WSA_FLAG_OVERLAPPED);
+	m_serverSocket = ::WSASocketW(AF_INET, SOCK_STREAM, 0, nullptr, 0, WSA_FLAG_OVERLAPPED); 
 	if (m_serverSocket == INVALID_SOCKET)
 	{
 		printf("서버소켓 생성 에러 : %d\n", ::WSAGetLastError());
 		return false;
 	}
 
-	memset(&m_servAddr, 0, sizeof(m_servAddr));
+	::memset(&m_servAddr, 0, sizeof(m_servAddr));
 	m_servAddr.sin_family = AF_INET;
 	::inet_pton(AF_INET, _ip, &m_servAddr.sin_addr);
-	m_servAddr.sin_port = htons(_port);
+	m_servAddr.sin_port = ::htons(_port);
 
 	return true;
 }
@@ -59,7 +63,7 @@ tAcceptedClient* Acceptor::Accept()
 	tAcceptedClient* pClient = new tAcceptedClient;
 	::inet_ntop(AF_INET, &m_clientAddr.sin_addr, pClient->ipAddr, sizeof(pClient->ipAddr));
 
-	// 서버와 같은 망 사용
+	// 테스트 : 서버와 같은 망 사용
 #ifdef _DEBUG	
 	if(pClient->ipAddr[0] == '1' && pClient->ipAddr[1] == '9' && pClient->ipAddr[2] == '2')
 		strcpy_s(pClient->ipAddr, SERVER_EXTERNAL_IP);

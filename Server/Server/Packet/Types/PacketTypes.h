@@ -2,9 +2,6 @@
 
 #include "../../Types.h"
 
-//LS2C_ROOM_ENTER_ANS
-//C2LS_ROOM_CREATE
-
 enum class eServer : PacketType
 {
 	None = 0,
@@ -54,6 +51,9 @@ enum class eServer : PacketType
 	StageClear,
 	Annihilated,
 	PlayerHit,
+	CheckedClientInfo,
+	SendAwake,
+	ConnectionID,
 	Max,
 };
 

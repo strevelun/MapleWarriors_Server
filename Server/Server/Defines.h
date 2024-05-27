@@ -14,13 +14,12 @@
 #include <sstream>
 #include <string>
 #include <chrono>
+#include <atomic>
 
 #include "Types.h"
 
-#define SERVER_INTERNAL_IP					"192.168.219.104"
-#define SERVER_EXTERNAL_IP					"119.67.216.164"
-
-//#define SERVER_INTERNAL_IP					"192.168.10.102"
+#define SERVER_INTERNAL_IP					"192.168.55.24"
+#define SERVER_EXTERNAL_IP					"110.9.1.110"
 
 #define BUFFER_MAX					4096
 
@@ -86,5 +85,18 @@ typedef struct _tAcceptedClient
 	int8			ipAddr[INET_ADDRSTRLEN] = { 0 };
 	uint8			privateIPAddr[4] = { 0 };
 	SOCKET			clientSocket = { 0 };
-	uint16			udpPort = 0;
+	SOCKADDR_IN		udpAddr = { 0 };
 } tAcceptedClient;
+
+enum class eConnType
+{
+	None,
+	TCP,
+	UDP
+};
+
+typedef struct _tWSAOVERLAPPED_EX : public WSAOVERLAPPED
+{
+	int32 udpIdx = 0;
+	eConnType connType = eConnType::None;
+} tWSAOVERLAPPED_EX;

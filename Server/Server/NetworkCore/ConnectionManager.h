@@ -16,6 +16,7 @@ private:
 
 public:
 	Connection* Create(tAcceptedClient* _pAcceptedClient);
+	Connection* Find(uint32 _id);
 	void Delete(uint32 _id);
 
 	uint32 GetCount() const { return m_count; }

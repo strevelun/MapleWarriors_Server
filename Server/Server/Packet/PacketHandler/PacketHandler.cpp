@@ -8,7 +8,6 @@
 void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 {
 	eClient type = (eClient)_packet.GetPacketType();
-	//printf("[%d] Before Handle : %d\n", (int32)_conn.GetSocket(), type);
 	switch (type)
 	{
 #pragma region Login

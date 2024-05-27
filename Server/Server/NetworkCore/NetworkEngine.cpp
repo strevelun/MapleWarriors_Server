@@ -1,4 +1,5 @@
 #include "NetworkEngine.h"
+#include "UDPHandler.h"
 #include "../Defines.h"
 
 NetworkEngine::NetworkEngine() 
@@ -18,21 +19,37 @@ bool NetworkEngine::Init()
 		return false;
 	}
 
+	UDPHandler* pHandlerInst = UDPHandler::GetInst();
+
 	SYSTEM_INFO		si;
-	GetSystemInfo(&si);
-	if (!m_iocp.CreateWorkerThread(si.dwNumberOfProcessors * 2)) return false;
-	
+	::GetSystemInfo(&si);
+	if (!m_iocp.CreateWorkerThread(si.dwNumberOfProcessors * 2))	return false;
+	if (!pHandlerInst->Init(si.dwNumberOfProcessors * 2))			return false;
+	if (!pHandlerInst->Bind())										return false;
+	if (!pHandlerInst->RecvReady())									return false;
+	if (!m_iocp.AssociateIOCP(pHandlerInst->GetSocket()))			return false;
+
 	return true;
 }
 
-void NetworkEngine::OnConnected(Connection* _pConn)
+Connection* NetworkEngine::OnConnected(tAcceptedClient* _pAcceptedClient)
 {
-	if (!m_iocp.AssociateIOCP(_pConn))
+	Connection* pConn = ConnectionManager::GetInst()->Create(_pAcceptedClient);
+
+	if (!m_iocp.AssociateIOCP(pConn))
 	{
 		printf("IOCP Association Failed");
-		ConnectionManager::GetInst()->Delete(_pConn->GetId());
-		return;
+		ConnectionManager::GetInst()->Delete(pConn->GetId());
+		return nullptr;
 	}
 	
-	_pConn->RecvWSA();
+	pConn->RecvWSA();
+
+	Packet pkt;
+	pkt
+		.Add<PacketType>((PacketType)eServer::ConnectionID)
+		.Add<uint32>(pConn->GetId());
+	pConn->Send(pkt);
+
+	return pConn;
 }

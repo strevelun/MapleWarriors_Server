@@ -2,6 +2,7 @@
 
 #include "NetworkCore/Acceptor.h"
 #include "NetworkCore/NetworkEngine.h"
+#include "NetworkCore/UDPHandler.h"
 
 class ServerApp
 {

@@ -11,7 +11,22 @@ Connection* ConnectionManager::Create(tAcceptedClient* _pAcceptedClient)
 	++m_connectionId;
 	++m_count;
 	m_lock.Leave();
+	pConn->AddRef();
 	return pConn;
+}
+
+Connection* ConnectionManager::Find(uint32 _id)
+{
+	m_lock.Enter();
+	std::unordered_map<uint32, Connection*>::iterator iter = m_mapConnection.find(_id);
+	if (iter == m_mapConnection.cend())
+	{
+		m_lock.Leave();
+		return nullptr;
+	}
+	m_lock.Leave();
+	iter->second->AddRef();
+	return iter->second;
 }
 
 void ConnectionManager::Delete(uint32 _id)
@@ -21,8 +36,8 @@ void ConnectionManager::Delete(uint32 _id)
 	if (iter != m_mapConnection.cend())
 	{
 		--m_count;
-		printf("id[%d], socket[%d], IP[%s]		접속 종료됨		(현재 접속자 수 : %d)\n", _id, (int32)iter->second->GetSocket(), iter->second->GetIP(), m_count);
-		delete iter->second;
+		printf("id[%u], socket[%d], IP[%s]		접속 종료됨		(현재 접속자 수 : %d)\n", _id, (int32)iter->second->GetSocket(), iter->second->GetIP(), m_count);
+		iter->second->Release();
 		m_mapConnection.erase(_id);
 	}
 	m_lock.Leave();

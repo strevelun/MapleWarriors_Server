@@ -133,7 +133,7 @@ void Lobby::Send(const Packet& _pkt, uint32 _userID)
 void Lobby::SendAllInLobby(const Packet& _pkt)
 {
 	m_lock.Enter();
-	auto usetLobbyUser = m_usetUserInLobby;
+	std::unordered_set<uint32> usetLobbyUser = m_usetUserInLobby;
 	m_lock.Leave();
 
 	for (uint32 id : usetLobbyUser)

@@ -16,11 +16,11 @@ public:
 	~IOCP();
 
 	HANDLE CreateIOCP();
-	bool AssociateIOCP(Connection* _completionKey);
-	bool CreateWorkerThread(uint32 _numOfThread );
+	bool AssociateIOCP(Connection* _completionKey); 
+	bool AssociateIOCP(SOCKET _socket);
+	bool CreateWorkerThread(uint32 _numOfThread);
 
 private:
 	static uint32 __stdcall CallWorkerThread(void* _pArgs);
 	void Worker();
 };
-

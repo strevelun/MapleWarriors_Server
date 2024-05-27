@@ -5,7 +5,7 @@
 class NetworkEngine
 {
 private:
-	IOCP			m_iocp;
+	IOCP				m_iocp;
 
 public:
 	NetworkEngine();
@@ -13,5 +13,5 @@ public:
 	
 	bool Init();
 
-	void OnConnected(Connection* _pConn);
+	Connection* OnConnected(tAcceptedClient* _pAcceptedClient);
 };
