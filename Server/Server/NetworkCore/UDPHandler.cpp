@@ -51,7 +51,6 @@ bool UDPHandler::Bind()
 
 void UDPHandler::OnRecv(int32 _idx)
 {
-
 	m_lock.Enter();
 	uint16 port = m_vecWorks[_idx].udpAddr.sin_port;
 	uint32 id = *reinterpret_cast<const int32*>(&m_vecWorks[_idx].udpBuf);
@@ -67,11 +66,13 @@ void UDPHandler::OnRecv(int32 _idx)
 		m_lock.Leave();
 		return;
 	}
-	pConn->SetMyUDPPort(port);
+	pConn->SetMyUDPPort(ntohs(port));
 	m_lock.Leave();
 
 	Packet pkt;
-	pkt.Add((PacketType)eServer::CheckedClientInfo);
+	pkt
+		.Add((PacketType)eServer::CheckedClientInfo)
+		.Add((uint16)port);
 	pConn->Send(pkt);
 	pConn->Release();
 }

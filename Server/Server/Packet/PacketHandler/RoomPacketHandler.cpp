@@ -5,7 +5,6 @@
 void NRoom::RoomChat(Connection& _conn, PacketReader& _packet)
 {
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
-	if (!pUser) return;
 
 	const wchar_t* pChat = _packet.GetWString();
 	const wchar_t* pNickname = pUser->GetNickname();

@@ -7,7 +7,6 @@
 void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 {
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
-	if (!pUser) return;
 
 	const wchar_t* pChat = _packet.GetWString();
 	const wchar_t* pNickname = pUser->GetNickname();
@@ -20,7 +19,6 @@ void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	pLobby->SendAllInLobby(pkt);
-	//printf("[%d] SendAll\n", (int32)_conn.GetSocket());
 }
 
 void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)

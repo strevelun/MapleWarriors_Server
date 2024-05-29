@@ -32,8 +32,7 @@ void User::Leave()
 		uint32 roomUserIdx = m_roomUserIdx;
 		uint32 prevOwnerID = USER_NOT_IN_THE_ROOM;
 		uint32 nextOwnerID = USER_NOT_IN_THE_ROOM;
-		// 인게임에서 나가면 로비에서도 나가고, 룸에서도 나가는 처리 해야
-	   // 나간놈이 방장이면 다음 놈에게 양도해야
+
 		Packet pkt;
 		pkt
 			.Add<PacketType>((PacketType)eServer::InGameExit)
