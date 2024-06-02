@@ -43,7 +43,7 @@ bool IOCP::AssociateIOCP(Connection* _pCompletionKey)
 {
 	if (m_hCPObject == nullptr) return false;
 
-	HANDLE h = ::CreateIoCompletionPort((HANDLE)_pCompletionKey->GetSocket(), m_hCPObject, (ULONG_PTR)_pCompletionKey, 0);
+	HANDLE h = ::CreateIoCompletionPort((HANDLE)_pCompletionKey->GetSocket(), m_hCPObject, (ULONG_PTR)_pCompletionKey->GetId(), 0);
 	if (h == nullptr) return false;
 
 	return true;
@@ -78,7 +78,7 @@ bool IOCP::CreateWorkerThread(uint32 _numOfThread)
 
 uint32 __stdcall IOCP::CallWorkerThread(void* _pArgs)
 {
-	IOCP* pIocp = (IOCP*)_pArgs;
+	IOCP* pIocp = static_cast<IOCP*>(_pArgs);
 	pIocp->Worker();
 	return 0;
 }
@@ -87,39 +87,35 @@ void IOCP::Worker()
 {
 	DWORD			bytesTransferred = 0;
 	tWSAOVERLAPPED_EX* pOverlapped = nullptr;
+	uint32 connID = 0;
 	Connection* pConn = nullptr;
 	bool result;
 
 	while (1)
 	{
-		result = ::GetQueuedCompletionStatus(m_hCPObject, &bytesTransferred, (PULONG_PTR)&pConn, (LPOVERLAPPED*)&pOverlapped, INFINITE);
+		result = ::GetQueuedCompletionStatus(m_hCPObject, &bytesTransferred, (PULONG_PTR)&connID, (LPOVERLAPPED*)&pOverlapped, INFINITE);
 
 		if (!m_workerRunning) break;
 
-		//printf("GetQueued\n");
-
 		if (!result || bytesTransferred == 0)
 		{
-			if (pConn)
-			{
-				UserManager::GetInst()->Disconnect(pConn->GetId());
-				ConnectionManager::GetInst()->Delete(pConn->GetId());
-			}
-		//	printf("ShutDown 받음 : %d\n", WSAGetLastError());
+			UserManager::GetInst()->Disconnect(connID); 
+			ConnectionManager::GetInst()->Delete(connID);
 			continue;
 		}
-		
-		//printf("받음 : %d\n", WSAGetLastError());
-
 
 		switch (pOverlapped->connType)
 		{
 		case eConnType::TCP:
-			pConn->OnRecv(bytesTransferred);
+			pConn = ConnectionManager::GetInst()->Get(connID);
+			if (pConn)
+			{
+				pConn->OnRecv(bytesTransferred);
+				pConn->Release();
+			}
 			break;
 		case eConnType::UDP:
 			UDPHandler::GetInst()->OnRecv(pOverlapped->udpIdx);
-			UDPHandler::GetInst()->RecvFromWSA(pOverlapped->udpIdx);
 			break;
 		}
 	}

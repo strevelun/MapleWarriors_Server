@@ -51,13 +51,18 @@ bool UDPHandler::Bind()
 
 void UDPHandler::OnRecv(int32 _idx)
 {
-	m_lock.Enter();
-	uint16 port = m_vecWorks[_idx].udpAddr.sin_port;
-	uint32 id = *reinterpret_cast<const int32*>(&m_vecWorks[_idx].udpBuf);
-	m_lock.Leave();
+	uint16 port;
+	uint32 id;
 
-	Connection* pConn = ConnectionManager::GetInst()->Find(id);
-	if (!pConn) return;
+	GetConnInfo(_idx, port, id);
+
+	Connection* pConn = ConnectionManager::GetInst()->Get(id);
+	if (!pConn) 
+	{
+		// 이미 삭제된 Connection
+		pConn->Release();
+		return;
+	}
 
 	m_lock.Enter();
 	if (pConn->GetUDPPort() != 0)
@@ -67,6 +72,8 @@ void UDPHandler::OnRecv(int32 _idx)
 		return;
 	}
 	pConn->SetMyUDPPort(ntohs(port));
+
+	pConn->Release();
 	m_lock.Leave();
 
 	Packet pkt;
@@ -74,12 +81,12 @@ void UDPHandler::OnRecv(int32 _idx)
 		.Add((PacketType)eServer::CheckedClientInfo)
 		.Add((uint16)port);
 	pConn->Send(pkt);
-	pConn->Release();
+
+	RecvFromWSA(_idx);
 }
 
 bool UDPHandler::RecvFromWSA(int32 _idx)
 {
-	m_lock.Enter();
 	DWORD flags = 0;
 	int32 addrSize = sizeof(m_vecWorks[_idx].udpAddr);
 	memset(&m_vecWorks[_idx], 0, sizeof(m_vecWorks[_idx]));
@@ -89,17 +96,16 @@ bool UDPHandler::RecvFromWSA(int32 _idx)
 	m_vecWorks[_idx].udpDataBuf.len = PACKET_MAX_SIZE;
 
 	int32 result = ::WSARecvFrom(m_udpSocket, &m_vecWorks[_idx].udpDataBuf, 1, nullptr, &flags, (SOCKADDR*)&m_vecWorks[_idx].udpAddr, &addrSize, &m_vecWorks[_idx].overlapped, nullptr);
+	
 	if (result == SOCKET_ERROR)
 	{
 		int err = ::WSAGetLastError();
 		if (err != WSA_IO_PENDING)
 		{
 			printf("WSARecvFrom err : %d\n", err);
-			m_lock.Leave();
 			return false;
 		}
 	}
-	m_lock.Leave();
 	return true;
 }
 
@@ -113,4 +119,8 @@ bool UDPHandler::RecvReady()
 	return true;
 }
 
-
+void UDPHandler::GetConnInfo(int32 _idx, uint16& _port, uint32& _id)
+{
+	_port = m_vecWorks[_idx].udpAddr.sin_port;
+	_id = *reinterpret_cast<const uint32*>(&m_vecWorks[_idx].udpBuf);
+}

@@ -150,6 +150,7 @@
     <ClCompile Include="Room\RoomManager.cpp" />
     <ClCompile Include="Room\RoomUser.cpp" />
     <ClCompile Include="ServerApp.cpp" />
+    <ClCompile Include="SRWLock.cpp" />
     <ClCompile Include="User\User.cpp" />
     <ClCompile Include="User\UserManager.cpp" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="Room\RoomManager.h" />
     <ClInclude Include="Room\RoomUser.h" />
     <ClInclude Include="ServerApp.h" />
+    <ClInclude Include="SRWLock.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="User\User.h" />
     <ClInclude Include="User\UserManager.h" />

@@ -3,10 +3,12 @@
 #include "../Defines.h"
 #include "../Types.h"
 #include "../NetworkCore/Connection.h"
+#include "../SRWLock.h"
 
 class User
 {
 private:
+	SRWLock			m_lock;
 
 private:
 	eLoginState		m_eLoginState; 
@@ -39,6 +41,8 @@ public:
 	void SetRoomID(uint32 _id) { m_roomID = _id; }
 	void SetRoomUserIdx(uint32 _id) { m_roomUserIdx = _id; }
 
+	void Connect(uint32 _connectionId);
+	bool IsLogin();
 	void Leave();
 };
 

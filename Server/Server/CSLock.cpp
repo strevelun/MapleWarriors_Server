@@ -1,6 +1,6 @@
 #include "CSLock.h"
 
-CSLock::CSLock() 
+CSLock::CSLock()
 {
 	InitializeCriticalSection(&m_lock);
 }
@@ -12,7 +12,7 @@ CSLock::~CSLock()
 
 void CSLock::Enter()
 {
-	EnterCriticalSection(&m_lock); 
+	EnterCriticalSection(&m_lock);
 }
 
 void CSLock::Leave()

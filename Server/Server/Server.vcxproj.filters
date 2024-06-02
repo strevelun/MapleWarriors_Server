@@ -111,6 +111,9 @@
     <ClCompile Include="NetworkCore\UDPHandler.cpp">
       <Filter>NetworkCore</Filter>
     </ClCompile>
+    <ClCompile Include="SRWLock.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Packet\Packet.h">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="NetworkCore\UDPHandler.h">
       <Filter>NetworkCore</Filter>
+    </ClInclude>
+    <ClInclude Include="SRWLock.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

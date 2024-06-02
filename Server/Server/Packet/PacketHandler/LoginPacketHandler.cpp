@@ -16,15 +16,12 @@ void NLogin::Test(Connection& _conn, PacketReader& _packet)
 void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 {
 	const wchar_t* pNickname = _packet.GetWString();
-	//uint16 port = _packet.GetUShort();
-	//_conn.SetMyUDPPort(port);
 
 	uint8 ipBytes[4] = { 0 };
 	ipBytes[0] = _packet.GetUInt8();
 	ipBytes[1] = _packet.GetUInt8();
 	ipBytes[2] = _packet.GetUInt8();
 	ipBytes[3] = _packet.GetUInt8();
-	_conn.SetPrivateIP(ipBytes[0], ipBytes[1], ipBytes[2], ipBytes[3]);
 
 	User* pUser = UserManager::GetInst()->Create(pNickname);
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
@@ -32,7 +29,12 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 	PacketType type;
 	Packet p;
 
-	if (pUser->GetState() == eLoginState::Logout)
+	if(pUser->IsLogin())
+	{
+		type = (PacketType)eServer::LoginFailure_AlreadyLoggedIn;
+		p.Add<PacketType>(type);
+	}
+	else // 해당아이디로 누군가 로그인
 	{
 		if (pLobby->GetUserCount() >= USER_LOBBY_MAX)
 		{
@@ -43,14 +45,11 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 		{
 			type = (PacketType)eServer::LoginSuccess;
 			p.Add<PacketType>(type);
-			UserManager::GetInst()->Connect(_conn.GetId(), pUser);
+
+			_conn.SetPrivateIP(ipBytes[0], ipBytes[1], ipBytes[2], ipBytes[3]);
+			UserManager::GetInst()->Connect(_conn.GetId(), pNickname);
 			pLobby->Enter(_conn, pUser);
 		}
-	}
-	else // 해당아이디로 누군가 로그인
-	{
-		type = (PacketType)eServer::LoginFailure_AlreadyLoggedIn;
-		p.Add<PacketType>(type);
 	}
 
 	wprintf(L"%s님 [%d] : ", pNickname, (int32)_conn.GetSocket());

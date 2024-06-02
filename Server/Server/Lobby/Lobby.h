@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../NetworkCore/Connection.h"
-#include "../CSLock.h"
+#include "../SRWLock.h"
 #include "LobbyUser.h"
 #include "../Room/RoomManager.h"
 
@@ -22,7 +22,7 @@ private:
 	RoomManager								m_roomManager;
 
 private:
-	CSLock m_lock;
+	SRWLock									m_lock;
 	std::vector<uint32>						m_vecUnusedUserIDs;
 	std::set<_stLobbyUser>					m_setAllLobbyUser;
 	std::unordered_set<uint32>				m_usetUserInLobby;
@@ -36,10 +36,9 @@ public:
 	~Lobby();
 
 	void Enter(Connection& _conn, User* _pUser);
-	LobbyUser* Find(uint32 _lobbyID, uint32 _connID);
 	void Leave(uint32 _lobbyID, uint32 _connID);
 
-	uint32 GetUserCount() const { return m_userCount; }
+	uint32 GetUserCount();
 	RoomManager* GetRoomManager() { return &m_roomManager; }
 
 	void PacketUserListPage(uint32 _page, Packet& _pkt);
@@ -54,6 +53,6 @@ public:
 	void SendRoom(const Packet& _pkt, uint32 _roomID, uint32 _exceptID = USER_NOT_IN_THE_ROOM);
 
 private:
-	//Room* FindRoom(uint32 _roomID);
+	LobbyUser* Find(uint32 _lobbyID, uint32 _connID);
 };
 

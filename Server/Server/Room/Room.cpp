@@ -18,9 +18,6 @@ void Room::Init(Connection& _conn, User* _pUser, const wchar_t* _pTitle, uint32 
 	if (len > ROOMTITLE_LEN)			len = ROOMTITLE_LEN;
 	wcsncpy_s(m_title, _pTitle, len);
 
-	// 데드락 발생
-	// User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
-
 	m_pOwnerNickname = _pUser->GetNickname();
 	m_ownerIdx = 0;
 	m_arrUser[0].Init(_conn, _pUser, true);
@@ -38,11 +35,9 @@ void Room::Clear()
 	m_numOfUser = 0;
 	m_eState = eRoomState::None;
 
-	m_lock.Enter();
 	for (RoomUser& user : m_arrUser)
 		if (user.GetState() != eRoomUserState::None)
 			user.Clear();
-	m_lock.Leave();
 }
 
 
@@ -80,7 +75,6 @@ bool Room::StartGame()
 			}
 		}
 		bSuccess = true;
-		//m_readyCnt = 1;
 	}
 	m_lock.Leave();
 

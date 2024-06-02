@@ -3,6 +3,7 @@
 #include "../Packet/Packet.h"
 #include "../NetworkCore/Connection.h"
 #include "../User/User.h"
+#include "../SRWLock.h"
 
 enum class eRoomUserState
 {
@@ -13,6 +14,10 @@ enum class eRoomUserState
 
 class RoomUser
 {
+private:
+	SRWLock					m_lock;
+
+private:
 	Connection*				m_pConn;
 	User*					m_pUser;
 	eRoomUserState			m_eState;

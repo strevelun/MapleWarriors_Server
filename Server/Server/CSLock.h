@@ -2,7 +2,7 @@
 
 #include "Defines.h"
 
-class CSLock
+class CSLock 
 {
 private:
 	CRITICAL_SECTION			m_lock;

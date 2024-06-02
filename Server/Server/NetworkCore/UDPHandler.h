@@ -26,6 +26,7 @@ public:
 	bool RecvFromWSA(int32 _idx);
 	bool RecvReady();
 	void OnRecv(int32 _idx);
+	void GetConnInfo(int32 _idx, uint16& _port, uint32& _id);
 
 	SOCKET GetSocket() const { return m_udpSocket; }
 

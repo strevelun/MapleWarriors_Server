@@ -15,7 +15,7 @@ Lobby::~Lobby()
 
 void Lobby::Enter(Connection& _conn, User* _pUser)
 {
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Writer);
 	{
 		if (m_userCount < USER_LOBBY_MAX && _pUser->GetSceneState() == eSceneState::Login)
 		{
@@ -34,7 +34,7 @@ void Lobby::Enter(Connection& _conn, User* _pUser)
 		else
 			printf("입장 거부됨 [현재 인원 : %d]\n", m_userCount);
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Writer);
 }
 
 LobbyUser* Lobby::Find(uint32 _lobbyID, uint32 _connID)
@@ -43,18 +43,16 @@ LobbyUser* Lobby::Find(uint32 _lobbyID, uint32 _connID)
 
 	LobbyUser* pUser = nullptr;
 
-	//m_userLock.Enter();
 	if (m_setAllLobbyUser.find(_stLobbyUser(_lobbyID, _connID)) != m_setAllLobbyUser.cend())
 	{
 		pUser = &m_arrUser[_lobbyID];
 	}
-	//m_userLock.Leave();
 	return pUser;
 }
 
 void Lobby::Leave(uint32 _lobbyID, uint32 _connID)
 {
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Writer); // 여기서 걸림
 	{
 		if (Find(_lobbyID, _connID))
 		{
@@ -65,14 +63,22 @@ void Lobby::Leave(uint32 _lobbyID, uint32 _connID)
 			--m_userCount;
 		}
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Writer);
+}
+
+uint32 Lobby::GetUserCount()
+{
+	m_lock.Lock(eLockType::Reader);
+	uint32 cnt = m_userCount;
+	m_lock.UnLock(eLockType::Reader);
+	return cnt;
 }
 
 void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 {
 	_pkt.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_UserList);
 
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Reader);
 	{
 		// 1페이지라면 처음부터 10개
 		// 3페이지 : 31~40
@@ -120,7 +126,7 @@ void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 
 		//printf("%d\n", result);
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Reader);
 }
 
 void Lobby::Send(const Packet& _pkt, uint32 _userID)
@@ -132,9 +138,9 @@ void Lobby::Send(const Packet& _pkt, uint32 _userID)
 
 void Lobby::SendAllInLobby(const Packet& _pkt)
 {
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Reader);
 	std::unordered_set<uint32> usetLobbyUser = m_usetUserInLobby;
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Reader);
 
 	for (uint32 id : usetLobbyUser)
 		m_arrUser[id].Send(_pkt);
@@ -146,11 +152,9 @@ Room* Lobby::CreateRoom(Connection& _conn, User* _pUser, const wchar_t* _pTitle)
 
 	if (pRoom)
 	{
-		m_lock.Enter();
-		{
-			m_usetUserInLobby.erase(_pUser->GetLobbyId());
-		}
-		m_lock.Leave();
+		m_lock.Lock(eLockType::Writer);
+		m_usetUserInLobby.erase(_pUser->GetLobbyId());
+		m_lock.UnLock(eLockType::Writer);
 	}
 
 	return pRoom;
@@ -162,11 +166,9 @@ eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomI
 
 	if (eResult == eEnterRoomResult::Success)
 	{
-		m_lock.Enter();
-		{
-			m_usetUserInLobby.erase(_pUser->GetLobbyId());
-		}
-		m_lock.Leave();
+		m_lock.Lock(eLockType::Writer);
+		m_usetUserInLobby.erase(_pUser->GetLobbyId());
+		m_lock.UnLock(eLockType::Writer);
 	}
 	return eResult;
 }
@@ -180,9 +182,9 @@ uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uin
 
 	if (result != ROOM_ID_NOT_FOUND)
 	{
-		m_lock.Enter();
+		m_lock.Lock(eLockType::Writer);
 		m_usetUserInLobby.insert(_pUser->GetLobbyId());
-		m_lock.Leave();
+		m_lock.UnLock(eLockType::Writer);
 	}
 
 	return result;

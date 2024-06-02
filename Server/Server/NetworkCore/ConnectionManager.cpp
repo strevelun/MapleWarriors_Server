@@ -5,33 +5,31 @@ ConnectionManager* ConnectionManager::s_pInst = nullptr;
 
 Connection* ConnectionManager::Create(tAcceptedClient* _pAcceptedClient)
 {
-	m_lock.Enter();
 	Connection* pConn = new Connection(m_connectionId, _pAcceptedClient);
 	m_mapConnection.insert({ m_connectionId, pConn });
 	++m_connectionId;
 	++m_count;
-	m_lock.Leave();
 	pConn->AddRef();
 	return pConn;
 }
 
-Connection* ConnectionManager::Find(uint32 _id)
+Connection* ConnectionManager::Get(uint32 _id)
 {
-	m_lock.Enter();
+	m_srwLock.Lock(eLockType::Reader);
 	std::unordered_map<uint32, Connection*>::iterator iter = m_mapConnection.find(_id);
 	if (iter == m_mapConnection.cend())
 	{
-		m_lock.Leave();
+		m_srwLock.UnLock(eLockType::Reader);
 		return nullptr;
 	}
-	m_lock.Leave();
 	iter->second->AddRef();
+	m_srwLock.UnLock(eLockType::Reader);
 	return iter->second;
 }
 
 void ConnectionManager::Delete(uint32 _id)
 {
-	m_lock.Enter();
+	m_srwLock.Lock(eLockType::Writer);
 	std::unordered_map<uint32, Connection*>::iterator iter = m_mapConnection.find(_id);
 	if (iter != m_mapConnection.cend())
 	{
@@ -40,7 +38,7 @@ void ConnectionManager::Delete(uint32 _id)
 		iter->second->Release();
 		m_mapConnection.erase(_id);
 	}
-	m_lock.Leave();
+	m_srwLock.UnLock(eLockType::Writer);
 }
 
 ConnectionManager::ConnectionManager() :

@@ -20,6 +20,24 @@ User::~User()
 {
 }
 
+void User::Connect(uint32 _connectionId)
+{
+	m_lock.Lock(eLockType::Writer);
+	SetConnectionId(_connectionId);
+	SetState(eLoginState::Login);
+	SetSceneState(eSceneState::Login);
+	m_lock.UnLock(eLockType::Writer);
+}
+
+bool User::IsLogin()
+{
+	bool login;
+	m_lock.Lock(eLockType::Reader);
+	login = GetState() == eLoginState::Login;
+	m_lock.UnLock(eLockType::Reader);
+	return login;
+}
+
 void User::Leave()
 {
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
@@ -73,8 +91,6 @@ void User::Leave()
 			pLobby->SendRoom(pktNotifyRoomUserExit, roomID, roomUserIdx);
 			printf("User::Leave::SendRoom\n");
 		}
-
-
 		//printf("%d : User::Leave\n", leftNum);
 	}
 	case eSceneState::Lobby:
@@ -82,6 +98,11 @@ void User::Leave()
 		break;
 	}
 
+	SetConnectionId(USER_NOT_CONNECTED);
+	SetSceneState(eSceneState::None);
+	SetLobbyID(USER_NOT_IN_THE_ROOM);
+	SetRoomID(USER_NOT_IN_THE_ROOM);
+	SetRoomUserIdx(USER_NOT_IN_THE_ROOM);
 	SetState(eLoginState::Logout);
 	wprintf(L"[%s] ¥‘ ¡¢º”¡æ∑·\n", m_nickname);
 }
