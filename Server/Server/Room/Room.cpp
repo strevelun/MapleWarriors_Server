@@ -21,7 +21,6 @@ void Room::Init(Connection& _conn, User* _pUser, const wchar_t* _pTitle, uint32 
 	m_pOwnerNickname = _pUser->GetNickname();
 	m_ownerIdx = 0;
 	m_arrUser[0].Init(_conn, _pUser, true);
-	_pUser->SetRoomUserIdx(0);
 	m_numOfUser = 1;
 	m_eState = eRoomState::Standby;
 	m_eMap = eGameMap::Map0;
@@ -70,7 +69,7 @@ bool Room::StartGame()
 		{
 			if (user.GetState() != eRoomUserState::None)
 			{
-				user.SetUserSceneState(eSceneState::InGame);
+				user.GameStart();
 				user.SetState(eRoomUserState::Standby);
 			}
 		}
@@ -87,7 +86,7 @@ void Room::GameOver()
 	{
 		if (user.GetState() == eRoomUserState::None) continue;
 
-		user.SetUserSceneState(eSceneState::Room);
+		user.GameOver();
 	}
 }
 
@@ -120,11 +119,19 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 	_pkt.Add<int8>(m_numOfUser);
 	MakePacketIP(_pkt, m_arrUser[_roomUserIdx].GetIP());
 
+	const int8* ip = nullptr;
+	const uint8* privateIP = nullptr;
+
 	uint32 idx = 0;
 	for (RoomUser& user : m_arrUser)
 	{
 		if (user.GetState() != eRoomUserState::None)
 		{
+			ip = user.GetIP();
+			privateIP = user.GetPrivateIP();
+
+			if (!ip || !privateIP) continue;
+
 			_pkt.Add<uint16>(user.GetConnectionID());
 			_pkt.Add<int8>(idx);
 			_pkt.AddWString(user.GetNickname());
@@ -141,7 +148,7 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 	m_lock.Leave();
 }
 
-bool Room::Enter(Connection& _conn, User* _pUser)
+uint32 Room::Enter(Connection& _conn, User* _pUser)
 {
 	m_lock.Enter();
 	{
@@ -161,30 +168,26 @@ bool Room::Enter(Connection& _conn, User* _pUser)
 			}
 
 			m_arrUser[i].Init(_conn, _pUser);
-			_pUser->SetRoomUserIdx(i);
 			++m_numOfUser;
 			m_lock.Leave();
-			return true;
+			return i;
 		}
 	}
 	m_lock.Leave();
-	return false;
+	return USER_NOT_IN_THE_ROOM;
 }
 
-uint32 Room::Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
+uint32 Room::Leave(uint32 _myRoomIdx, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 {
 	//printf("Leave : %d\n", m_numOfUser);
 	if (m_numOfUser == 0) return USER_NOT_IN_THE_ROOM;
-	
-	uint32 idx = _pUser->GetRoomUserIdx();
-	if (idx >= ROOM_USER_MAX) return USER_NOT_IN_THE_ROOM;
 
 	m_lock.Enter();
 	{
-		if (m_arrUser[idx].IsOwner())
+		if (m_arrUser[_myRoomIdx].IsOwner())
 		{
-			_prevOwnerIdx = idx;
-			_newOwnerIdx = FindNextOwner(idx);
+			_prevOwnerIdx = _myRoomIdx;
+			_newOwnerIdx = FindNextOwner(_myRoomIdx);
 			if (_newOwnerIdx != USER_NOT_IN_THE_ROOM) // 방에 방장 혼자가 아닌 경우
 			{
 				m_pOwnerNickname = m_arrUser[_newOwnerIdx].GetNickname();
@@ -195,11 +198,7 @@ uint32 Room::Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 			}
 		}
 
-		m_arrUser[idx].Clear();
-		_pUser->SetRoomUserIdx(USER_NOT_IN_THE_ROOM);
-		_pUser->SetRoomID(USER_NOT_IN_THE_ROOM);
-		_pUser->SetSceneState(eSceneState::Lobby);
-		
+		m_arrUser[_myRoomIdx].Clear();
 		--m_numOfUser;
 	}
 	m_lock.Leave();

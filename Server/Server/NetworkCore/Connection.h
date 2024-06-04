@@ -10,8 +10,6 @@
 class Connection
 {
 private:
-    std::atomic<int32>               m_ref; 
-
     uint32               m_id;
     tAcceptedClient*    m_pAcceptedClient;
     RingBuffer          m_ringBuffer;
@@ -22,16 +20,6 @@ private:
 public:
     Connection(uint32 _id, tAcceptedClient* _pAcceptedClient);
     ~Connection();
-
-    void AddRef() { m_ref.fetch_add(1); }
-    void Release()
-    {
-        m_ref.fetch_sub(1);
-        if (m_ref <= 0)
-        {
-            delete this;
-        }
-    }
 
     uint32   GetId() const { return m_id; }
     SOCKET  GetSocket() const { return m_pAcceptedClient->clientSocket; }

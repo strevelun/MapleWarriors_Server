@@ -44,5 +44,10 @@ public:
 	void Connect(uint32 _connectionId);
 	bool IsLogin();
 	void Leave();
+	void LeaveRoom();
+	void EnterRoom(uint32 _roomID);
+	void CreateRoom(uint32 _roomID);
+	void GameOver();
+	void GameStart();
 };
 

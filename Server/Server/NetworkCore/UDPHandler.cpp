@@ -1,5 +1,4 @@
 #include "UDPHandler.h"
-#include "ConnectionManager.h"
 #include "../Packet/PacketHandler/PacketHandler.h"
 
 UDPHandler* UDPHandler::s_pInst = nullptr;
@@ -52,35 +51,29 @@ bool UDPHandler::Bind()
 void UDPHandler::OnRecv(int32 _idx)
 {
 	uint16 port;
-	uint32 id;
 
-	GetConnInfo(_idx, port, id);
-
-	Connection* pConn = ConnectionManager::GetInst()->Get(id);
-	if (!pConn) 
+	std::shared_ptr<Connection> conn = GetConnInfo(_idx, port);
+	if (!conn) 
 	{
 		// 이미 삭제된 Connection
-		pConn->Release();
 		return;
 	}
 
 	m_lock.Enter();
-	if (pConn->GetUDPPort() != 0)
+	if (conn->GetUDPPort() != 0)
 	{
-		pConn->Release();
 		m_lock.Leave();
 		return;
 	}
-	pConn->SetMyUDPPort(ntohs(port));
+	conn->SetMyUDPPort(ntohs(port));
 
-	pConn->Release();
 	m_lock.Leave();
 
 	Packet pkt;
 	pkt
 		.Add((PacketType)eServer::CheckedClientInfo)
 		.Add((uint16)port);
-	pConn->Send(pkt);
+	conn->Send(pkt);
 
 	RecvFromWSA(_idx);
 }
@@ -119,8 +112,10 @@ bool UDPHandler::RecvReady()
 	return true;
 }
 
-void UDPHandler::GetConnInfo(int32 _idx, uint16& _port, uint32& _id)
+std::shared_ptr<Connection> UDPHandler::GetConnInfo(int32 _idx, uint16& _port)
 {
 	_port = m_vecWorks[_idx].udpAddr.sin_port;
-	_id = *reinterpret_cast<const uint32*>(&m_vecWorks[_idx].udpBuf);
+	uint32 id = *reinterpret_cast<const uint32*>(&m_vecWorks[_idx].udpBuf);
+
+	return ConnectionManager::GetInst()->Get(id);
 }

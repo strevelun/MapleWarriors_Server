@@ -13,11 +13,11 @@ private:
 	SRWLock									m_srwLock;
 	uint32									m_connectionId;
 	uint32									m_count;
-	std::unordered_map<uint32, Connection*> m_mapConnection;
+	std::unordered_map<uint32, std::shared_ptr<Connection>> m_mapConnection;
 
 public:
-	Connection* Create(tAcceptedClient* _pAcceptedClient);
-	Connection* Get(uint32 _id);
+	std::shared_ptr<Connection> Create(tAcceptedClient* _pAcceptedClient);
+	std::shared_ptr<Connection> Get(uint32 _id);
 	void Delete(uint32 _id);
 
 	uint32 GetCount() const { return m_count; }

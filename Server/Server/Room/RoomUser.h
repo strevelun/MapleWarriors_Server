@@ -3,7 +3,6 @@
 #include "../Packet/Packet.h"
 #include "../NetworkCore/Connection.h"
 #include "../User/User.h"
-#include "../SRWLock.h"
 
 enum class eRoomUserState
 {
@@ -14,9 +13,6 @@ enum class eRoomUserState
 
 class RoomUser
 {
-private:
-	SRWLock					m_lock;
-
 private:
 	Connection*				m_pConn;
 	User*					m_pUser;
@@ -33,19 +29,21 @@ public:
 
 	eRoomUserState GetState() const { return m_eState; }
 	bool			IsOwner() const { return m_bOwner; }
-	const wchar_t* GetNickname() const { return m_pUser->GetNickname(); }
-	uint32 GetConnectionID() const { return m_pConn->GetId(); }
+	const wchar_t* GetNickname() const { return m_pUser ? m_pUser->GetNickname() : nullptr; }
+	uint32 GetConnectionID() const { return m_pConn ? m_pConn->GetId() : 0;  }
 	eCharacterChoice GetCharacterChoice() const { return m_eCharacter; }
-	const int8* GetIP() const { return m_pConn->GetIP(); }
-	const uint8* GetPrivateIP() const { return m_pConn->GetPrivateIP(); }
-	SOCKET GetSocket() const { return m_pConn->GetSocket(); }
-	uint16 GetUDPPort() const { return m_pConn->GetUDPPort(); }
+	const int8* GetIP() const { return m_pConn ? m_pConn->GetIP() : nullptr; }
+	const uint8* GetPrivateIP() const { return m_pConn ? m_pConn->GetPrivateIP() : nullptr; }
+	SOCKET GetSocket() const { return m_pConn ? m_pConn->GetSocket() : (SOCKET)0; }
+	uint16 GetUDPPort() const { return m_pConn ? m_pConn->GetUDPPort() : 0; }
 
 	void SetOwner(bool _bIsOwner) { m_bOwner = _bIsOwner; }
 	void SetState(eRoomUserState _eState) { m_eState = _eState; }
-	void SetUserSceneState(eSceneState _eState) { m_pUser->SetSceneState(_eState); }
 	void SetCharacterChoice(eCharacterChoice _eChoice) { m_eCharacter = _eChoice; }
 
 	void Send(const Packet& _pkt);
+	
+	void GameOver() { if(m_pUser) m_pUser->GameOver(); }
+	void GameStart() { if(m_pUser) m_pUser->GameStart(); }
 };
 

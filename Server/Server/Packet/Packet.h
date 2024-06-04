@@ -18,7 +18,7 @@ public:
 
 	template<typename Type>
 	Packet& Add(const Type& _type);
-	Packet& AddWString(const std::wstring& _str);
+	Packet& AddWString(const wchar_t* _str);
 };
 
 template<typename Type>

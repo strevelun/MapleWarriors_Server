@@ -6,7 +6,7 @@
 #include "ConnectionManager.h"
 
 Connection::Connection(uint32 _id, tAcceptedClient* _pAcceptedClient) :
-	m_ref(0), m_id(_id), m_pAcceptedClient(_pAcceptedClient)
+	m_id(_id), m_pAcceptedClient(_pAcceptedClient)
 {
 	m_dataBuf.buf = m_ringBuffer.GetWriteAddr();
 	m_dataBuf.len = BUFFER_MAX;

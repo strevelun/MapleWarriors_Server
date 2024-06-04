@@ -11,20 +11,28 @@ LobbyUser::~LobbyUser()
 {
 }
 
-void LobbyUser::Init(Connection& _pConn, User* _pUser)
+void LobbyUser::Init(Connection& _conn, User* _pUser)
 {
-	m_pConn = &_pConn;
+	m_pConn = &_conn;
 	m_pUser = _pUser;
 }
 
 void LobbyUser::Clear()
 {
+	m_lock.Enter();
 	m_pUser = nullptr;
 	m_pConn = nullptr;
+	m_lock.Leave();
 }
 
 void LobbyUser::Send(const Packet& _pkt)
 {
-	if (!m_pConn) return;
+	m_lock.Enter();
+	if (!m_pConn)
+	{
+		m_lock.Leave();
+		return;
+	}
 	m_pConn->Send(_pkt);
+	m_lock.Leave();
 }

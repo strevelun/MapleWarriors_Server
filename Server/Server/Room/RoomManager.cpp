@@ -16,33 +16,27 @@ RoomManager::~RoomManager()
 Room* RoomManager::Create(Connection& _conn, User* _pUser, const wchar_t* _pTitle)
 {
 	Room* pRoom = nullptr;
+	uint32 roomId = ROOM_ID_NOT_FOUND;
 	m_lock.Enter();
 	{
 		if (m_count < ROOM_MAX)
 		{
-			uint32 roomId = m_vecUnusedRoomIDs.back();
+			roomId = m_vecUnusedRoomIDs.back();
 			m_vecUnusedRoomIDs.pop_back();
 			m_setRoom.insert(roomId);
 			m_arrRoom[roomId].Init(_conn, _pUser, _pTitle, roomId);
 			pRoom = &m_arrRoom[roomId];
-			_pUser->SetRoomID(roomId);
-			_pUser->SetSceneState(eSceneState::Room);
 			++m_count;
 		}
 	}
 	m_lock.Leave();
+
 	return pRoom;
 }
 
 eEnterRoomResult RoomManager::Enter(Connection& _conn, User* _pUser, uint32 _roomID)
 {
 	m_lock.Enter();
-
-	if (_pUser->GetSceneState() == eSceneState::Room)
-	{
-		m_lock.Leave();
-		return eEnterRoomResult::None;
-	}
 
 	eEnterRoomResult eResult = eEnterRoomResult::None;
 	auto iter = m_setRoom.find(_roomID);
@@ -54,43 +48,39 @@ eEnterRoomResult RoomManager::Enter(Connection& _conn, User* _pUser, uint32 _roo
 		m_lock.Leave();
 		return eResult;
 	}
-
-	bool result = m_arrRoom[*iter].Enter(_conn, _pUser);
-	if (!result) eResult = eEnterRoomResult::Full;
-	else
-	{
-		_pUser->SetRoomID(_roomID);
-		_pUser->SetSceneState(eSceneState::Room);
-		eResult = eEnterRoomResult::Success;
-	}
-
 	m_lock.Leave();
+
+	uint32 idx = m_arrRoom[*iter].Enter(_conn, _pUser);
+
+	if (idx != USER_NOT_IN_THE_ROOM) eResult = eEnterRoomResult::Success;
+	else eResult = eEnterRoomResult::Full;
 
 	return eResult;
 }
 
-uint32 RoomManager::Leave(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32 &_newOwnerIdx)
+uint32 RoomManager::Leave(uint32 _myRoomIdx, uint32 _roomID, uint32& _prevOwnerIdx, uint32 &_newOwnerIdx)
 {
 	uint32 leftNum = ROOM_ID_NOT_FOUND;
 
 	m_lock.Enter(); 
 
-	if (m_setRoom.find(_roomID) != m_setRoom.cend())
+	if (m_setRoom.find(_roomID) == m_setRoom.cend())
 	{
-		leftNum = m_arrRoom[_roomID].Leave(_pUser, _prevOwnerIdx, _newOwnerIdx);
-		printf("남은 방 인원 : %d\n", leftNum);
-		if (leftNum == 0)
-		{
-			m_arrRoom[_roomID].Clear();
-			m_vecUnusedRoomIDs.push_back(_roomID);
-			m_setRoom.erase(_roomID);
-			--m_count;
-		}
-		_pUser->SetRoomID(USER_NOT_IN_THE_ROOM);
-		_pUser->SetSceneState(eSceneState::Lobby);
+		m_lock.Leave();
+		return leftNum;
 	}
-
+	
+	if (m_arrRoom[_roomID].GetNumOfUser() == 1)
+	{
+		m_arrRoom[_roomID].Clear();
+		m_vecUnusedRoomIDs.push_back(_roomID);
+		m_setRoom.erase(_roomID);
+		--m_count;
+	}
 	m_lock.Leave();
+
+	leftNum = m_arrRoom[_roomID].Leave(_myRoomIdx, _prevOwnerIdx, _newOwnerIdx);
+
     return leftNum;
 }
 
@@ -181,8 +171,9 @@ void RoomManager::MakePacketUserSlotInfo(uint32 _roomID, Packet& _pkt)
 	_pkt.Add<uint16>(m_arrRoom[*iter].GetId());
 	_pkt.AddWString(m_arrRoom[*iter].GetTitle());
 
-	m_arrRoom[*iter].PacketRoomUserSlotInfo(_pkt);
 	m_lock.Leave();
+
+	m_arrRoom[*iter].PacketRoomUserSlotInfo(_pkt);
 }
 
 void RoomManager::Send(const Packet& _pkt, uint32 _roomID, uint32 _exceptID)

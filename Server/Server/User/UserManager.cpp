@@ -39,7 +39,14 @@ User* UserManager::FindConnectedUser(uint32 _connectionId)
 bool UserManager::Connect(uint32 _connectionId, const wchar_t* _pNickname)
 {
 	m_lock.Lock(eLockType::Writer);
-	User* pUser = new User(_pNickname);
+	std::unordered_map<std::wstring, User*>::const_iterator iter = m_mapUser.find(_pNickname);
+	std::unordered_map<std::wstring, User*>::const_iterator iterEnd = m_mapUser.cend();
+	if (iter == iterEnd)
+	{
+		m_lock.UnLock(eLockType::Writer);
+		return false;
+	}
+	User* pUser = iter->second;
 	m_mapConnectedUser.insert({ _connectionId, pUser });
 	m_lock.UnLock(eLockType::Writer);
 

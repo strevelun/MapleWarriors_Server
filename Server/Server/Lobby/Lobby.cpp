@@ -52,7 +52,7 @@ LobbyUser* Lobby::Find(uint32 _lobbyID, uint32 _connID)
 
 void Lobby::Leave(uint32 _lobbyID, uint32 _connID)
 {
-	m_lock.Lock(eLockType::Writer); // 여기서 걸림
+	m_lock.Lock(eLockType::Writer); 
 	{
 		if (Find(_lobbyID, _connID))
 		{
@@ -152,6 +152,8 @@ Room* Lobby::CreateRoom(Connection& _conn, User* _pUser, const wchar_t* _pTitle)
 
 	if (pRoom)
 	{
+		_pUser->CreateRoom(pRoom->GetId());
+
 		m_lock.Lock(eLockType::Writer);
 		m_usetUserInLobby.erase(_pUser->GetLobbyId());
 		m_lock.UnLock(eLockType::Writer);
@@ -166,6 +168,8 @@ eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomI
 
 	if (eResult == eEnterRoomResult::Success)
 	{
+		_pUser->EnterRoom(_roomID);
+
 		m_lock.Lock(eLockType::Writer);
 		m_usetUserInLobby.erase(_pUser->GetLobbyId());
 		m_lock.UnLock(eLockType::Writer);
@@ -174,14 +178,17 @@ eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomI
 }
 
 // _pUser의 LobbyID가 초기화된 후 LeaveRoom이 호출되는 경우 포착됨
+// 로비에서 나간 다음(Clear)
 uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
 {
 	if (_roomID >= USER_LOBBY_MAX) return 0;
 
-	uint32 result = m_roomManager.Leave(_pUser, _roomID, _prevOwnerIdx, _newOwnerIdx);
+	uint32 result = m_roomManager.Leave(_pUser->GetRoomUserIdx(), _roomID, _prevOwnerIdx, _newOwnerIdx);
 
 	if (result != ROOM_ID_NOT_FOUND)
 	{
+		_pUser->LeaveRoom();
+
 		m_lock.Lock(eLockType::Writer);
 		m_usetUserInLobby.insert(_pUser->GetLobbyId());
 		m_lock.UnLock(eLockType::Writer);

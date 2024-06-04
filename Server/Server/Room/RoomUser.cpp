@@ -28,7 +28,7 @@ void RoomUser::Clear()
 	m_eCharacter = eCharacterChoice::None;
 }
 
-void RoomUser::Send(const Packet& _pkt) // Conn을 매개변수
+void RoomUser::Send(const Packet& _pkt)
 {
 	if (m_pConn) m_pConn->Send(_pkt);
 }

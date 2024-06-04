@@ -16,7 +16,7 @@ public:
 	~IOCP();
 
 	HANDLE CreateIOCP();
-	bool AssociateIOCP(Connection* _completionKey); 
+	bool AssociateIOCP(SOCKET _socket, uint32 _completionKey);
 	bool AssociateIOCP(SOCKET _socket);
 	bool CreateWorkerThread(uint32 _numOfThread);
 

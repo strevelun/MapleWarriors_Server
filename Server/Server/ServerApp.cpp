@@ -29,27 +29,13 @@ bool ServerApp::Init(const int8* _ip, uint16 _port, int32 _backlog)
 void ServerApp::Run()
 {
 	tAcceptedClient* pAcceptedClient = nullptr;
-	Connection* pConn = nullptr;
 
 	while (m_bIsRunning)
 	{
 		pAcceptedClient = m_acceptor.Accept();
-		if (pAcceptedClient->clientSocket == INVALID_SOCKET)
-		{
-			printf("socket 수락 실패 : %d\n", ::WSAGetLastError());
-			continue;
-		}
+		if (!pAcceptedClient) continue;
 
-		pConn = m_engine.OnConnected(pAcceptedClient);
-		if (!pConn)
-		{
-			printf("[%d], IP[%s]		연결실패			(현재 접속자 수 : %d)\n",
-				(int32)pAcceptedClient->clientSocket, pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
-			continue;
-		}
-
-		printf("id[%u], socket[%d], IP[%s]		연결됨			(현재 접속자 수 : %d)\n", 
-			pConn->GetId(), (int32)pAcceptedClient->clientSocket, pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
+		m_engine.OnConnected(pAcceptedClient);
 	}
 }
 

@@ -10,7 +10,7 @@ private:
 public:
 	Lobby* GetLobby() { return &m_lobby; }
 
-public:
+	//void Leave();
 
 #pragma region Singleton
 private:

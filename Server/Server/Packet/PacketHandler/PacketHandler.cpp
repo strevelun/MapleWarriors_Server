@@ -69,9 +69,6 @@ void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 #pragma endregion
 
 #pragma region InGame
-	case eClient::ReqInitInfo:
-		NInGame::ReqInitInfo(_conn, _packet);
-		break;
 	case eClient::GameOver:
 		NInGame::GameOver(_conn, _packet);
 		break;

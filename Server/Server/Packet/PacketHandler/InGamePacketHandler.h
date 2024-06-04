@@ -4,6 +4,5 @@
 
 namespace NInGame
 {
-	void ReqInitInfo(Connection& _conn, PacketReader& _packet);
 	void GameOver(Connection& _conn, PacketReader& _packet);
 }

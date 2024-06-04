@@ -3,6 +3,7 @@
 #include "../Defines.h"
 #include "RingBuffer.h"
 #include "../CSLock.h"
+#include "ConnectionManager.h"
 
 typedef struct _tWork
 {
@@ -26,7 +27,7 @@ public:
 	bool RecvFromWSA(int32 _idx);
 	bool RecvReady();
 	void OnRecv(int32 _idx);
-	void GetConnInfo(int32 _idx, uint16& _port, uint32& _id);
+	std::shared_ptr<Connection> GetConnInfo(int32 _idx, uint16& _port);
 
 	SOCKET GetSocket() const { return m_udpSocket; }
 

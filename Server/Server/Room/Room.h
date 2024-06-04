@@ -55,8 +55,8 @@ public:
 	void PacketRoomUserSlotInfo(Packet& _pkt); // change name
 	void PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx);
 
-	bool Enter(Connection& _conn, User* _pUser);
-	uint32 Leave(User* _pUser, uint32& _prevOwnerIdx, uint32& _newOwnerIdx);
+	uint32 Enter(Connection& _conn, User* _pUser);
+	uint32 Leave(uint32 _myRoomIdx, uint32& _prevOwnerIdx, uint32& _newOwnerIdx);
 
 	void SendAll(const Packet& _pkt, uint32 _exceptIdx = USER_NOT_IN_THE_ROOM);
 

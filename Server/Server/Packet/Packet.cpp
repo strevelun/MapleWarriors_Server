@@ -9,11 +9,12 @@ Packet::~Packet()
 {
 }
 
-Packet& Packet::AddWString(const std::wstring& _str)
+Packet& Packet::AddWString(const wchar_t* _str)
 {
-	uint16 size = (uint16)_str.size();
+	std::wstring str = _str ? _str : L"";
+	uint16 size = (uint16)str.size();
 	uint16 byteSize = size * sizeof(wchar_t);
-	memcpy(&m_buffer[m_addPos], _str.c_str(), byteSize);
+	memcpy(&m_buffer[m_addPos], str.c_str(), byteSize);
 	m_addPos += byteSize;
 	m_addPos += sizeof(wchar_t);
 	*reinterpret_cast<uint16*>(m_buffer) = m_addPos;

@@ -39,11 +39,11 @@ HANDLE IOCP::CreateIOCP()
     return m_hCPObject;
 }
 
-bool IOCP::AssociateIOCP(Connection* _pCompletionKey)
+bool IOCP::AssociateIOCP(SOCKET _socket, uint32 _completionKey)
 {
 	if (m_hCPObject == nullptr) return false;
 
-	HANDLE h = ::CreateIoCompletionPort((HANDLE)_pCompletionKey->GetSocket(), m_hCPObject, (ULONG_PTR)_pCompletionKey->GetId(), 0);
+	HANDLE h = ::CreateIoCompletionPort((HANDLE)_socket, m_hCPObject, (ULONG_PTR)_completionKey, 0);
 	if (h == nullptr) return false;
 
 	return true;
@@ -88,7 +88,6 @@ void IOCP::Worker()
 	DWORD			bytesTransferred = 0;
 	tWSAOVERLAPPED_EX* pOverlapped = nullptr;
 	uint32 connID = 0;
-	Connection* pConn = nullptr;
 	bool result;
 
 	while (1)
@@ -107,13 +106,11 @@ void IOCP::Worker()
 		switch (pOverlapped->connType)
 		{
 		case eConnType::TCP:
-			pConn = ConnectionManager::GetInst()->Get(connID);
-			if (pConn)
-			{
-				pConn->OnRecv(bytesTransferred);
-				pConn->Release();
-			}
+		{
+			std::shared_ptr<Connection> conn = ConnectionManager::GetInst()->Get(connID);
+			if (conn)	conn->OnRecv(bytesTransferred);
 			break;
+		}
 		case eConnType::UDP:
 			UDPHandler::GetInst()->OnRecv(pOverlapped->udpIdx);
 			break;

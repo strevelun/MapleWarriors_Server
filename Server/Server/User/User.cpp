@@ -62,7 +62,7 @@ void User::Leave()
 		if (leftNum != 0 && leftNum != ROOM_ID_NOT_FOUND)
 		{
 			pLobby->SendRoom(pkt, roomID, roomUserIdx);
-			printf("InGameExit sent\n");
+			//printf("InGameExit sent\n");
 		}
 
 		pLobby->Leave(m_lobbyID, m_connectionId);
@@ -84,12 +84,11 @@ void User::Leave()
 
 		pktNotifyRoomUserExit.Add<int8>(prevOwnerID);
 		pktNotifyRoomUserExit.Add<int8>(nextOwnerID);
-		printf("%d, %d", prevOwnerID, nextOwnerID);
+		//printf("%d, %d", prevOwnerID, nextOwnerID);
 
 		if (leftNum != 0 && leftNum != ROOM_ID_NOT_FOUND)
 		{
 			pLobby->SendRoom(pktNotifyRoomUserExit, roomID, roomUserIdx);
-			printf("User::Leave::SendRoom\n");
 		}
 		//printf("%d : User::Leave\n", leftNum);
 	}
@@ -98,11 +97,45 @@ void User::Leave()
 		break;
 	}
 
+	m_lock.Lock(eLockType::Writer);
+
 	SetConnectionId(USER_NOT_CONNECTED);
 	SetSceneState(eSceneState::None);
 	SetLobbyID(USER_NOT_IN_THE_ROOM);
 	SetRoomID(USER_NOT_IN_THE_ROOM);
 	SetRoomUserIdx(USER_NOT_IN_THE_ROOM);
 	SetState(eLoginState::Logout);
+
+	m_lock.UnLock(eLockType::Writer);
 	wprintf(L"[%s] ¥‘ ¡¢º”¡æ∑·\n", m_nickname);
+}
+
+void User::LeaveRoom()
+{
+	SetRoomUserIdx(USER_NOT_IN_THE_ROOM);
+	SetRoomID(USER_NOT_IN_THE_ROOM);
+	SetSceneState(eSceneState::Lobby);
+}
+
+void User::EnterRoom(uint32 _roomID)
+{
+	SetRoomID(_roomID);
+	SetSceneState(eSceneState::Room);
+}
+
+void User::CreateRoom(uint32 _roomID)
+{
+	SetRoomID(_roomID);
+	SetRoomUserIdx(0);
+	SetSceneState(eSceneState::Room);
+}
+
+void User::GameOver()
+{
+	SetSceneState(eSceneState::Room);
+}
+
+void User::GameStart()
+{
+	SetSceneState(eSceneState::InGame);
 }

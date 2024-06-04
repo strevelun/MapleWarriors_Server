@@ -13,5 +13,5 @@ public:
 	
 	bool Init();
 
-	Connection* OnConnected(tAcceptedClient* _pAcceptedClient);
+	void OnConnected(tAcceptedClient* _pAcceptedClient);
 };

@@ -69,7 +69,6 @@ void NRoom::ReqRoomUsersInfo(Connection& _conn, PacketReader& _packet)
 
 void NRoom::StartGame(Connection& _conn, PacketReader& _packet)
 {
-	// 방장이 아니면 return
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
@@ -79,7 +78,11 @@ void NRoom::StartGame(Connection& _conn, PacketReader& _packet)
 	bool bSuccess = pRoom->StartGame();
 	if (bSuccess)
 	{
-		pkt.Add<PacketType>((PacketType)eServer::StartGame_Success);
+		eGameMap mapID = pRoom->GetMapID();
+
+		pkt.Add<PacketType>((PacketType)eServer::StartGame_Success)
+		.Add<int8>((int8)mapID);
+		pRoom->PacketStartGameReqInitInfo(pkt, pUser->GetRoomUserIdx());
 		pRoom->SendAll(pkt);
 	}
 	else
