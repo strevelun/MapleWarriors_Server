@@ -21,6 +21,7 @@
 
 #define SERVER_INTERNAL_IP					"192.168.55.24"
 #define SERVER_EXTERNAL_IP					"110.9.1.110"
+#define SERVER_PORT							30002
 
 #define BUFFER_MAX					4096
 

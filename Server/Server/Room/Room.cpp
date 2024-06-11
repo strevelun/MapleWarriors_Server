@@ -117,7 +117,7 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 {
 	m_lock.Enter();
 	_pkt.Add<int8>(m_numOfUser);
-	MakePacketIP(_pkt, m_arrUser[_roomUserIdx].GetIP());
+	//MakePacketIP(_pkt, m_arrUser[_roomUserIdx].GetIP());
 
 	const int8* ip = nullptr;
 	const uint8* privateIP = nullptr;
@@ -132,16 +132,12 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 
 			if (!ip || !privateIP) continue;
 
-			_pkt.Add<uint16>(user.GetConnectionID());
 			_pkt.Add<int8>(idx);
 			_pkt.AddWString(user.GetNickname());
 			_pkt.Add<int8>((int8)user.GetCharacterChoice());
-			if (_roomUserIdx != idx)
-			{
-				_pkt.Add<uint16>(user.GetUDPPort());
-				MakePacketIP(_pkt, user.GetIP());
-				MakePacketIP(_pkt, user.GetPrivateIP());
-			}
+			_pkt.Add<uint16>(user.GetUDPPort());
+			MakePacketIP(_pkt, user.GetIP());
+			MakePacketIP(_pkt, user.GetPrivateIP());
 		}
 		++idx;
 	}
@@ -169,6 +165,7 @@ uint32 Room::Enter(Connection& _conn, User* _pUser)
 
 			m_arrUser[i].Init(_conn, _pUser);
 			++m_numOfUser;
+			_pUser->SetRoomUserIdx(i);
 			m_lock.Leave();
 			return i;
 		}

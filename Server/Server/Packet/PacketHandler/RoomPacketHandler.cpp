@@ -63,7 +63,6 @@ void NRoom::ReqRoomUsersInfo(Connection& _conn, PacketReader& _packet)
 	pRoomManager->MakePacketUserSlotInfo(pUser->GetRoomId(), pkt);
 	pkt.Add<int8>((int8)pRoom->GetMapID());
 
-
 	_conn.Send(pkt);
 }
 

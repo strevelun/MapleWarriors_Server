@@ -118,7 +118,7 @@ void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 			.Add<PacketType>((PacketType)eServer::NotifyRoomUserEnter)
 			.Add<int8>(idx)
 			.AddWString(pUser->GetNickname());
-		pLobby->SendRoom(pktNotifyRoomUserEnter, roomID, idx); // 이 시점에 방에있던 Connection이 할당 해제가 되어 있음
+		pLobby->SendRoom(pktNotifyRoomUserEnter, roomID, idx);
 		break;
 	}
 	case eEnterRoomResult::Full:

@@ -6,14 +6,12 @@ int32 main()
 {
 	ServerApp app;
 	
-	if (app.Init(SERVER_INTERNAL_IP, 30002, SOMAXCONN) == true)
+	if (app.Init(SERVER_INTERNAL_IP, SERVER_PORT, SOMAXCONN) == true)
 	{
 		app.Run();
 	}
-	else
-	{
-		app.Shutdown();
-	}
+
+	app.Shutdown();
 
 	printf("종료");
 	system("pause");

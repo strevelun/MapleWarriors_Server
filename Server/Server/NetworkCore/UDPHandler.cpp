@@ -1,5 +1,6 @@
 #include "UDPHandler.h"
 #include "../Packet/PacketHandler/PacketHandler.h"
+#include "../Defines.h"
 
 UDPHandler* UDPHandler::s_pInst = nullptr;
 
@@ -29,7 +30,7 @@ bool UDPHandler::Init(uint32 _numOfThread)
 	m_numOfThread = _numOfThread;
 
 	m_udpAddr.sin_family = AF_INET;
-	m_udpAddr.sin_port = ::htons(30001);
+	m_udpAddr.sin_port = ::htons(SERVER_PORT);
 	m_udpAddr.sin_addr.s_addr = ::htonl(INADDR_ANY);
 
 	return true;
