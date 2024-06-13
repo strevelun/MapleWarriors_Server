@@ -34,7 +34,7 @@ Room* RoomManager::Create(Connection& _conn, User* _pUser, const wchar_t* _pTitl
 	return pRoom;
 }
 
-eEnterRoomResult RoomManager::Enter(Connection& _conn, User* _pUser, uint32 _roomID)
+eEnterRoomResult RoomManager::Enter(Connection& _conn, User* _pUser, uint32 _roomID, OUT uint32& _myRoomSlotIdx)
 {
 	m_lock.Enter();
 
@@ -50,15 +50,15 @@ eEnterRoomResult RoomManager::Enter(Connection& _conn, User* _pUser, uint32 _roo
 	}
 	m_lock.Leave();
 
-	uint32 idx = m_arrRoom[*iter].Enter(_conn, _pUser);
+	_myRoomSlotIdx = m_arrRoom[*iter].Enter(_conn, _pUser);
 
-	if (idx != USER_NOT_IN_THE_ROOM) eResult = eEnterRoomResult::Success;
+	if (_myRoomSlotIdx != USER_NOT_IN_THE_ROOM) eResult = eEnterRoomResult::Success;
 	else eResult = eEnterRoomResult::Full;
 
 	return eResult;
 }
 
-uint32 RoomManager::Leave(uint32 _myRoomIdx, uint32 _roomID, uint32& _prevOwnerIdx, uint32 &_newOwnerIdx)
+uint32 RoomManager::Leave(uint32 _myRoomIdx, uint32 _roomID, OUT uint32& _prevOwnerIdx, OUT uint32 &_newOwnerIdx)
 {
 	uint32 leftNum = ROOM_ID_NOT_FOUND;
 
@@ -79,7 +79,7 @@ uint32 RoomManager::Leave(uint32 _myRoomIdx, uint32 _roomID, uint32& _prevOwnerI
 	}
 	m_lock.Leave();
 
-	leftNum = m_arrRoom[_roomID].Leave(_myRoomIdx, _prevOwnerIdx, _newOwnerIdx);
+	leftNum = m_arrRoom[_roomID].Leave(_myRoomIdx, OUT _prevOwnerIdx, OUT _newOwnerIdx);
 
     return leftNum;
 }

@@ -48,7 +48,7 @@ public:
 
 	Room* CreateRoom(Connection& _conn, User* _pUser, const wchar_t* _pTitle);
 	eEnterRoomResult EnterRoom(Connection& _conn, User* _pUser, uint32 _roomID);
-	uint32 LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32& _newOwnerIdx);
+	uint32 LeaveRoom(User* _pUser, uint32 _roomID, OUT uint32& _prevOwnerIdx, OUT uint32& _newOwnerIdx);
 
 	void SendRoom(const Packet& _pkt, uint32 _roomID, uint32 _exceptID = USER_NOT_IN_THE_ROOM);
 

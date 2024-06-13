@@ -20,8 +20,8 @@ public:
 	~RoomManager();
 
 	Room* Create(Connection& _conn, User* _pUser, const wchar_t* _pTitle);
-	eEnterRoomResult Enter(Connection& _conn, User* _pUser, uint32 _roomID);
-	uint32 Leave(uint32 _myRoomIdx, uint32 _roomID, uint32& _prevOwnerIdx, uint32 &_newOwnerIdx);
+	eEnterRoomResult Enter(Connection& _conn, User* _pUser, uint32 _roomID, OUT uint32& _myRoomSlotIdx);
+	uint32 Leave(uint32 _myRoomIdx, uint32 _roomID, OUT uint32& _prevOwnerIdx, OUT uint32 &_newOwnerIdx);
 	Room* Find(uint32 _roomID);
 
 	void SetRoomState(uint32 _roomID, eRoomState _eState);

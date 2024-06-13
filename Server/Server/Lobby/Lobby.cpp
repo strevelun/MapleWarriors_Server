@@ -25,8 +25,7 @@ void Lobby::Enter(Connection& _conn, User* _pUser)
 			m_usetUserInLobby.insert(lobbyId);
 			m_arrUser[lobbyId].Init(_conn, _pUser);
 
-			_pUser->SetLobbyID(lobbyId);
-			_pUser->SetSceneState(eSceneState::Lobby);
+			_pUser->EnterLobby(lobbyId);
 
 			++m_userCount;
 			//printf("로비 입장! : %d명\n", m_userCount);
@@ -164,11 +163,12 @@ Room* Lobby::CreateRoom(Connection& _conn, User* _pUser, const wchar_t* _pTitle)
 
 eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomID)
 {
-	eEnterRoomResult eResult = m_roomManager.Enter(_conn, _pUser, _roomID);
+	uint32 myRoomSlotIdx = USER_NOT_IN_THE_ROOM;
+	eEnterRoomResult eResult = m_roomManager.Enter(_conn, _pUser, _roomID, OUT myRoomSlotIdx);
 
 	if (eResult == eEnterRoomResult::Success)
 	{
-		_pUser->EnterRoom(_roomID);
+		_pUser->EnterRoom(_roomID, myRoomSlotIdx);
 
 		m_lock.Lock(eLockType::Writer);
 		m_usetUserInLobby.erase(_pUser->GetLobbyId());
@@ -177,13 +177,11 @@ eEnterRoomResult Lobby::EnterRoom(Connection& _conn, User* _pUser, uint32 _roomI
 	return eResult;
 }
 
-// _pUser의 LobbyID가 초기화된 후 LeaveRoom이 호출되는 경우 포착됨
-// 로비에서 나간 다음(Clear)
-uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
+uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, OUT uint32& _prevOwnerIdx, OUT uint32& _newOwnerIdx)
 {
 	if (_roomID >= USER_LOBBY_MAX) return 0;
 
-	uint32 result = m_roomManager.Leave(_pUser->GetRoomUserIdx(), _roomID, _prevOwnerIdx, _newOwnerIdx);
+	uint32 result = m_roomManager.Leave(_pUser->GetRoomUserIdx(), _roomID, OUT _prevOwnerIdx, OUT _newOwnerIdx);
 
 	if (result != ROOM_ID_NOT_FOUND)
 	{

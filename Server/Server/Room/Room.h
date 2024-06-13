@@ -56,7 +56,7 @@ public:
 	void PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx);
 
 	uint32 Enter(Connection& _conn, User* _pUser);
-	uint32 Leave(uint32 _myRoomIdx, uint32& _prevOwnerIdx, uint32& _newOwnerIdx);
+	uint32 Leave(uint32 _myRoomIdx, OUT uint32& _prevOwnerIdx, OUT uint32& _newOwnerIdx);
 
 	void SendAll(const Packet& _pkt, uint32 _exceptIdx = USER_NOT_IN_THE_ROOM);
 

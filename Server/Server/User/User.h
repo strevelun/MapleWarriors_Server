@@ -34,19 +34,13 @@ public:
 	uint32 GetRoomUserIdx() const { return m_roomUserIdx; }
 	eSceneState GetSceneState() const { return m_eSceneState; }
 
-	void SetConnectionId(uint32 _connectionId) { m_connectionId = _connectionId; }
-	void SetState(eLoginState _eState) { m_eLoginState = _eState; }
-	void SetSceneState(eSceneState _eState) { m_eSceneState = _eState; }
-	void SetLobbyID(uint32 _id) { m_lobbyID = _id; }
-	void SetRoomID(uint32 _id) { m_roomID = _id; }
-	void SetRoomUserIdx(uint32 _id) { m_roomUserIdx = _id; }
-
 	void Connect(uint32 _connectionId);
 	bool IsLogin();
 	void Leave();
 	void LeaveRoom();
-	void EnterRoom(uint32 _roomID);
+	void EnterRoom(uint32 _roomID, uint32 _myRoomSlotIdx);
 	void CreateRoom(uint32 _roomID);
+	void EnterLobby(uint32 _lobbyID);
 	void GameOver();
 	void GameStart();
 };

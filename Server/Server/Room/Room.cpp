@@ -165,7 +165,6 @@ uint32 Room::Enter(Connection& _conn, User* _pUser)
 
 			m_arrUser[i].Init(_conn, _pUser);
 			++m_numOfUser;
-			_pUser->SetRoomUserIdx(i);
 			m_lock.Leave();
 			return i;
 		}
@@ -174,7 +173,7 @@ uint32 Room::Enter(Connection& _conn, User* _pUser)
 	return USER_NOT_IN_THE_ROOM;
 }
 
-uint32 Room::Leave(uint32 _myRoomIdx, uint32& _prevOwnerIdx, uint32& _newOwnerIdx)
+uint32 Room::Leave(uint32 _myRoomIdx, OUT uint32& _prevOwnerIdx, OUT uint32& _newOwnerIdx)
 {
 	//printf("Leave : %d\n", m_numOfUser);
 	if (m_numOfUser == 0) return USER_NOT_IN_THE_ROOM;

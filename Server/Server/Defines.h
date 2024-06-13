@@ -45,6 +45,8 @@
 #define USER_NOT_IN_THE_ROOM		INT_MAX
 #define ROOM_ID_NOT_FOUND			INT_MAX
 
+#define OUT
+
 enum class eLoginState
 {
 	Logout,

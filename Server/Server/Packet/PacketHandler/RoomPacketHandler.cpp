@@ -35,7 +35,7 @@ void NRoom::ExitRoom(Connection& _conn, PacketReader& _packet)
 	pktNotifyRoomUserExit
 		.Add<PacketType>((PacketType)eServer::NotifyRoomUserExit)
 		.Add<int8>(roomUserIdx);
-	uint32 leftNum = pLobby->LeaveRoom(pUser, roomId, prevOwnerIdx, nextOwnerIdx);
+	uint32 leftNum = pLobby->LeaveRoom(pUser, roomId, OUT prevOwnerIdx, OUT nextOwnerIdx);
 	pktNotifyRoomUserExit.Add<int8>(prevOwnerIdx);
 	pktNotifyRoomUserExit.Add<int8>(nextOwnerIdx);
 	printf("%d, %d", prevOwnerIdx, nextOwnerIdx);
