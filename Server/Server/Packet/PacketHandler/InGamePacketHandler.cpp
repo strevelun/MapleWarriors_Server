@@ -19,6 +19,6 @@ void NInGame::GameOver(Connection& _conn, PacketReader& _packet)
 
 	Packet pkt;
 	pkt.
-		Add<PacketType>((PacketType)eServer::GameOver);
+		Add<PacketType>(static_cast<PacketType>(eServer::GameOver));
 	pRoom->SendAll(pkt);
 }

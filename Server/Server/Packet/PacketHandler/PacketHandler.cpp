@@ -7,7 +7,7 @@
 
 void PacketHandler::Handle(Connection& _conn, PacketReader& _packet)
 {
-	eClient type = (eClient)_packet.GetPacketType();
+	eClient type = static_cast<eClient>(_packet.GetPacketType());
 	switch (type)
 	{
 #pragma region Login

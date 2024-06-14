@@ -152,7 +152,7 @@ void RoomManager::MakePacketRoomListPage(uint32 _page, Packet& _pkt)
 			_pkt.AddWString(m_arrRoom[roomID].GetTitle());
 			_pkt.AddWString(m_arrRoom[roomID].GetOwner());
 			_pkt.Add<int8>(m_arrRoom[roomID].GetNumOfUser());
-			_pkt.Add<int8>((int8)m_arrRoom[roomID].GetState());
+			_pkt.Add<int8>(static_cast<int8>(m_arrRoom[roomID].GetState()));
 		}
 	}
 	m_lock.Leave();

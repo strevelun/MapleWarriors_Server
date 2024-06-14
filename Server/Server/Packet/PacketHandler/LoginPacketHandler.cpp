@@ -8,7 +8,7 @@ void NLogin::Test(Connection& _conn, PacketReader& _packet)
 {
 	int64 ticks = _packet.GetInt64();
 	Packet pkt;
-	pkt.Add<PacketType>((PacketType)eServer::Test);
+	pkt.Add<PacketType>(static_cast<PacketType>(eServer::Test));
 	//Sleep(20);
 	_conn.Send(pkt);
 }
@@ -31,19 +31,19 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 
 	if(pUser->IsLogin())
 	{
-		type = (PacketType)eServer::LoginFailure_AlreadyLoggedIn;
+		type = static_cast<PacketType>(eServer::LoginFailure_AlreadyLoggedIn);
 		p.Add<PacketType>(type);
 	}
 	else // 해당아이디로 누군가 로그인
 	{
 		if (pLobby->GetUserCount() >= USER_LOBBY_MAX)
 		{
-			type = (PacketType)eServer::LoginFailure_Full;
+			type = static_cast<PacketType>(eServer::LoginFailure_Full);
 			p.Add<PacketType>(type);
 		}
 		else
 		{
-			type = (PacketType)eServer::LoginSuccess;
+			type = static_cast<PacketType>(eServer::LoginSuccess);
 			p.Add<PacketType>(type);
 
 			_conn.SetPrivateIP(ipBytes[0], ipBytes[1], ipBytes[2], ipBytes[3]);
@@ -52,8 +52,8 @@ void NLogin::LoginReq(Connection& _conn, PacketReader& _packet)
 		}
 	}
 
-	wprintf(L"%s님 [%d] : ", pNickname, (int32)_conn.GetSocket());
-	if ((eServer)type == eServer::LoginSuccess) std::cout << "로그인 성공!" << '\n';
+	wprintf(L"%s님 [%d] : ", pNickname, static_cast<int32>(_conn.GetSocket()));
+	if (static_cast<eServer>(type) == eServer::LoginSuccess) std::cout << "로그인 성공!" << '\n';
 	else std::cout << "로그인 실패!" << '\n';
 
 	_conn.Send(p);

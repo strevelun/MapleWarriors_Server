@@ -23,7 +23,7 @@ bool UDPHandler::Init(uint32 _numOfThread)
 	m_udpSocket = ::WSASocketW(AF_INET, SOCK_DGRAM, 0, nullptr, 0, WSA_FLAG_OVERLAPPED);
 	if (m_udpSocket == INVALID_SOCKET)
 	{
-		printf("UDP 家南 积己 俊矾 : %d\n", (int32)m_udpSocket);
+		printf("UDP 家南 积己 俊矾 : %d\n", static_cast<int32>(m_udpSocket));
 		return false;
 	}
 
@@ -38,7 +38,7 @@ bool UDPHandler::Init(uint32 _numOfThread)
 
 bool UDPHandler::Bind()
 {
-	int32 result = ::bind(m_udpSocket, (SOCKADDR*)&m_udpAddr, sizeof(m_udpAddr));
+	int32 result = ::bind(m_udpSocket, reinterpret_cast<SOCKADDR*>(&m_udpAddr), sizeof(m_udpAddr));
 	if (result == SOCKET_ERROR)
 	{
 		int32 err = ::WSAGetLastError();
@@ -53,7 +53,7 @@ void UDPHandler::OnRecv(int32 _idx)
 {
 	uint16 port;
 
-	std::shared_ptr<Connection> conn = GetConnInfo(_idx, port);
+	std::shared_ptr<Connection> conn = GetConnInfo(_idx, OUT port);
 	if (!conn) 
 	{
 		// 捞固 昏力等 Connection
@@ -72,8 +72,8 @@ void UDPHandler::OnRecv(int32 _idx)
 
 	Packet pkt;
 	pkt
-		.Add((PacketType)eServer::CheckedClientInfo)
-		.Add((uint16)port);
+		.Add(static_cast<PacketType>(eServer::CheckedClientInfo))
+		.Add<uint16>(port);
 	conn->Send(pkt);
 
 	RecvFromWSA(_idx);
@@ -89,11 +89,11 @@ bool UDPHandler::RecvFromWSA(int32 _idx)
 	m_vecWorks[_idx].udpDataBuf.buf = m_vecWorks[_idx].udpBuf;
 	m_vecWorks[_idx].udpDataBuf.len = PACKET_MAX_SIZE;
 
-	int32 result = ::WSARecvFrom(m_udpSocket, &m_vecWorks[_idx].udpDataBuf, 1, nullptr, &flags, (SOCKADDR*)&m_vecWorks[_idx].udpAddr, &addrSize, &m_vecWorks[_idx].overlapped, nullptr);
+	int32 result = ::WSARecvFrom(m_udpSocket, &m_vecWorks[_idx].udpDataBuf, 1, nullptr, &flags, reinterpret_cast<SOCKADDR*>(&m_vecWorks[_idx].udpAddr), &addrSize, &m_vecWorks[_idx].overlapped, nullptr);
 	
 	if (result == SOCKET_ERROR)
 	{
-		int err = ::WSAGetLastError();
+		int32 err = ::WSAGetLastError();
 		if (err != WSA_IO_PENDING)
 		{
 			printf("WSARecvFrom err : %d\n", err);
@@ -113,10 +113,10 @@ bool UDPHandler::RecvReady()
 	return true;
 }
 
-std::shared_ptr<Connection> UDPHandler::GetConnInfo(int32 _idx, uint16& _port)
+std::shared_ptr<Connection> UDPHandler::GetConnInfo(int32 _idx, OUT uint16& _port)
 {
 	_port = m_vecWorks[_idx].udpAddr.sin_port;
-	uint32 id = *reinterpret_cast<const uint32*>(&m_vecWorks[_idx].udpBuf);
+	uint32 id = *reinterpret_cast<uint32*>(&m_vecWorks[_idx].udpBuf);
 
 	return ConnectionManager::GetInst()->Get(id);
 }

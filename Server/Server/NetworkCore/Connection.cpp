@@ -55,7 +55,7 @@ bool Connection::RecvWSA() // false리턴하면 접속 종료 시킬것
 	memset(&m_overlapped, 0, sizeof(m_overlapped));
 	m_overlapped.connType = eConnType::TCP;
 
-	m_ringBuffer.SetWriteBuf(m_dataBuf);
+	m_ringBuffer.SetWriteBuf(OUT m_dataBuf);
 
 	int32 result = ::WSARecv(m_pAcceptedClient->clientSocket, &m_dataBuf, 1, &recvBytes, &flags, &m_overlapped, nullptr);
 	if (result == SOCKET_ERROR)
@@ -63,7 +63,7 @@ bool Connection::RecvWSA() // false리턴하면 접속 종료 시킬것
 		err = ::WSAGetLastError();
 		if (err != WSA_IO_PENDING)
 		{
-			printf("[%d] WSARecv Error : %d", (int32)m_pAcceptedClient->clientSocket, err);
+			printf("[%d] WSARecv Error : %d", static_cast<int32>(m_pAcceptedClient->clientSocket), err);
 			switch (err)
 			{
 			case WSAECONNRESET:

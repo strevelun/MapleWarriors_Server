@@ -13,7 +13,7 @@ void NLobby::LobbyChat(Connection& _conn, PacketReader& _packet)
 
 	Packet pkt;
 	pkt
-		.Add<PacketType>((PacketType)eServer::LobbyChat)
+		.Add<PacketType>(static_cast<PacketType>(eServer::LobbyChat))
 		.AddWString(pNickname)
 		.AddWString(pChat);
 
@@ -38,7 +38,7 @@ void NLobby::LobbyUpdateInfo(Connection& _conn, PacketReader& _packet)
 	}
 
 	Packet pktRoomList;
-	pktRoomList.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
+	pktRoomList.Add<PacketType>(static_cast<PacketType>(eServer::LobbyUpdateInfo_RoomList));
 	pRoomManager->MakePacketRoomListPage(roomListPage, pktRoomList);
 
 	_conn.Send(pktRoomList);
@@ -64,7 +64,7 @@ void NLobby::RoomListGetPageInfo(Connection& _conn, PacketReader& _packet)
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
 
 	Packet pktRoomList;
-	pktRoomList.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_RoomList);
+	pktRoomList.Add<PacketType>(static_cast<PacketType>(eServer::LobbyUpdateInfo_RoomList));
 	pRoomManager->MakePacketRoomListPage(roomListPage, pktRoomList);
 	_conn.Send(pktRoomList);
 }
@@ -80,13 +80,13 @@ void NLobby::CreateRoom(Connection& _conn, PacketReader& _packet)
 	Room* pRoom = pLobby->CreateRoom(_conn, pUser, pTitle);
 	if (pRoom)
 	{
-		pkt.Add<PacketType>((PacketType)eServer::CreateRoom_Success);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::CreateRoom_Success));
 		pkt.Add<uint32>(pRoom->GetId());
 		pkt.AddWString(pTitle);
 	}
 	else // 방 만들기 실패
 	{
-		pkt.Add<PacketType>((PacketType)eServer::CreateRoom_Fail);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::CreateRoom_Fail));
 	}
 
 	_conn.Send(pkt);
@@ -110,25 +110,25 @@ void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 	{
 	case eEnterRoomResult::Success:
 	{
-		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_Success);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::EnterRoom_Success));
 
 		uint32 idx = pUser->GetRoomUserIdx();
 		Packet pktNotifyRoomUserEnter;
 		pktNotifyRoomUserEnter
-			.Add<PacketType>((PacketType)eServer::NotifyRoomUserEnter)
+			.Add<PacketType>(static_cast<PacketType>(eServer::NotifyRoomUserEnter))
 			.Add<int8>(idx)
 			.AddWString(pUser->GetNickname());
 		pLobby->SendRoom(pktNotifyRoomUserEnter, roomID, idx);
 		break;
 	}
 	case eEnterRoomResult::Full:
-		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_Full);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::EnterRoom_Full));
 		break;
 	case eEnterRoomResult::InGame:
-		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_InGame);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::EnterRoom_InGame));
 		break;
 	case eEnterRoomResult::NoRoom:
-		pkt.Add<PacketType>((PacketType)eServer::EnterRoom_NoRoom);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::EnterRoom_NoRoom));
 		break;
 	default:
 		return;

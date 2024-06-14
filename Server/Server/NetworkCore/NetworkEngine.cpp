@@ -47,17 +47,17 @@ void NetworkEngine::OnConnected(tAcceptedClient* _pAcceptedClient)
 
 	Packet pkt;
 	pkt
-		.Add<PacketType>((PacketType)eServer::ConnectionID)
+		.Add<PacketType>(static_cast<PacketType>(eServer::ConnectionID))
 		.Add<uint32>(conn->GetId());
 	conn->Send(pkt);
 
 	if (!conn)
 	{
-		printf("[%d], IP[%s]		연결실패			(현재 접속자 수 : %d)\n", (int32)_pAcceptedClient->clientSocket, _pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
+		printf("[%d], IP[%s]		연결실패			(현재 접속자 수 : %d)\n", static_cast<int32>(_pAcceptedClient->clientSocket), _pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
 	}
 	else
 	{
 		printf("id[%u], socket[%d], IP[%s]		연결됨			(현재 접속자 수 : %d)\n",
-			conn->GetId(), (int32)_pAcceptedClient->clientSocket, _pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
+			conn->GetId(), static_cast<int32>(_pAcceptedClient->clientSocket), _pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
 	}
 }

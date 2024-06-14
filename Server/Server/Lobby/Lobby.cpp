@@ -21,7 +21,7 @@ void Lobby::Enter(Connection& _conn, User* _pUser)
 		{
 			uint32 lobbyId = m_vecUnusedUserIDs.back();
 			m_vecUnusedUserIDs.pop_back();
-			m_setAllLobbyUser.insert(_stLobbyUser(lobbyId, _conn.GetId()));
+			m_setAllLobbyUser.emplace(lobbyId, _conn.GetId());
 			m_usetUserInLobby.insert(lobbyId);
 			m_arrUser[lobbyId].Init(_conn, _pUser);
 
@@ -75,7 +75,7 @@ uint32 Lobby::GetUserCount()
 
 void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 {
-	_pkt.Add<PacketType>((PacketType)eServer::LobbyUpdateInfo_UserList);
+	_pkt.Add<PacketType>(static_cast<PacketType>(eServer::LobbyUpdateInfo_UserList));
 
 	m_lock.Lock(eLockType::Reader);
 	{
@@ -116,7 +116,7 @@ void Lobby::PacketUserListPage(uint32 _page, Packet& _pkt)
 			lobbyID = iter->lobbyID;
 			_pkt.AddWString(m_arrUser[lobbyID].GetNickname());
 			eState = m_arrUser[lobbyID].GetSceneState();
-			_pkt.Add<int8>((int8)eState);
+			_pkt.Add<int8>(static_cast<int8>(eState));
 			if (eState == eSceneState::Room || eState == eSceneState::InGame)
 			{
 				_pkt.Add<int8>(m_arrUser[lobbyID].GetRoomID());
@@ -195,8 +195,6 @@ uint32 Lobby::LeaveRoom(User* _pUser, uint32 _roomID, OUT uint32& _prevOwnerIdx,
 	return result;
 }
 
-// EnterRoom하는 유저가 SendRoom다 할때까지 기다리기 x
-// TODO : 제거
 void Lobby::SendRoom(const Packet& _pkt, uint32 _roomID, uint32 _exceptID)
 {
 	if (_roomID >= USER_LOBBY_MAX) return;

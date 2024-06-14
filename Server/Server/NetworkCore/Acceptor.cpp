@@ -38,7 +38,7 @@ bool Acceptor::Start(const int8* _ip, uint16 _port)
 
 bool Acceptor::Bind()
 {
-	if (::bind(m_serverSocket, (SOCKADDR*)&m_servAddr, sizeof(m_servAddr)) == SOCKET_ERROR)
+	if (::bind(m_serverSocket, reinterpret_cast<SOCKADDR*>(&m_servAddr), sizeof(m_servAddr)) == SOCKET_ERROR)
 	{
 		printf("bind 에러 : %d\n", ::WSAGetLastError());
 		return false;
@@ -58,7 +58,7 @@ bool Acceptor::Listen(int32 _backlog)
 
 tAcceptedClient* Acceptor::Accept()
 {
-	SOCKET clientSocket = ::accept(m_serverSocket, (SOCKADDR*)&m_clientAddr, &m_clientAddrSize);
+	SOCKET clientSocket = ::accept(m_serverSocket, reinterpret_cast<SOCKADDR*>(&m_clientAddr), &m_clientAddrSize);
 	if (clientSocket == INVALID_SOCKET)
 	{
 		printf("accept 에러 : %d\n", ::WSAGetLastError());

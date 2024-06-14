@@ -31,7 +31,7 @@ uint32 RingBuffer::GetTotalReadableSize() const
 	return (m_writePos < m_readPos) ? BUFFER_MAX - m_readPos + m_writePos : m_writePos - m_readPos; ;
 }
 
-void RingBuffer::SetWriteBuf(WSABUF& _buf)
+void RingBuffer::SetWriteBuf(OUT WSABUF& _buf)
 {
 	uint32 writableSize = GetWritableSize();
 

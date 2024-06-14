@@ -11,7 +11,7 @@ void NRoom::RoomChat(Connection& _conn, PacketReader& _packet)
 
 	Packet pkt;
 	pkt
-		.Add<PacketType>((PacketType)eServer::RoomChat)
+		.Add<PacketType>(static_cast<PacketType>(eServer::RoomChat))
 		.AddWString(pNickname)
 		.AddWString(pChat);
 
@@ -33,7 +33,7 @@ void NRoom::ExitRoom(Connection& _conn, PacketReader& _packet)
 
 	Packet pktNotifyRoomUserExit;
 	pktNotifyRoomUserExit
-		.Add<PacketType>((PacketType)eServer::NotifyRoomUserExit)
+		.Add<PacketType>(static_cast<PacketType>(eServer::NotifyRoomUserExit))
 		.Add<int8>(roomUserIdx);
 	uint32 leftNum = pLobby->LeaveRoom(pUser, roomId, OUT prevOwnerIdx, OUT nextOwnerIdx);
 	pktNotifyRoomUserExit.Add<int8>(prevOwnerIdx);
@@ -45,7 +45,7 @@ void NRoom::ExitRoom(Connection& _conn, PacketReader& _packet)
 
 	Packet pkt;
 	pkt
-		.Add<PacketType>((PacketType)eServer::ExitRoom);
+		.Add<PacketType>(static_cast<PacketType>(eServer::ExitRoom));
 
 	_conn.Send(pkt);
 }
@@ -59,9 +59,9 @@ void NRoom::ReqRoomUsersInfo(Connection& _conn, PacketReader& _packet)
 	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
 	Packet pkt;
-	pkt.Add<PacketType>((PacketType)eServer::RoomUsersInfo);
+	pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomUsersInfo));
 	pRoomManager->MakePacketUserSlotInfo(pUser->GetRoomId(), pkt);
-	pkt.Add<int8>((int8)pRoom->GetMapID());
+	pkt.Add<int8>(static_cast<int8>(pRoom->GetMapID()));
 
 	_conn.Send(pkt);
 }
@@ -79,14 +79,14 @@ void NRoom::StartGame(Connection& _conn, PacketReader& _packet)
 	{
 		eGameMap mapID = pRoom->GetMapID();
 
-		pkt.Add<PacketType>((PacketType)eServer::StartGame_Success)
-		.Add<int8>((int8)mapID);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::StartGame_Success))
+		.Add<int8>(static_cast<int8>(mapID));
 		pRoom->PacketStartGameReqInitInfo(pkt, pUser->GetRoomUserIdx());
 		pRoom->SendAll(pkt);
 	}
 	else
 	{
-		pkt.Add<PacketType>((PacketType)eServer::StartGame_Fail);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::StartGame_Fail));
 		_conn.Send(pkt);
 	}
 }
@@ -103,11 +103,11 @@ void NRoom::RoomReady(Connection& _conn, PacketReader& _packet)
 	Packet pkt;
 	if (!pRoom->SetMemberState(pUser->GetRoomUserIdx(), eRoomUserState::Ready))
 	{
-		pkt.Add<PacketType>((PacketType)eServer::RoomReady_Fail);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomReady_Fail));
 	}	
 	else
 	{
-		pkt.Add<PacketType>((PacketType)eServer::RoomReady)
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomReady))
 			.Add<int8>(pUser->GetRoomUserIdx())
 			.Add<uint16>(_conn.GetId());
 	}
@@ -127,11 +127,11 @@ void NRoom::RoomStandby(Connection& _conn, PacketReader& _packet)
 	Packet pkt;
 	if (!pRoom->SetMemberState(pUser->GetRoomUserIdx(), eRoomUserState::Standby))
 	{
-		pkt.Add<PacketType>((PacketType)eServer::RoomStandby_Fail);
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomStandby_Fail));
 	}
 	else
 	{
-		pkt.Add<PacketType>((PacketType)eServer::RoomStandby)
+		pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomStandby))
 			.Add<int8>(pUser->GetRoomUserIdx())
 			.Add<uint16>(_conn.GetId());
 	}
@@ -147,11 +147,11 @@ void NRoom::RoomMapChoice(Connection& _conn, PacketReader& _packet)
 	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
 	int8 mapID = _packet.GetInt8();
-	pRoom->SetMapID((eGameMap)mapID);
+	pRoom->SetMapID(static_cast<eGameMap>(mapID));
 
 	Packet pkt;
 	pkt
-		.Add<PacketType>((PacketType)eServer::RoomMapChoice)
+		.Add<PacketType>(static_cast<PacketType>(eServer::RoomMapChoice))
 		.Add<int8>(mapID);
 	pRoom->SendAll(pkt);
 }
@@ -168,7 +168,7 @@ void NRoom::RoomCharacterChoice(Connection& _conn, PacketReader& _packet)
 
 	Packet pkt;
 	pkt
-		.Add<PacketType>((PacketType)eServer::RoomCharacterChoice)
+		.Add<PacketType>(static_cast<PacketType>(eServer::RoomCharacterChoice))
 		.Add<int8>(pUser->GetRoomUserIdx())
 		.Add<int8>(characterIdx);
 	pRoom->SendAll(pkt);

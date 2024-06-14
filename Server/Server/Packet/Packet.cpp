@@ -12,7 +12,7 @@ Packet::~Packet()
 Packet& Packet::AddWString(const wchar_t* _str)
 {
 	std::wstring str = _str ? _str : L"";
-	uint16 size = (uint16)str.size();
+	uint16 size = static_cast<uint16>(str.size());
 	uint16 byteSize = size * sizeof(wchar_t);
 	memcpy(&m_buffer[m_addPos], str.c_str(), byteSize);
 	m_addPos += byteSize;

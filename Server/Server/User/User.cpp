@@ -11,7 +11,7 @@ User::User(const wchar_t* _pNickname) :
 	m_loginCount(0), 
 	m_killCount(0)
 {
-	uint32 len = (uint32)wcslen(_pNickname);
+	uint32 len = static_cast<uint32>(wcslen(_pNickname));
 	if (len > NICKNAME_LEN)			len = NICKNAME_LEN;
 	wcsncpy_s(m_nickname, _pNickname, len);
 }
@@ -53,7 +53,7 @@ void User::Leave()
 
 		Packet pkt;
 		pkt
-			.Add<PacketType>((PacketType)eServer::InGameExit)
+			.Add<PacketType>(static_cast<PacketType>(eServer::InGameExit))
 			.Add<int8>(m_roomUserIdx); // 나간 유저 
 
 		uint32 leftNum = pLobby->LeaveRoom(this, m_roomID, OUT prevOwnerID, OUT nextOwnerID);
@@ -77,7 +77,7 @@ void User::Leave()
 		uint32 nextOwnerID = USER_NOT_IN_THE_ROOM;
 		Packet pktNotifyRoomUserExit;
 		pktNotifyRoomUserExit
-			.Add<PacketType>((PacketType)eServer::NotifyRoomUserExit)
+			.Add<PacketType>(static_cast<PacketType>(eServer::NotifyRoomUserExit))
 			.Add<int8>(m_roomUserIdx); // 나간 유저 
 
 		uint32 leftNum = pLobby->LeaveRoom(this, m_roomID, OUT prevOwnerID, OUT nextOwnerID);

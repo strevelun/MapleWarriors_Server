@@ -29,7 +29,7 @@ public:
 	
 	bool IsFull() const { return m_writtenBytes >= BUFFER_MAX; }
 
-	void SetWriteBuf(WSABUF& _buf);
+	void SetWriteBuf(OUT WSABUF& _buf);
 
 	void MoveReadPos(uint32 _readBytes);
 	void MoveWritePos(uint32 _recvBytes);

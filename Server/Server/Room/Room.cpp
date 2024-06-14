@@ -14,7 +14,7 @@ void Room::Init(Connection& _conn, User* _pUser, const wchar_t* _pTitle, uint32 
 {
 	m_id = _id;
 
-	uint32 len = (uint32)wcslen(_pTitle);
+	uint32 len = static_cast<uint32>(wcslen(_pTitle));
 	if (len > ROOMTITLE_LEN)			len = ROOMTITLE_LEN;
 	wcsncpy_s(m_title, _pTitle, len);
 
@@ -105,8 +105,8 @@ void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 			_pkt.Add<int8>(idx);
 			_pkt.Add<bool>(user.IsOwner());
 			_pkt.AddWString(user.GetNickname());
-			_pkt.Add<int8>((int8)user.GetState());
-			_pkt.Add<int8>((int8)user.GetCharacterChoice());
+			_pkt.Add<int8>(static_cast<int8>(user.GetState()));
+			_pkt.Add<int8>(static_cast<int8>(user.GetCharacterChoice()));
 		}
 		++idx;
 	}
@@ -134,7 +134,7 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 
 			_pkt.Add<int8>(idx);
 			_pkt.AddWString(user.GetNickname());
-			_pkt.Add<int8>((int8)user.GetCharacterChoice());
+			_pkt.Add<int8>(static_cast<int8>(user.GetCharacterChoice()));
 			_pkt.Add<uint16>(user.GetUDPPort());
 			MakePacketIP(_pkt, user.GetIP());
 			MakePacketIP(_pkt, user.GetPrivateIP());

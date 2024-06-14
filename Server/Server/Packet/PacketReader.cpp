@@ -67,10 +67,10 @@ const wchar_t* PacketReader::GetWString()
 	uint16 pos = m_getPos;
 	const wchar_t* str = reinterpret_cast<const wchar_t*>(&m_pBuffer[pos]);
 	uint32 maxCnt = (BUFFER_MAX - pos) / 2;
-	uint32 len = (uint32)wcsnlen_s(str, maxCnt);
+	uint32 len = static_cast<uint32>(wcsnlen_s(str, maxCnt));
 	if (len < maxCnt) // 정상적인 경우
 	{
-		m_getPos += uint16(len * sizeof(wchar_t) + sizeof(wchar_t));
+		m_getPos += static_cast<uint16>(len * sizeof(wchar_t) + sizeof(wchar_t));
 		return str;
 	}
 	else
@@ -81,14 +81,14 @@ const wchar_t* PacketReader::GetWString()
 		{
 			m_tempBuf[tempPos++] = m_pBuffer[0];
 			str = reinterpret_cast<const wchar_t*>(&m_pBuffer[1]);
-			uint32 cpySize = (uint32)wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t);
+			uint32 cpySize = static_cast<uint32>(wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t));
 			memcpy(&m_tempBuf[tempPos], &m_pBuffer[1], cpySize);
 			m_getPos += tempPos + cpySize;
 		}
 		else
 		{
 			str = reinterpret_cast<const wchar_t*>(m_pBuffer);
-			uint32 cpySize = (uint32)wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t);
+			uint32 cpySize = static_cast<uint32>(wcslen(str) * sizeof(wchar_t) + sizeof(wchar_t));
 			memcpy(&m_tempBuf[tempPos], m_pBuffer, cpySize);
 			m_getPos += tempPos + cpySize;
 		}

@@ -43,7 +43,7 @@ bool IOCP::AssociateIOCP(SOCKET _socket, uint32 _completionKey)
 {
 	if (m_hCPObject == nullptr) return false;
 
-	HANDLE h = ::CreateIoCompletionPort((HANDLE)_socket, m_hCPObject, (ULONG_PTR)_completionKey, 0);
+	HANDLE h = ::CreateIoCompletionPort(reinterpret_cast<HANDLE>(_socket), m_hCPObject, static_cast<ULONG_PTR>(_completionKey), 0);
 	if (h == nullptr) return false;
 
 	return true;
@@ -53,7 +53,7 @@ bool IOCP::AssociateIOCP(SOCKET _socket)
 {
 	if (m_hCPObject == nullptr) return false;
 
-	HANDLE h = ::CreateIoCompletionPort((HANDLE)_socket, m_hCPObject, (ULONG_PTR)0, 0);
+	HANDLE h = ::CreateIoCompletionPort(reinterpret_cast<HANDLE>(_socket), m_hCPObject, 0, 0);
 	if (h == nullptr) return false;
 
 	return true;
@@ -66,7 +66,7 @@ bool IOCP::CreateWorkerThread(uint32 _numOfThread)
 
 	for (uint32 i = 0; i < _numOfThread; ++i)
 	{
-		m_arrThreadHandle[i] = (HANDLE)_beginthreadex(nullptr, 0, &CallWorkerThread, (void*)this, 0, nullptr);
+		m_arrThreadHandle[i] = reinterpret_cast<HANDLE>(_beginthreadex(nullptr, 0, &CallWorkerThread, reinterpret_cast<void*>(this), 0, nullptr));
 		if (m_arrThreadHandle[i] == 0)
 		{
 			printf("thread 생성 실패\n");
@@ -92,7 +92,7 @@ void IOCP::Worker()
 
 	while (1)
 	{
-		result = ::GetQueuedCompletionStatus(m_hCPObject, &bytesTransferred, (PULONG_PTR)&connID, (LPOVERLAPPED*)&pOverlapped, INFINITE);
+		result = ::GetQueuedCompletionStatus(m_hCPObject, &bytesTransferred, reinterpret_cast<PULONG_PTR>(&connID), reinterpret_cast<LPOVERLAPPED*>(&pOverlapped), INFINITE);
 
 		if (!m_workerRunning) break;
 

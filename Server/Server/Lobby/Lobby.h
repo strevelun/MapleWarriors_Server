@@ -13,7 +13,7 @@ struct _stLobbyUser
 	uint32 connID;
 
 	_stLobbyUser(uint32 _lobbyID, uint32 _connID) : lobbyID(_lobbyID), connID(_connID) {}
-	bool operator< (const _stLobbyUser& _other) const { return connID < _other.connID; }
+	bool operator<(const _stLobbyUser& _other) const { return connID < _other.connID; }
 };
 
 class Lobby
