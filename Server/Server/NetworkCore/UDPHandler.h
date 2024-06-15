@@ -27,7 +27,7 @@ public:
 	bool RecvFromWSA(int32 _idx);
 	bool RecvReady();
 	void OnRecv(int32 _idx);
-	std::shared_ptr<Connection> GetConnInfo(int32 _idx, OUT uint16& _port);
+	uint32 GetConnInfo(int32 _idx, OUT uint16& _port);
 
 	SOCKET GetSocket() const { return m_udpSocket; }
 

@@ -5,20 +5,26 @@
 #include "../Types.h"
 #include "Connection.h"
 #include "../CSLock.h"
-#include "../SRWLock.h"
 
 class ConnectionManager
 {
 private:
-	SRWLock									m_srwLock;
-	uint32									m_connectionId;
-	uint32									m_count;
-	std::unordered_map<uint32, std::shared_ptr<Connection>> m_mapConnection;
+	struct _tConnection
+	{
+		uint32		refCnt;
+		Connection* pConn;
+	};
+
+private:
+	CSLock														m_lock;
+	uint32														m_connectionId;
+	uint32														m_count;
+	std::unordered_map<uint32, _tConnection>					m_umapConnection;
 
 public:
-	std::shared_ptr<Connection> Create(tAcceptedClient* _pAcceptedClient);
-	std::shared_ptr<Connection> Get(uint32 _id);
-	void Delete(uint32 _id);
+	Connection* Create(tAcceptedClient* _pAcceptedClient);
+	Connection* Get(uint32 _id);
+	void Release(uint32 _id);
 
 	uint32 GetCount() const { return m_count; }
 

@@ -14,7 +14,6 @@
 #include <sstream>
 #include <string>
 #include <chrono>
-#include <atomic>
 #include <cassert> 
 
 #include "Types.h"

@@ -46,7 +46,7 @@ bool Room::SetMemberState(uint32 _idx, eRoomUserState _eState)
 
 	bool bSuccess = false;
 
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Writer);
 	if (m_eState == eRoomState::Standby &&
 		m_ownerIdx != _idx && 
 		m_arrUser[_idx].GetState() != eRoomUserState::None)
@@ -54,14 +54,14 @@ bool Room::SetMemberState(uint32 _idx, eRoomUserState _eState)
 		m_arrUser[_idx].SetState(_eState);
 		bSuccess = true;
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Writer);
 	return bSuccess;
 }
 
 bool Room::StartGame()
 {
 	bool bSuccess = false;
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Writer);
 	if (CheckAllReady())
 	{
 		m_eState = eRoomState::InGame;
@@ -75,24 +75,26 @@ bool Room::StartGame()
 		}
 		bSuccess = true;
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Writer);
 
 	return bSuccess;
 }
 
 void Room::GameOver()
 {
+	m_lock.Lock(eLockType::Reader);
 	for (RoomUser user : m_arrUser)
 	{
 		if (user.GetState() == eRoomUserState::None) continue;
 
 		user.GameOver();
 	}
+	m_lock.UnLock(eLockType::Reader);
 }
 
 void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 {
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Reader);
 	_pkt.Add<int8>(m_ownerIdx);
 	_pkt.Add<int8>(m_numOfUser);
 
@@ -110,14 +112,13 @@ void Room::PacketRoomUserSlotInfo(Packet& _pkt)
 		}
 		++idx;
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Reader);
 }
 
 void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 {
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Reader);
 	_pkt.Add<int8>(m_numOfUser);
-	//MakePacketIP(_pkt, m_arrUser[_roomUserIdx].GetIP());
 
 	const int8* ip = nullptr;
 	const uint8* privateIP = nullptr;
@@ -141,12 +142,12 @@ void Room::PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx)
 		}
 		++idx;
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Reader);
 }
 
 uint32 Room::Enter(Connection& _conn, User* _pUser)
 {
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Writer);
 	{
 		if (m_numOfUser < ROOM_USER_MAX)
 		{
@@ -156,29 +157,36 @@ uint32 Room::Enter(Connection& _conn, User* _pUser)
 				if (m_arrUser[i].GetState() == eRoomUserState::None)
 					break;
 			}
-
-			if (i == ROOM_USER_MAX)
+			
+			if (i >= ROOM_USER_MAX)
 			{
-				m_lock.Leave();
-				return false; // 뭔가 잘못됨
+				m_lock.UnLock(eLockType::Writer);
+				return USER_NOT_IN_THE_ROOM;
 			}
 
 			m_arrUser[i].Init(_conn, _pUser);
 			++m_numOfUser;
-			m_lock.Leave();
+			m_lock.UnLock(eLockType::Writer);
 			return i;
 		}
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Writer);
 	return USER_NOT_IN_THE_ROOM;
 }
 
 uint32 Room::Leave(uint32 _myRoomIdx, OUT uint32& _prevOwnerIdx, OUT uint32& _newOwnerIdx)
 {
 	//printf("Leave : %d\n", m_numOfUser);
-	if (m_numOfUser == 0) return USER_NOT_IN_THE_ROOM;
+	m_lock.Lock(eLockType::Reader);
+	if (m_numOfUser == 0) // 나 혼자 있을 때 방을 나간 경우
+	{
+		m_lock.UnLock(eLockType::Reader);
+		return _myRoomIdx;
+	}
+	m_lock.UnLock(eLockType::Reader);
 
-	m_lock.Enter();
+	uint32 numOfUser;
+	m_lock.Lock(eLockType::Writer);
 	{
 		if (m_arrUser[_myRoomIdx].IsOwner())
 		{
@@ -195,15 +203,15 @@ uint32 Room::Leave(uint32 _myRoomIdx, OUT uint32& _prevOwnerIdx, OUT uint32& _ne
 		}
 
 		m_arrUser[_myRoomIdx].Clear();
-		--m_numOfUser;
+		numOfUser = --m_numOfUser;
 	}
-	m_lock.Leave();
-	return m_numOfUser;
+	m_lock.UnLock(eLockType::Writer);
+	return numOfUser;
 }
 
 void Room::SendAll(const Packet& _pkt, uint32 _exceptIdx)
 {
-	m_lock.Enter();
+	m_lock.Lock(eLockType::Reader);
 	if(m_numOfUser != 0)
 	{
 		uint32 idx = 0;
@@ -214,7 +222,7 @@ void Room::SendAll(const Packet& _pkt, uint32 _exceptIdx)
 			++idx;
 		}
 	}
-	m_lock.Leave();
+	m_lock.UnLock(eLockType::Reader);
 }
 
 uint32 Room::FindNextOwner(uint32 _prevOwnerIdx)

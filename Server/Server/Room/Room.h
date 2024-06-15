@@ -14,7 +14,7 @@ enum class eRoomState
 class Room
 {
 private:
-	CSLock					m_lock;
+	SRWLock					m_lock;
 
 private:
 	std::array<RoomUser, ROOM_USER_MAX> m_arrUser;
@@ -41,13 +41,13 @@ public:
 	uint32 GetNumOfUser() const { return m_numOfUser; }
 	eRoomState GetState() const { return m_eState; }
 	eGameMap GetMapID() const { return m_eMap; }
-	eCharacterChoice GetCharacterChoice(uint32 _memberIdx) const { return m_arrUser[_memberIdx].GetCharacterChoice(); } // 범위 체크
+	//eCharacterChoice GetCharacterChoice(uint32 _memberIdx) const { return m_arrUser[_memberIdx].GetCharacterChoice(); } // 범위 체크
 
 	// 게임이 시작된 상태에서 Set은 불가능
 	bool SetMemberState(uint32 _idx, eRoomUserState _eState);
 	void SetState(eRoomState _eState) { m_eState = _eState; }
 	void SetMapID(eGameMap _mapID) { m_eMap = _mapID; }
-	void SetMemberCharacterChoice(uint32 _memberIdx, uint32 _characterIdx) { m_arrUser[_memberIdx].SetCharacterChoice((eCharacterChoice)_characterIdx); }
+	void SetMemberCharacterChoice(uint32 _memberIdx, uint32 _characterIdx) { m_arrUser[_memberIdx].SetCharacterChoice(static_cast<eCharacterChoice>(_characterIdx)); }
 
 	bool StartGame();
 	void GameOver();

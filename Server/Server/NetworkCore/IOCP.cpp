@@ -99,7 +99,7 @@ void IOCP::Worker()
 		if (!result || bytesTransferred == 0)
 		{
 			UserManager::GetInst()->Disconnect(connID); 
-			ConnectionManager::GetInst()->Delete(connID);
+			ConnectionManager::GetInst()->Release(connID);
 			continue;
 		}
 
@@ -107,8 +107,9 @@ void IOCP::Worker()
 		{
 		case eConnType::TCP:
 		{
-			std::shared_ptr<Connection> conn = ConnectionManager::GetInst()->Get(connID);
-			if (conn)	conn->OnRecv(bytesTransferred);
+			Connection* pConn = ConnectionManager::GetInst()->Get(connID);
+			if (pConn)	pConn->OnRecv(bytesTransferred);
+			ConnectionManager::GetInst()->Release(connID);
 			break;
 		}
 		case eConnType::UDP:

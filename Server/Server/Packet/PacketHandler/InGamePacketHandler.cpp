@@ -12,13 +12,5 @@ void NInGame::GameOver(Connection& _conn, PacketReader& _packet)
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	if (!pLobby) return;
 
-	Room* pRoom = pLobby->GetRoomManager()->Find(pUser->GetRoomId());
-
-	pRoom->SetState(eRoomState::Standby);
-	pRoom->GameOver();
-
-	Packet pkt;
-	pkt.
-		Add<PacketType>(static_cast<PacketType>(eServer::GameOver));
-	pRoom->SendAll(pkt);
+	pLobby->GetRoomManager()->GameOver(pUser->GetRoomId());
 }

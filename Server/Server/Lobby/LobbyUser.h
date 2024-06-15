@@ -9,9 +9,6 @@ class Connection;
 class LobbyUser
 {
 private:
-	CSLock									m_lock;
-
-private:
 	Connection*								m_pConn;
 	User*									m_pUser;
 

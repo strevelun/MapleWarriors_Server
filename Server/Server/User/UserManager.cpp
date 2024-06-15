@@ -7,12 +7,12 @@ User* UserManager::Create(const wchar_t* _pNickname)
 {
 	User* pUser = nullptr;
 	m_userDBLock.Enter();	
-	std::unordered_map<std::wstring, User*>::const_iterator iter = m_mapUser.find(_pNickname);
-	std::unordered_map<std::wstring, User*>::const_iterator iterEnd = m_mapUser.cend();
+	std::unordered_map<std::wstring, User*>::iterator iter = m_umapDBUser.find(_pNickname);
+	std::unordered_map<std::wstring, User*>::iterator iterEnd = m_umapDBUser.end();
 	if (iter == iterEnd)
 	{
 		pUser = new User(_pNickname);
-		m_mapUser.insert({ _pNickname, pUser });
+		m_umapDBUser.insert({ _pNickname, pUser });
 	}
 	else
 		pUser = iter->second;
@@ -28,8 +28,8 @@ User* UserManager::FindConnectedUser(uint32 _connectionId)
 	User* pUser = nullptr;
 
 	m_lock.Lock(eLockType::Reader);
-	std::unordered_map<uint32, User*>::const_iterator iter = m_mapConnectedUser.find(_connectionId);
-	if (iter != m_mapConnectedUser.cend()) pUser = iter->second;
+	std::unordered_map<uint32, User*>::iterator iter = m_umapConnectedUser.find(_connectionId);
+	if (iter != m_umapConnectedUser.end()) pUser = iter->second;
 	m_lock.UnLock(eLockType::Reader);
 
 	return pUser;
@@ -39,15 +39,15 @@ User* UserManager::FindConnectedUser(uint32 _connectionId)
 bool UserManager::Connect(uint32 _connectionId, const wchar_t* _pNickname)
 {
 	m_lock.Lock(eLockType::Writer);
-	std::unordered_map<std::wstring, User*>::const_iterator iter = m_mapUser.find(_pNickname);
-	std::unordered_map<std::wstring, User*>::const_iterator iterEnd = m_mapUser.cend();
+	std::unordered_map<std::wstring, User*>::iterator iter = m_umapDBUser.find(_pNickname);
+	std::unordered_map<std::wstring, User*>::iterator iterEnd = m_umapDBUser.end();
 	if (iter == iterEnd)
 	{
 		m_lock.UnLock(eLockType::Writer);
 		return false;
 	}
 	User* pUser = iter->second;
-	m_mapConnectedUser.insert({ _connectionId, pUser });
+	m_umapConnectedUser.insert({ _connectionId, pUser });
 	m_lock.UnLock(eLockType::Writer);
 
 	pUser->Connect(_connectionId);
@@ -60,15 +60,15 @@ void UserManager::Disconnect(uint32 _connectionId)
 	User* pUser = nullptr;
 
 	m_lock.Lock(eLockType::Writer);
-	std::unordered_map<uint32, User*>::const_iterator iter = m_mapConnectedUser.find(_connectionId);
-	if (iter != m_mapConnectedUser.cend()) pUser = iter->second;
+	std::unordered_map<uint32, User*>::iterator iter = m_umapConnectedUser.find(_connectionId);
+	if (iter != m_umapConnectedUser.end()) pUser = iter->second;
 	if (!pUser)
 	{
 		m_lock.UnLock(eLockType::Writer);
 		return;
 	}
 
-	m_mapConnectedUser.erase(_connectionId);
+	m_umapConnectedUser.erase(_connectionId);
 	m_lock.UnLock(eLockType::Writer);
 
 	pUser->Leave();

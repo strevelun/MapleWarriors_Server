@@ -34,30 +34,30 @@ bool NetworkEngine::Init()
 
 void NetworkEngine::OnConnected(tAcceptedClient* _pAcceptedClient)
 {
-	std::shared_ptr<Connection> conn = ConnectionManager::GetInst()->Create(_pAcceptedClient);
+	Connection* pConn = ConnectionManager::GetInst()->Create(_pAcceptedClient);
 
-	if (!m_iocp.AssociateIOCP(conn->GetSocket(), conn->GetId()))
+	if (!m_iocp.AssociateIOCP(pConn->GetSocket(), pConn->GetId()))
 	{
 		printf("IOCP Association Failed");
-		ConnectionManager::GetInst()->Delete(conn->GetId());
+		ConnectionManager::GetInst()->Release(pConn->GetId());
 		return;
 	}
 	
-	conn->RecvWSA();
+	pConn->RecvWSA();
 
 	Packet pkt;
 	pkt
 		.Add<PacketType>(static_cast<PacketType>(eServer::ConnectionID))
-		.Add<uint32>(conn->GetId());
-	conn->Send(pkt);
+		.Add<uint32>(pConn->GetId());
+	pConn->Send(pkt);
 
-	if (!conn)
+	if (!pConn)
 	{
 		printf("[%d], IP[%s]		연결실패			(현재 접속자 수 : %d)\n", static_cast<int32>(_pAcceptedClient->clientSocket), _pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
 	}
 	else
 	{
 		printf("id[%u], socket[%d], IP[%s]		연결됨			(현재 접속자 수 : %d)\n",
-			conn->GetId(), static_cast<int32>(_pAcceptedClient->clientSocket), _pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
+			pConn->GetId(), static_cast<int32>(_pAcceptedClient->clientSocket), _pAcceptedClient->ipAddr, ConnectionManager::GetInst()->GetCount());
 	}
 }

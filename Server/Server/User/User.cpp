@@ -42,21 +42,26 @@ void User::Leave()
 {
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 
+	m_lock.Lock(eLockType::Reader);
+	uint32 roomID = m_roomID;
+	uint32 lobbyID = m_lobbyID;
+	uint32 connectionId = m_connectionId;
+	uint32 roomUserIdx = m_roomUserIdx;
+	m_lock.UnLock(eLockType::Reader);
+
+	uint32 prevOwnerID = USER_NOT_IN_THE_ROOM;
+	uint32 nextOwnerID = USER_NOT_IN_THE_ROOM;
+
 	switch (m_eSceneState)
 	{
 	case eSceneState::InGame:
 	{
-		uint32 roomID = m_roomID;
-		uint32 roomUserIdx = m_roomUserIdx;
-		uint32 prevOwnerID = USER_NOT_IN_THE_ROOM;
-		uint32 nextOwnerID = USER_NOT_IN_THE_ROOM;
-
 		Packet pkt;
 		pkt
 			.Add<PacketType>(static_cast<PacketType>(eServer::InGameExit))
-			.Add<int8>(m_roomUserIdx); // 나간 유저 
+			.Add<int8>(roomUserIdx); // 나간 유저 
 
-		uint32 leftNum = pLobby->LeaveRoom(this, m_roomID, OUT prevOwnerID, OUT nextOwnerID);
+		uint32 leftNum = pLobby->LeaveRoom(this, roomID, OUT prevOwnerID, OUT nextOwnerID);
 		pkt.Add<int8>(nextOwnerID);
 
 		if (leftNum != 0 && leftNum != ROOM_ID_NOT_FOUND)
@@ -65,22 +70,18 @@ void User::Leave()
 			//printf("InGameExit sent\n");
 		}
 
-		pLobby->Leave(m_lobbyID, m_connectionId);
+		pLobby->Leave(lobbyID, connectionId);
 
 		break;
 	}
 	case eSceneState::Room:
 	{
-		uint32 roomID = m_roomID;
-		uint32 roomUserIdx = m_roomUserIdx;
-		uint32 prevOwnerID = USER_NOT_IN_THE_ROOM;
-		uint32 nextOwnerID = USER_NOT_IN_THE_ROOM;
 		Packet pktNotifyRoomUserExit;
 		pktNotifyRoomUserExit
 			.Add<PacketType>(static_cast<PacketType>(eServer::NotifyRoomUserExit))
-			.Add<int8>(m_roomUserIdx); // 나간 유저 
+			.Add<int8>(roomUserIdx); // 나간 유저 
 
-		uint32 leftNum = pLobby->LeaveRoom(this, m_roomID, OUT prevOwnerID, OUT nextOwnerID);
+		uint32 leftNum = pLobby->LeaveRoom(this, roomID, OUT prevOwnerID, OUT nextOwnerID);
 
 		pktNotifyRoomUserExit.Add<int8>(prevOwnerID);
 		pktNotifyRoomUserExit.Add<int8>(nextOwnerID);
@@ -93,7 +94,7 @@ void User::Leave()
 		//printf("%d : User::Leave\n", leftNum);
 	}
 	case eSceneState::Lobby:
-		pLobby->Leave(m_lobbyID, m_connectionId);
+		pLobby->Leave(lobbyID, connectionId);
 		break;
 	}
 
@@ -112,37 +113,49 @@ void User::Leave()
 
 void User::LeaveRoom()
 {
+	m_lock.Lock(eLockType::Writer);
 	m_roomUserIdx = USER_NOT_IN_THE_ROOM;
 	m_roomID = USER_NOT_IN_THE_ROOM;
 	m_eSceneState = eSceneState::Lobby;
+	m_lock.UnLock(eLockType::Writer);
 }
 
 void User::EnterRoom(uint32 _roomID, uint32 _myRoomSlotIdx)
 {
+	m_lock.Lock(eLockType::Writer);
 	m_roomID = _roomID;
 	m_roomUserIdx = _myRoomSlotIdx;
 	m_eSceneState = eSceneState::Room;
+	m_lock.UnLock(eLockType::Writer);
 }
 
 void User::CreateRoom(uint32 _roomID)
 {
+	m_lock.Lock(eLockType::Writer);
 	m_roomID = _roomID;
 	m_roomUserIdx = 0;
 	m_eSceneState = eSceneState::Room;
+	m_lock.UnLock(eLockType::Writer);
 }
 
 void User::EnterLobby(uint32 _lobbyID)
 {
+	m_lock.Lock(eLockType::Writer);
 	m_lobbyID = _lobbyID;
 	m_eSceneState = eSceneState::Lobby;
+	m_lock.UnLock(eLockType::Writer);
 }
 
 void User::GameOver()
 {
+	m_lock.Lock(eLockType::Writer);
 	m_eSceneState = eSceneState::Room;
+	m_lock.UnLock(eLockType::Writer);
 }
 
 void User::GameStart()
 {
+	m_lock.Lock(eLockType::Writer);
 	m_eSceneState = eSceneState::InGame;
+	m_lock.UnLock(eLockType::Writer);
 }

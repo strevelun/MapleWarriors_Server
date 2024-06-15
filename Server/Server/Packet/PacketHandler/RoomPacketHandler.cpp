@@ -56,7 +56,7 @@ void NRoom::ReqRoomUsersInfo(Connection& _conn, PacketReader& _packet)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
-	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
+	const Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
 	Packet pkt;
 	pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomUsersInfo));
@@ -71,24 +71,11 @@ void NRoom::StartGame(Connection& _conn, PacketReader& _packet)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
-	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
 	Packet pkt;
-	bool bSuccess = pRoom->StartGame();
-	if (bSuccess)
-	{
-		eGameMap mapID = pRoom->GetMapID();
+	pRoomManager->GameStart(OUT pkt, pUser->GetRoomId(), pUser->GetRoomUserIdx());
 
-		pkt.Add<PacketType>(static_cast<PacketType>(eServer::StartGame_Success))
-		.Add<int8>(static_cast<int8>(mapID));
-		pRoom->PacketStartGameReqInitInfo(pkt, pUser->GetRoomUserIdx());
-		pRoom->SendAll(pkt);
-	}
-	else
-	{
-		pkt.Add<PacketType>(static_cast<PacketType>(eServer::StartGame_Fail));
-		_conn.Send(pkt);
-	}
+	_conn.Send(pkt);
 }
 
 void NRoom::RoomReady(Connection& _conn, PacketReader& _packet)
@@ -98,21 +85,9 @@ void NRoom::RoomReady(Connection& _conn, PacketReader& _packet)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
-	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
-	Packet pkt;
-	if (!pRoom->SetMemberState(pUser->GetRoomUserIdx(), eRoomUserState::Ready))
-	{
-		pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomReady_Fail));
-	}	
-	else
-	{
-		pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomReady))
-			.Add<int8>(pUser->GetRoomUserIdx())
-			.Add<uint16>(_conn.GetId());
-	}
-
-	pRoom->SendAll(pkt); 
+	pRoomManager->RoomReady(pUser->GetRoomId(), pUser->GetRoomUserIdx(), _conn.GetId());
+	
 }
 
 void NRoom::RoomStandby(Connection& _conn, PacketReader& _packet)
@@ -122,21 +97,7 @@ void NRoom::RoomStandby(Connection& _conn, PacketReader& _packet)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
-	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
-
-	Packet pkt;
-	if (!pRoom->SetMemberState(pUser->GetRoomUserIdx(), eRoomUserState::Standby))
-	{
-		pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomStandby_Fail));
-	}
-	else
-	{
-		pkt.Add<PacketType>(static_cast<PacketType>(eServer::RoomStandby))
-			.Add<int8>(pUser->GetRoomUserIdx())
-			.Add<uint16>(_conn.GetId());
-	}
-
-	pRoom->SendAll(pkt);
+	pRoomManager->RoomStandby(pUser->GetRoomId(), pUser->GetRoomUserIdx(), _conn.GetId());
 }
 
 void NRoom::RoomMapChoice(Connection& _conn, PacketReader& _packet)
@@ -144,16 +105,9 @@ void NRoom::RoomMapChoice(Connection& _conn, PacketReader& _packet)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
-	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
-
+	
 	int8 mapID = _packet.GetInt8();
-	pRoom->SetMapID(static_cast<eGameMap>(mapID));
-
-	Packet pkt;
-	pkt
-		.Add<PacketType>(static_cast<PacketType>(eServer::RoomMapChoice))
-		.Add<int8>(mapID);
-	pRoom->SendAll(pkt);
+	pRoomManager->RoomMapChoice(pUser->GetRoomId(), mapID);
 }
 
 void NRoom::RoomCharacterChoice(Connection& _conn, PacketReader& _packet)
@@ -161,15 +115,7 @@ void NRoom::RoomCharacterChoice(Connection& _conn, PacketReader& _packet)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
-	Room* pRoom = pRoomManager->Find(pUser->GetRoomId());
 
 	int8 characterIdx = _packet.GetInt8();
-	pRoom->SetMemberCharacterChoice(pUser->GetRoomUserIdx(), characterIdx);
-
-	Packet pkt;
-	pkt
-		.Add<PacketType>(static_cast<PacketType>(eServer::RoomCharacterChoice))
-		.Add<int8>(pUser->GetRoomUserIdx())
-		.Add<int8>(characterIdx);
-	pRoom->SendAll(pkt);
+	pRoomManager->RoomCharacterChoice(pUser->GetRoomId(), pUser->GetRoomUserIdx(), characterIdx);
 }

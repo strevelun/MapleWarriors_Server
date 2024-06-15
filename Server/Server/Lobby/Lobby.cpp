@@ -42,7 +42,7 @@ LobbyUser* Lobby::Find(uint32 _lobbyID, uint32 _connID)
 
 	LobbyUser* pUser = nullptr;
 
-	if (m_setAllLobbyUser.find(_stLobbyUser(_lobbyID, _connID)) != m_setAllLobbyUser.cend())
+	if (m_setAllLobbyUser.find(_stLobbyUser(_lobbyID, _connID)) != m_setAllLobbyUser.end())
 	{
 		pUser = &m_arrUser[_lobbyID];
 	}
@@ -132,17 +132,17 @@ void Lobby::Send(const Packet& _pkt, uint32 _userID)
 {
 	if (_userID >= USER_LOBBY_MAX) return;
 
+	m_lock.Lock(eLockType::Reader);
 	m_arrUser[_userID].Send(_pkt);
+	m_lock.UnLock(eLockType::Reader);
 }
 
 void Lobby::SendAllInLobby(const Packet& _pkt)
 {
 	m_lock.Lock(eLockType::Reader);
-	std::unordered_set<uint32> usetLobbyUser = m_usetUserInLobby;
-	m_lock.UnLock(eLockType::Reader);
-
-	for (uint32 id : usetLobbyUser)
+	for (uint32 id : m_usetUserInLobby)
 		m_arrUser[id].Send(_pkt);
+	m_lock.UnLock(eLockType::Reader);
 }
 
 Room* Lobby::CreateRoom(Connection& _conn, User* _pUser, const wchar_t* _pTitle)

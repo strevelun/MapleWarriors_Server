@@ -11,8 +11,8 @@ private:
 	CSLock		m_userDBLock;
 
 private:
-	std::unordered_map<std::wstring, User*>		m_mapUser;
-	std::unordered_map<uint32, User*>			m_mapConnectedUser;
+	std::unordered_map<std::wstring, User*>		m_umapDBUser;
+	std::unordered_map<uint32, User*>			m_umapConnectedUser;
 
 public:
 	User* Create(const wchar_t* _pNickname);
