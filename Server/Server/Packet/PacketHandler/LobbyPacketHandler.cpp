@@ -101,9 +101,6 @@ void NLobby::EnterRoom(Connection& _conn, PacketReader& _packet)
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	eEnterRoomResult eResult = pLobby->EnterRoom(_conn, pUser, roomID);
 
-	// 이 사이에 누가 LeaveRoom한다면 반영된 정보를 가져오게 됨.
-	// LoadScene해서 Init하기 전 UIUsers 갱신하는 패킷이 온다면
-
 	Packet pkt;
 
 	switch (eResult)

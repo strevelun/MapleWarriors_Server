@@ -68,7 +68,7 @@ tAcceptedClient* Acceptor::Accept()
 	tAcceptedClient* pClient = new tAcceptedClient;
 	::inet_ntop(AF_INET, &m_clientAddr.sin_addr, pClient->ipAddr, sizeof(pClient->ipAddr));
 
-	// 테스트 : 서버와 같은 망 사용
+	// 테스트
 #ifdef _DEBUG	
 	if(pClient->ipAddr[0] == '1' && pClient->ipAddr[1] == '9' && pClient->ipAddr[2] == '2')
 		strcpy_s(pClient->ipAddr, SERVER_EXTERNAL_IP);

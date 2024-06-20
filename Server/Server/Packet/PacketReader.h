@@ -21,8 +21,6 @@ public:
 
 	uint32 GetSize() const;
 
-	//template <typename Type>
-	//Type Get();
 	PacketType GetPacketType();
 	int8 GetInt8();
 	uint8 GetUInt8();
@@ -34,16 +32,3 @@ public:
 	const wchar_t* GetWString();
 
 };
-/*
-template<typename Type>
-inline Type PacketReader::Get()
-{
-	if (std::is_same<Type, int8>::value)
-	{
-		GetChar();
-	}
-	uint16 pos = m_getPos;
-	m_getPos += sizeof(Type);
-	return *reinterpret_cast<Type*>(&m_pBuffer[pos]);
-}
-*/

@@ -47,7 +47,7 @@ void Connection::OnRecv(uint32 _recvBytes)
 	RecvWSA();
 }
 
-bool Connection::RecvWSA() // false리턴하면 접속 종료 시킬것
+bool Connection::RecvWSA() 
 {
 	DWORD recvBytes = 0, flags = 0;
 	int32 err = 0;

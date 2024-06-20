@@ -41,9 +41,7 @@ public:
 	uint32 GetNumOfUser() const { return m_numOfUser; }
 	eRoomState GetState() const { return m_eState; }
 	eGameMap GetMapID() const { return m_eMap; }
-	//eCharacterChoice GetCharacterChoice(uint32 _memberIdx) const { return m_arrUser[_memberIdx].GetCharacterChoice(); } // 범위 체크
 
-	// 게임이 시작된 상태에서 Set은 불가능
 	bool SetMemberState(uint32 _idx, eRoomUserState _eState);
 	void SetState(eRoomState _eState) { m_eState = _eState; }
 	void SetMapID(eGameMap _mapID) { m_eMap = _mapID; }
@@ -52,7 +50,7 @@ public:
 	bool StartGame();
 	void GameOver();
 
-	void PacketRoomUserSlotInfo(Packet& _pkt); // change name
+	void PacketRoomUserSlotInfo(Packet& _pkt); 
 	void PacketStartGameReqInitInfo(Packet& _pkt, uint32 _roomUserIdx);
 
 	uint32 Enter(Connection& _conn, User* _pUser);

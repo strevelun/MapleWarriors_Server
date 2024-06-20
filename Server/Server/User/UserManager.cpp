@@ -35,7 +35,6 @@ User* UserManager::FindConnectedUser(uint32 _connectionId)
 	return pUser;
 }
 
-// 유저만들고 insert
 bool UserManager::Connect(uint32 _connectionId, const wchar_t* _pNickname)
 {
 	m_lock.Lock(eLockType::Writer);

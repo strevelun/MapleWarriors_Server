@@ -28,7 +28,6 @@ void NRoom::ExitRoom(Connection& _conn, PacketReader& _packet)
 	uint32 nextOwnerIdx = USER_NOT_IN_THE_ROOM;
 
 	// 자신이 방장이면 룸을 제거
-	// 방장 한 명일때 방장이 나가면 룸을 제거해야 하는데 누군가 들어온다면?
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 
 	Packet pktNotifyRoomUserExit;
@@ -80,20 +79,15 @@ void NRoom::StartGame(Connection& _conn, PacketReader& _packet)
 
 void NRoom::RoomReady(Connection& _conn, PacketReader& _packet)
 {
-	// 방장이면 리턴
-
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
 
 	pRoomManager->RoomReady(pUser->GetRoomId(), pUser->GetRoomUserIdx(), _conn.GetId());
-	
 }
 
 void NRoom::RoomStandby(Connection& _conn, PacketReader& _packet)
 {
-	// 방장이면 리턴
-
 	User* pUser = UserManager::GetInst()->FindConnectedUser(_conn.GetId());
 	Lobby* pLobby = LobbyManager::GetInst()->GetLobby();
 	RoomManager* pRoomManager = pLobby->GetRoomManager();
