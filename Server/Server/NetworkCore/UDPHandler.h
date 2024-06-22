@@ -2,7 +2,7 @@
 
 #include "../Defines.h"
 #include "RingBuffer.h"
-#include "../CSLock.h"
+#include "../Lock/CSLock.h"
 #include "ConnectionManager.h"
 
 typedef struct _tWork

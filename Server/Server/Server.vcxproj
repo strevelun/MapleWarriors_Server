@@ -127,10 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CSLock.cpp" />
+    <ClCompile Include="DB\DBConnection.cpp" />
+    <ClCompile Include="DB\DBConnectionManager.cpp" />
     <ClCompile Include="Lobby\Lobby.cpp" />
     <ClCompile Include="Lobby\LobbyManager.cpp" />
     <ClCompile Include="Lobby\LobbyUser.cpp" />
+    <ClCompile Include="Lock\CSLock.cpp" />
+    <ClCompile Include="Lock\SRWLock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetworkCore\Acceptor.cpp" />
     <ClCompile Include="NetworkCore\Connection.cpp" />
@@ -150,16 +153,18 @@
     <ClCompile Include="Room\RoomManager.cpp" />
     <ClCompile Include="Room\RoomUser.cpp" />
     <ClCompile Include="ServerApp.cpp" />
-    <ClCompile Include="SRWLock.cpp" />
     <ClCompile Include="User\User.cpp" />
     <ClCompile Include="User\UserManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CSLock.h" />
+    <ClInclude Include="DB\DBConnection.h" />
+    <ClInclude Include="DB\DBConnectionManager.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Lobby\Lobby.h" />
     <ClInclude Include="Lobby\LobbyManager.h" />
     <ClInclude Include="Lobby\LobbyUser.h" />
+    <ClInclude Include="Lock\CSLock.h" />
+    <ClInclude Include="Lock\SRWLock.h" />
     <ClInclude Include="NetworkCore\Acceptor.h" />
     <ClInclude Include="NetworkCore\Connection.h" />
     <ClInclude Include="NetworkCore\ConnectionManager.h" />
@@ -179,7 +184,6 @@
     <ClInclude Include="Room\RoomManager.h" />
     <ClInclude Include="Room\RoomUser.h" />
     <ClInclude Include="ServerApp.h" />
-    <ClInclude Include="SRWLock.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="User\User.h" />
     <ClInclude Include="User\UserManager.h" />
