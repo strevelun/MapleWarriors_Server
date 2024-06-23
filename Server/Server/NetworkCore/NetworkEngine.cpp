@@ -23,11 +23,11 @@ bool NetworkEngine::Init()
 
 	SYSTEM_INFO		si;
 	::GetSystemInfo(&si);
-	if (!m_iocp.CreateWorkerThread(si.dwNumberOfProcessors * 2))	return false;
 	if (!pHandlerInst->Init(si.dwNumberOfProcessors * 2))			return false;
 	if (!pHandlerInst->Bind())										return false;
 	if (!pHandlerInst->RecvReady())									return false;
 	if (!m_iocp.AssociateIOCP(pHandlerInst->GetSocket()))			return false;
+	if (!m_iocp.CreateWorkerThread(si.dwNumberOfProcessors * 2))	return false;
 
 	return true;
 }

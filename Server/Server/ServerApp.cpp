@@ -18,10 +18,10 @@ bool ServerApp::Init(const int8* _ip, uint16 _port, int32 _backlog)
 
 	WSADATA  wsaData;
 	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)	return false;
-	if (!m_engine.Init())							return false;
 	if (!m_acceptor.Start(_ip, _port))				return false;
 	if (!m_acceptor.Bind())							return false;
 	if (!m_acceptor.Listen(_backlog))				return false;
+	if (!m_engine.Init())							return false;
 	
 	return true;
 }
