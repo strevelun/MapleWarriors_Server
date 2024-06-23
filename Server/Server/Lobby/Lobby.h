@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../NetworkCore/Connection.h"
-#include "../Lock/SRWLock.h"
+#include "../SRWLock.h"
 #include "LobbyUser.h"
 #include "../Room/RoomManager.h"
 

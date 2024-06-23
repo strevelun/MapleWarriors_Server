@@ -4,7 +4,7 @@
 
 #include "../Types.h"
 #include "Connection.h"
-#include "../Lock/CSLock.h"
+#include "../CSLock.h"
 
 class ConnectionManager
 {

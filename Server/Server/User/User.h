@@ -3,7 +3,7 @@
 #include "../Defines.h"
 #include "../Types.h"
 #include "../NetworkCore/Connection.h"
-#include "../Lock/SRWLock.h"
+#include "../SRWLock.h"
 
 class User
 {
@@ -24,7 +24,7 @@ private:
 	uint32			m_killCount;
 
 public:
-	User(uint32 _connID, const wchar_t* _pNickname);
+	User(const wchar_t* _pNickname);
 	~User();
 
 	const wchar_t* GetNickname() const { return m_nickname; }
@@ -34,6 +34,8 @@ public:
 	uint32 GetRoomUserIdx() const { return m_roomUserIdx; }
 	eSceneState GetSceneState() const { return m_eSceneState; }
 
+	void Connect(uint32 _connectionId);
+	bool IsLogin();
 	void Leave();
 	void LeaveRoom();
 	void EnterRoom(uint32 _roomID, uint32 _myRoomSlotIdx);

@@ -1,14 +1,13 @@
 #include "User.h"
 #include "../Lobby/LobbyManager.h"
-#include "../DB/DBConnectionManager.h"
 
-User::User(uint32 _connID, const wchar_t* _pNickname) :
+User::User(const wchar_t* _pNickname) : 
 	m_lobbyID(0),
 	m_roomID(0),
 	m_roomUserIdx(0),
-	m_eLoginState(eLoginState::Login),
+	m_eLoginState(eLoginState::Logout),
 	m_eSceneState(eSceneState::Login),
-	m_connectionId(_connID),
+	m_connectionId(USER_NOT_CONNECTED),
 	m_loginCount(0), 
 	m_killCount(0)
 {
@@ -19,6 +18,24 @@ User::User(uint32 _connID, const wchar_t* _pNickname) :
 
 User::~User()
 {
+}
+
+void User::Connect(uint32 _connectionId)
+{
+	m_lock.Lock(eLockType::Writer);
+	m_connectionId = _connectionId;
+	m_eLoginState = eLoginState::Login;
+	m_eSceneState = eSceneState::Login;
+	m_lock.UnLock(eLockType::Writer);
+}
+
+bool User::IsLogin()
+{
+	bool login;
+	m_lock.Lock(eLockType::Reader);
+	login = GetState() == eLoginState::Login;
+	m_lock.UnLock(eLockType::Reader);
+	return login;
 }
 
 void User::Leave()
@@ -80,17 +97,6 @@ void User::Leave()
 		pLobby->Leave(lobbyID, connectionId);
 		break;
 	}
-
-
-	DBConnection* pConn = DBConnectionManager::GetInst()->Acquire();
-	pConn->Unbind();
-	wchar_t query[256];
-	uint32 connID = 0;
-	SQLLEN len = 0;
-	swprintf(query, sizeof(query) / sizeof(wchar_t), L"UPDATE Users SET connID = ? where connID = %d;", m_connectionId);
-	assert(pConn->BindParam(1, SQL_C_LONG, SQL_INTEGER, sizeof(connID), &connID, &len));
-	assert(pConn->Execute(query));
-	DBConnectionManager::GetInst()->Release();
 
 	m_lock.Lock(eLockType::Writer);
 

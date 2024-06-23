@@ -1,7 +1,6 @@
 #include "ServerApp.h"
 
 #include "NetworkCore/ConnectionManager.h"
-#include "DB/DBConnectionManager.h"
 
 ServerApp::ServerApp() :
 	m_bIsRunning(true)
@@ -23,14 +22,7 @@ bool ServerApp::Init(const int8* _ip, uint16 _port, int32 _backlog)
 	if (!m_acceptor.Start(_ip, _port))				return false;
 	if (!m_acceptor.Bind())							return false;
 	if (!m_acceptor.Listen(_backlog))				return false;
-
-	if (!DBConnectionManager::GetInst()->Connect(L"Driver={MySQL ODBC 8.4 Unicode Driver};Server=127.0.0.1;Database=mydb;User=root;Password=root;CHARSET=utf8"))
-	{
-		printf("DBConnect ½ÇÆÐ\n");
-		DBConnectionManager::GetInst()->Clear();
-		return false;
-	}
-
+	
 	return true;
 }
 
@@ -49,7 +41,6 @@ void ServerApp::Run()
 
 void ServerApp::Shutdown()
 {
-	DBConnectionManager::GetInst()->Clear();
 	m_bIsRunning = false;
 	::WSACleanup();
 }

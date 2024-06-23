@@ -34,12 +34,6 @@
     <Filter Include="User">
       <UniqueIdentifier>{0c7e7c11-7c10-436d-b66e-f6068414ffe3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DB">
-      <UniqueIdentifier>{2735af76-ee0d-48c9-90d5-669db2232f2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Lock">
-      <UniqueIdentifier>{eceb6bd6-861e-4b41-a244-1439937448b8}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Packet\Packet.cpp">
@@ -78,6 +72,9 @@
     <ClCompile Include="Packet\PacketHandler\LoginPacketHandler.cpp">
       <Filter>Packet\PacketHandler</Filter>
     </ClCompile>
+    <ClCompile Include="CSLock.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="Packet\PacketHandler\LobbyPacketHandler.cpp">
       <Filter>Packet\PacketHandler</Filter>
     </ClCompile>
@@ -114,17 +111,8 @@
     <ClCompile Include="NetworkCore\UDPHandler.cpp">
       <Filter>NetworkCore</Filter>
     </ClCompile>
-    <ClCompile Include="DB\DBConnection.cpp">
-      <Filter>DB</Filter>
-    </ClCompile>
-    <ClCompile Include="DB\DBConnectionManager.cpp">
-      <Filter>DB</Filter>
-    </ClCompile>
-    <ClCompile Include="Lock\CSLock.cpp">
-      <Filter>Lock</Filter>
-    </ClCompile>
-    <ClCompile Include="Lock\SRWLock.cpp">
-      <Filter>Lock</Filter>
+    <ClCompile Include="SRWLock.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +158,9 @@
     <ClInclude Include="Packet\PacketHandler\LoginPacketHandler.h">
       <Filter>Packet\PacketHandler</Filter>
     </ClInclude>
+    <ClInclude Include="CSLock.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="Packet\PacketHandler\LobbyPacketHandler.h">
       <Filter>Packet\PacketHandler</Filter>
     </ClInclude>
@@ -206,17 +197,8 @@
     <ClInclude Include="NetworkCore\UDPHandler.h">
       <Filter>NetworkCore</Filter>
     </ClInclude>
-    <ClInclude Include="DB\DBConnection.h">
-      <Filter>DB</Filter>
-    </ClInclude>
-    <ClInclude Include="DB\DBConnectionManager.h">
-      <Filter>DB</Filter>
-    </ClInclude>
-    <ClInclude Include="Lock\CSLock.h">
-      <Filter>Lock</Filter>
-    </ClInclude>
-    <ClInclude Include="Lock\SRWLock.h">
-      <Filter>Lock</Filter>
+    <ClInclude Include="SRWLock.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

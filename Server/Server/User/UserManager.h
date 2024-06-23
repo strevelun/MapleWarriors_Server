@@ -1,20 +1,24 @@
 #pragma once
 
 #include "User.h"
-#include "../Lock/SRWLock.h"
+#include "../SRWLock.h"
+#include "../CSLock.h"
 
 class UserManager
 {
 private:
 	SRWLock		m_lock;
+	CSLock		m_userDBLock;
 
 private:
+	std::unordered_map<std::wstring, User*>		m_umapDBUser;
 	std::unordered_map<uint32, User*>			m_umapConnectedUser;
 
 public:
-	User* Create(uint32 _connID, const wchar_t* _pNickname);
-	User* FindConnectedUser(uint32 _connID);
-	void Disconnect(uint32 _connID);
+	User* Create(const wchar_t* _pNickname);
+	User* FindConnectedUser(uint32 _connectionId);
+	bool Connect(uint32 _connectionId, const wchar_t* _pNickname);
+	void Disconnect(uint32 _connectionId);
 
 #pragma region Singleton
 private:

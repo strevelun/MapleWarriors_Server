@@ -5,7 +5,7 @@
 #include "../Packet/Packet.h"
 #include "../Packet/PacketReader.h"
 #include "RingBuffer.h"
-#include "../Lock/CSLock.h"
+#include "../CSLock.h"
 
 class Connection
 {
