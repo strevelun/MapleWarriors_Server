@@ -17,13 +17,14 @@ Connection* ConnectionManager::Create(tAcceptedClient* _pAcceptedClient)
 Connection* ConnectionManager::Get(uint32 _id)
 {
 	m_lock.Enter();
-	Connection* pConn = nullptr;
 	std::unordered_map<uint32, _tConnection>::iterator iter = m_umapConnection.find(_id);
-	if (iter != m_umapConnection.end())
+	if (iter == m_umapConnection.end())
 	{
-		++(iter->second.refCnt);
-		pConn = iter->second.pConn;
+		m_lock.Leave();
+		return nullptr;
 	}
+	++(iter->second.refCnt);
+	Connection* pConn = iter->second.pConn;
 	m_lock.Leave();
 	return pConn;
 }
@@ -32,7 +33,7 @@ void ConnectionManager::Release(uint32 _id)
 {
 	m_lock.Enter();
 	std::unordered_map<uint32, _tConnection>::iterator iter = m_umapConnection.find(_id);	
-	if (iter != m_umapConnection.end())
+	if (iter == m_umapConnection.end())
 	{
 		--(iter->second.refCnt);
 		if (iter->second.refCnt < 1)
