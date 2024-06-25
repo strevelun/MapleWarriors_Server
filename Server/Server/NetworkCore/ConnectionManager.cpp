@@ -33,7 +33,7 @@ void ConnectionManager::Release(uint32 _id)
 {
 	m_lock.Enter();
 	std::unordered_map<uint32, _tConnection>::iterator iter = m_umapConnection.find(_id);	
-	if (iter == m_umapConnection.end())
+	if (iter != m_umapConnection.end())
 	{
 		--(iter->second.refCnt);
 		if (iter->second.refCnt < 1)
